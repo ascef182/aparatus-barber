@@ -173,7 +173,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
             <SheetTitle className="text-lg font-bold">Fazer Reserva</SheetTitle>
           </SheetHeader>
 
-          <div className="flex flex-col gap-4 px-5">
+          <div className="flex min-h-[420px] shrink-0 flex-col gap-4 px-5">
             <Calendar
               mode="single"
               selected={selectedDate}
