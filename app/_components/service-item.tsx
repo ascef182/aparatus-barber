@@ -8,7 +8,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "./ui/sheet";
 import { Calendar } from "./ui/calendar";
 import { Separator } from "./ui/separator";
@@ -21,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-slots";
 import { createBookingCheckoutSession } from "../_actions/create-booking-checkout-session";
 import { loadStripe } from "@stripe/stripe-js";
+import { authClient } from "@/lib/auth-client";
 
 interface ServiceItemProps {
   service: BarbershopService & {
@@ -36,7 +36,8 @@ export function ServiceItem({ service }: ServiceItemProps) {
     createBookingCheckoutSession,
   );
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
-  const { data: availableTimeSlots } = useQuery({
+  const { data: session } = authClient.useSession();
+  const { data: availableTimeSlots, isLoading: isLoadingSlots } = useQuery({
     queryKey: ["date-available-time-slots", service.barbershopId, selectedDate],
     queryFn: () =>
       getDateAvailableTimeSlots({
@@ -46,9 +47,32 @@ export function ServiceItem({ service }: ServiceItemProps) {
     enabled: Boolean(selectedDate),
   });
 
+  const promptLogin = () =>
+    toast.error("Faça login para reservar.", {
+      action: {
+        label: "Entrar",
+        onClick: () => authClient.signIn.social({ provider: "google" }),
+      },
+    });
+
+  const handleReserveClick = () => {
+    if (!session?.user) {
+      promptLogin();
+      return;
+    }
+    setSheetIsOpen(true);
+  };
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
+    setSelectedTime(undefined);
   };
+
+  const slotsUnauthorized =
+    availableTimeSlots?.validationErrors?._errors?.includes("Unauthorized");
+  const slotsHasError = Boolean(
+    availableTimeSlots?.validationErrors || availableTimeSlots?.serverError,
+  );
 
   const priceInReais = (service.priceInCents / 100).toLocaleString("pt-BR", {
     style: "currency",
@@ -132,16 +156,19 @@ export function ServiceItem({ service }: ServiceItemProps) {
               <p className="text-card-foreground text-sm leading-[1.4] font-bold whitespace-pre">
                 {priceInReais}
               </p>
-              <SheetTrigger asChild>
-                <Button className="rounded-full px-4 py-2">Reservar</Button>
-              </SheetTrigger>
+              <Button
+                className="rounded-full px-4 py-2"
+                onClick={handleReserveClick}
+              >
+                Reservar
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
       <SheetContent className="w-[370px] overflow-y-auto p-0">
-        <div className="flex h-full flex-col gap-6">
+        <div className="flex flex-col gap-6">
           <SheetHeader className="px-5 pt-6">
             <SheetTitle className="text-lg font-bold">Fazer Reserva</SheetTitle>
           </SheetHeader>
@@ -161,18 +188,47 @@ export function ServiceItem({ service }: ServiceItemProps) {
             <>
               <Separator />
 
-              <div className="flex gap-3 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
-                {availableTimeSlots?.data?.map((time) => (
+              {isLoadingSlots ? (
+                <p className="text-muted-foreground px-5 text-center text-sm">
+                  Carregando horários…
+                </p>
+              ) : slotsUnauthorized ? (
+                <div className="flex flex-col items-center gap-2 px-5 text-center">
+                  <p className="text-muted-foreground text-sm">
+                    Faça login para ver os horários disponíveis.
+                  </p>
                   <Button
-                    key={time}
-                    variant={selectedTime === time ? "default" : "outline"}
-                    className="shrink-0 rounded-full px-4 py-2"
-                    onClick={() => setSelectedTime(time)}
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() =>
+                      authClient.signIn.social({ provider: "google" })
+                    }
                   >
-                    {time}
+                    Entrar
                   </Button>
-                ))}
-              </div>
+                </div>
+              ) : slotsHasError ? (
+                <p className="text-muted-foreground px-5 text-center text-sm">
+                  Não foi possível carregar os horários. Tente novamente.
+                </p>
+              ) : availableTimeSlots?.data?.length === 0 ? (
+                <p className="text-muted-foreground px-5 text-center text-sm">
+                  Nenhum horário disponível para esta data.
+                </p>
+              ) : (
+                <div className="flex gap-3 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
+                  {availableTimeSlots?.data?.map((time) => (
+                    <Button
+                      key={time}
+                      variant={selectedTime === time ? "default" : "outline"}
+                      className="shrink-0 rounded-full px-4 py-2"
+                      onClick={() => setSelectedTime(time)}
+                    >
+                      {time}
+                    </Button>
+                  ))}
+                </div>
+              )}
 
               <Separator />
 
