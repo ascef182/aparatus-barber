@@ -1,10 +1,7 @@
 <div align="center">
-  <img src="./public/logo.svg" alt="Aparatus Logo" width="200" />
-  <h1 align="center" style="margin-top: 0;">Aparatus Barber</h1>
-  <p align="center">
-    Plataforma moderna de agendamento para barbearias com assistente de IA
-  </p>
-  <p align="center">
+  <h1>Aparatus Barber</h1>
+  <p>Modern barbershop booking platform with an AI scheduling assistant</p>
+  <p>
     <a href="#features">Features</a>&nbsp;&nbsp;|&nbsp;&nbsp;
     <a href="#tech-stack">Tech Stack</a>&nbsp;&nbsp;|&nbsp;&nbsp;
     <a href="#quick-start">Quick Start</a>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -31,160 +28,160 @@
 
 ---
 
-## Sobre
+## About
 
-**Aparatus Barber** é uma aplicação full-stack para agendamento online em barbearias. O cliente pode navegar por barbearias, visualizar serviços, escolher horários disponíveis e pagar online via Stripe. Conta também com um **assistente de IA** que permite agendar serviços por conversa natural.
+**Aparatus Barber** is a full-stack online booking platform for barbershops. Customers can browse barbershops, view services and pricing, pick available time slots, and pay securely via Stripe. The app also features an **AI assistant** that lets users book appointments through natural conversation.
 
-Projeto desenvolvido como portfólio, demonstrando arquitetura moderna com Next.js 16 App Router, Server Actions, autenticação OAuth, pagamentos reais e integração com IA generativa.
+Built as a portfolio project to demonstrate production-grade architecture: Next.js 16 App Router, Server Actions, OAuth authentication, real payment processing, and generative AI integration — all shipped solo under CazaTech.
 
 ---
 
 ## Features
 
-### Para Clientes
+### For Customers
 
-- **Busca e descoberta** — Encontre barbearias por nome ou categoria (Cabelo, Barba, Sobrancelha, etc.)
-- **Perfil da barbearia** — Veja detalhes, fotos, serviços e preços
-- **Agendamento online** — Selecione data, horário disponível e confirme em poucos cliques
-- **Pagamento com Stripe** — Checkout seguro em reais (BRL) com cartão de crédito
-- **Gerenciamento de agendamentos** — Acompanhe reservas confirmadas, finalizadas e cancele com reembolso
-- **Assistente IA** — Converse com a Agenda.ai para agendar sem navegar: *"Quero cortar o cabelo amanhã às 14h"*
+- **Search & Discovery** — Find barbershops by name or category (Haircut, Beard, Eyebrows, etc.)
+- **Barbershop Profile** — View details, photos, services, and pricing
+- **Online Booking** — Select date and time slot, confirm in a few clicks
+- **Stripe Payments** — Secure checkout in BRL with credit card support
+- **Booking Management** — Track confirmed and completed appointments, cancel with refund
+- **AI Assistant (Agenda.ai)** — Schedule without navigating: *"I want a haircut tomorrow at 2pm"*
 
-### Técnicas
+### Technical Highlights
 
-- Autenticação com Google OAuth (Better Auth)
-- Server Actions tipadas com validação Zod (next-safe-action)
-- Streaming de IA em tempo real com `ai` SDK + OpenAI GPT-4o-mini
-- Webhook Stripe para confirmação de pagamentos
-- Revalidação de cache via Next.js `revalidatePath`
-- Design responsivo com Tailwind CSS 4 + shadcn/ui
-- Tema claro/escuro com next-themes
+- Google OAuth via Better Auth
+- Type-safe Server Actions with Zod validation (next-safe-action)
+- Real-time AI streaming with Vercel AI SDK + OpenAI GPT-4o-mini
+- Stripe webhook for payment confirmation and booking creation
+- Cache invalidation via Next.js `revalidatePath`
+- Responsive design with Tailwind CSS 4 + shadcn/ui
+- Light/dark theme with next-themes
 
 ---
 
 ## Tech Stack
 
-| Categoria | Tecnologias |
+| Category | Technologies |
 |---|---|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
 | **Database** | PostgreSQL, Prisma ORM 6, Prisma Adapter PG |
-| **Auth** | Better Auth 1.6 com Google OAuth |
-| **Pagamentos** | Stripe (Checkout Sessions + Webhooks) |
-| **IA** | AI SDK 5 (Vercel), OpenAI GPT-4o-mini, Google Gemini |
+| **Auth** | Better Auth 1.6 with Google OAuth |
+| **Payments** | Stripe (Checkout Sessions + Webhooks) |
+| **AI** | AI SDK 5 (Vercel), OpenAI GPT-4o-mini, Google Gemini |
 | **UI** | Tailwind CSS 4, shadcn/ui, Radix UI, Lucide React |
-| **Estado** | TanStack React Query |
-| **Validação** | Zod 4, next-safe-action 8 |
-| **Ferramentas** | pnpm, ESLint, Prettier, date-fns |
+| **State** | TanStack React Query |
+| **Validation** | Zod 4, next-safe-action 8 |
+| **Tooling** | pnpm, ESLint, Prettier, date-fns |
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```
 src/
 ├── app/
 │   ├── _actions/          # Server Actions (next-safe-action)
-│   ├── _components/       # Componentes compartilhados + shadcn/ui
-│   │   └── ui/            # Primitivos UI (button, sheet, dialog...)
-│   ├── _providers/        # Providers React (QueryClient)
+│   ├── _components/       # Shared components + shadcn/ui
+│   │   └── ui/            # UI primitives (button, sheet, dialog...)
+│   ├── _providers/        # React providers (QueryClient)
 │   ├── api/
 │   │   ├── auth/          # Better Auth endpoints
-│   │   ├── chat/          # Streaming de IA (POST)
-│   │   └── stripe/        # Webhook de pagamento
-│   ├── barbershops/       # Listagem + detalhe da barbearia
-│   ├── bookings/          # Agendamentos do usuário
-│   ├── chat/              # Interface do assistente IA
-│   ├── layout.tsx         # Layout raiz
+│   │   ├── chat/          # AI streaming (POST)
+│   │   └── stripe/        # Payment webhook
+│   ├── barbershops/       # Listing + barbershop detail
+│   ├── bookings/          # User bookings
+│   ├── chat/              # AI assistant interface
+│   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Home (/)
 ├── lib/
-│   ├── auth.ts            # Configuração Better Auth (server)
-│   ├── auth-client.ts     # Client Better Auth (browser)
+│   ├── auth.ts            # Better Auth config (server)
+│   ├── auth-client.ts     # Better Auth client (browser)
 │   ├── action-client.ts   # Safe action client
-│   ├── prisma.ts          # Singleton Prisma
-│   └── utils.ts           # Utilitários (cn)
+│   ├── prisma.ts          # Prisma singleton
+│   └── utils.ts           # Utilities (cn)
 ├── prisma/
-│   ├── schema.prisma      # Modelos: User, Barbershop, Service, Booking
-│   └── seed.ts            # Seed com 10 barbearias + serviços
-└── generated/prisma/      # Prisma Client gerado
+│   ├── schema.prisma      # Models: User, Barbershop, Service, Booking
+│   └── seed.ts            # Seed with 10 barbershops + services
+└── generated/prisma/      # Generated Prisma Client
 ```
 
-### Fluxo de Agendamento
+### Booking Flow
 
 ```
-Busca → Barbearia → Serviço → Calendário → Horário → Stripe Checkout → Confirmação
-                                                                         ↓
-                                                         Webhook cria Booking no DB
+Search → Barbershop → Service → Calendar → Time Slot → Stripe Checkout → Confirmation
+                                                                          ↓
+                                                          Webhook creates Booking in DB
 ```
 
 ---
 
 ## Quick Start
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 20+
 - pnpm
-- PostgreSQL (local ou Neon/Railway)
-- Contas: Google OAuth, Stripe, OpenAI (ou Google AI)
+- PostgreSQL (local or Neon/Railway)
+- Accounts: Google OAuth, Stripe, OpenAI (or Google AI)
 
-### Passo a passo
+### Setup
 
 ```bash
 # 1. Clone
-git clone https://github.com/seu-usuario/aparatus-barber.git
+git clone https://github.com/your-username/aparatus-barber.git
 cd aparatus-barber
 
-# 2. Instale as dependências
+# 2. Install dependencies
 pnpm install
 
-# 3. Configure as variáveis de ambiente
+# 3. Configure environment variables
 cp .env.example .env
-# Edite .env com suas credenciais (veja tabela abaixo)
+# Edit .env with your credentials (see table below)
 
-# 4. Crie o banco e popule com dados de exemplo
+# 4. Create database and seed sample data
 pnpm prisma db push
 pnpm prisma db seed
 
-# 5. Inicie o servidor de desenvolvimento
+# 5. Start development server
 pnpm dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Variáveis de Ambiente
+## Environment Variables
 
-| Variável | Descrição | Obrigatória |
+| Variable | Description | Required |
 |---|---|---|
-| `DATABASE_URL` | URL de conexão PostgreSQL | Sim |
-| `BETTER_AUTH_SECRET` | Chave secreta para JWT | Sim |
-| `BETTER_AUTH_URL` | URL base da aplicação | Sim |
-| `GOOGLE_CLIENT_ID` | Client ID do Google OAuth | Sim |
-| `GOOGLE_CLIENT_SECRET` | Client Secret do Google OAuth | Sim |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Chave pública Stripe | Sim |
-| `STRIPE_SECRET_KEY` | Chave secreta Stripe | Sim |
-| `STRIPE_WEBHOOK_SECRET` | Segredo do webhook Stripe | Sim |
-| `NEXT_PUBLIC_APP_URL` | URL pública da aplicação | Sim |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | API Key Google Gemini (fallback IA) | Não |
-| `OPENAI_API_KEY` | API Key OpenAI (IA principal) | Não* |
+| `DATABASE_URL` | PostgreSQL connection URL | Yes |
+| `BETTER_AUTH_SECRET` | Secret key for JWT | Yes |
+| `BETTER_AUTH_URL` | Application base URL | Yes |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | Yes |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | Yes |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key | Yes |
+| `STRIPE_SECRET_KEY` | Stripe secret key | Yes |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret | Yes |
+| `NEXT_PUBLIC_APP_URL` | Public application URL | Yes |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Google Gemini API Key (AI fallback) | No |
+| `OPENAI_API_KEY` | OpenAI API Key (primary AI) | No* |
 
-\* Pelo menos uma das chaves de IA é necessária para o chat funcionar.
+\* At least one AI key is required for the chat assistant to work.
 
 ---
 
 ## Scripts
 
-| Comando | Descrição |
+| Command | Description |
 |---|---|
-| `pnpm dev` | Servidor de desenvolvimento |
-| `pnpm build` | Build de produção + Prisma Generate |
-| `pnpm start` | Iniciar servidor de produção |
-| `pnpm lint` | Verificar código com ESLint |
-| `pnpm prisma db push` | Sincronizar schema com o banco |
-| `pnpm prisma migrate dev` | Criar e aplicar migration |
-| `pnpm prisma db seed` | Popular banco com dados iniciais |
-| `pnpm prisma studio` | GUI do Prisma Studio |
+| `pnpm dev` | Start development server |
+| `pnpm build` | Production build + Prisma Generate |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Lint with ESLint |
+| `pnpm prisma db push` | Sync schema to database |
+| `pnpm prisma migrate dev` | Create and apply migration |
+| `pnpm prisma db seed` | Seed database with sample data |
+| `pnpm prisma studio` | Open Prisma Studio GUI |
 
 ---
 
@@ -194,17 +191,17 @@ Acesse [http://localhost:3000](http://localhost:3000).
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-1. Crie um banco PostgreSQL gratuito no [Neon](https://neon.tech)
-2. Conecte o repositório na [Vercel](https://vercel.com)
-3. Adicione **todas** as variáveis de ambiente no painel da Vercel
-4. O `vercel.json` já configura o build com `prisma generate`
-5. Configure os webhooks do Stripe apontando para `https://seu-site.vercel.app/api/stripe/webhook`
-6. Atualize `BETTER_AUTH_URL` e `NEXT_PUBLIC_APP_URL` para a URL de produção
+1. Create a free PostgreSQL database on [Neon](https://neon.tech)
+2. Connect the repository on [Vercel](https://vercel.com)
+3. Add **all** environment variables in the Vercel dashboard
+4. `vercel.json` already configures the build with `prisma generate`
+5. Set up Stripe webhooks pointing to `https://your-site.vercel.app/api/stripe/webhook`
+6. Update `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to your production URL
 
-> **Importante:** O build gera o Prisma Client em `generated/prisma/`. O arquivo `next.config.ts` já inclui `serverExternalPackages` e `outputFileTracingIncludes` necessários.
+> **Note:** The build outputs the Prisma Client to `generated/prisma/`. The `next.config.ts` file already includes the necessary `serverExternalPackages` and `outputFileTracingIncludes` config.
 
 ---
 
-## Licença
+## License
 
-MIT &mdash; sinta-se à vontade para usar como referência ou base para seus projetos.
+MIT — feel free to use this as reference or as a starting point for your own projects.
