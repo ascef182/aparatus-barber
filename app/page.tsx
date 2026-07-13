@@ -2,7 +2,7 @@ import Image from "next/image";
 import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
-import { prisma } from "@/lib/prisma";
+import { listBarbershops } from "@/lib/services/barbershop-service";
 import BarbershopItem from "./_components/barbershop-item";
 import Footer from "./_components/footer";
 import {
@@ -14,16 +14,8 @@ import {
 import QuickSearchButtons from "./_components/quick-search-buttons";
 
 const Home = async () => {
-  const recommendedBarbershops = await prisma.barbershop.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
-  const popularBarbershops = await prisma.barbershop.findMany({
-    orderBy: {
-      name: "desc",
-    },
-  });
+  const recommendedBarbershops = await listBarbershops("asc");
+  const popularBarbershops = await listBarbershops("desc");
   return (
     <main>
       <Header />

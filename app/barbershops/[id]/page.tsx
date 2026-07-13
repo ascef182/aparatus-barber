@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getBarbershopWithServices } from "@/lib/services/barbershop-service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,14 +10,7 @@ import { PhoneItem } from "@/app/_components/phone-item";
 
 const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
   const { id } = await props.params;
-  const barbershop = await prisma.barbershop.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      services: true,
-    },
-  });
+  const barbershop = await getBarbershopWithServices(id);
 
   if (!barbershop) {
     notFound();

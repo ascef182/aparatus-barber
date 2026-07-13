@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { listUserBookings } from "@/lib/services/booking-service";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Header from "../_components/header";
@@ -20,18 +20,7 @@ const BookingsPage = async () => {
     redirect("/");
   }
 
-  const bookings = await prisma.booking.findMany({
-    where: {
-      userId: session.user.id,
-    },
-    include: {
-      service: true,
-      barbershop: true,
-    },
-    orderBy: {
-      date: "desc",
-    },
-  });
+  const bookings = await listUserBookings(session.user.id);
 
   const now = new Date();
 

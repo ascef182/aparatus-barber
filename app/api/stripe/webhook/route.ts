@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { createBooking } from "@/lib/services/booking-service";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -45,14 +45,15 @@ export const POST = async (request: Request) => {
         ? paymentIntent.latest_charge
         : paymentIntent?.latest_charge?.id;
 
-    await prisma.booking.create({
-      data: {
-        barbershopId,
-        serviceId,
-        date,
-        userId,
-        stripeChargeId: chargeId || null,
-      },
+    // TODO(Fase 2): fluxo unificado — booking nasce PENDING_PAYMENT antes do
+    // Checkout e o webhook apenas confirma (idempotente), eliminando o risco
+    // de double-booking. Ver plano de reestruturação, seção 6.3.
+    await createBooking({
+      barbershopId,
+      serviceId,
+      date,
+      userId,
+      stripeChargeId: chargeId || null,
     });
   }
   revalidatePath("/bookings");

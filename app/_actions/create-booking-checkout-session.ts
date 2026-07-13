@@ -1,11 +1,9 @@
 "use server";
-import { actionClient } from "@/lib/action-client";
-import { auth } from "@/lib/auth";
+import { authActionClient } from "@/lib/safe-action";
+import { getServiceWithBarbershop } from "@/lib/services/barbershop-service";
 import { returnValidationErrors } from "next-safe-action";
-import { headers } from "next/headers";
 import { z } from "zod";
 import Stripe from "stripe";
-import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 
 const inputSchema = z.object({
@@ -13,28 +11,13 @@ const inputSchema = z.object({
   date: z.date(),
 });
 
-export const createBookingCheckoutSession = actionClient
+export const createBookingCheckoutSession = authActionClient
   .inputSchema(inputSchema)
-  .action(async ({ parsedInput: { serviceId, date } }) => {
+  .action(async ({ parsedInput: { serviceId, date }, ctx }) => {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error("STRIPE_SECRET_KEY is not set");
     }
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session?.user) {
-      returnValidationErrors(inputSchema, {
-        _errors: ["Unauthorized"],
-      });
-    }
-    const service = await prisma.barbershopService.findUnique({
-      where: {
-        id: serviceId,
-      },
-      include: {
-        barbershop: true,
-      },
-    });
+    const service = await getServiceWithBarbershop(serviceId);
     if (!service) {
       returnValidationErrors(inputSchema, {
         _errors: ["Service not found"],
@@ -49,7 +32,7 @@ export const createBookingCheckoutSession = actionClient
       metadata: {
         serviceId: service.id,
         barbershopId: service.barbershopId,
-        userId: session.user.id,
+        userId: ctx.user.id,
         date: date.toISOString(),
       },
       line_items: [

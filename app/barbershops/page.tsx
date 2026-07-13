@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { searchBarbershopsByServiceName } from "@/lib/services/barbershop-service";
 import BarbershopItem from "../_components/barbershop-item";
 import Footer from "../_components/footer";
 import Header from "../_components/header";
@@ -9,21 +9,7 @@ import { PageContainer } from "../_components/ui/page";
 const BarbershopsPage = async ({ searchParams }: PageProps<"/barbershops">) => {
   const { search } = await searchParams;
   const barbershops = search
-    ? await prisma.barbershop.findMany({
-        where: {
-          services: {
-            some: {
-              name: {
-                contains: search as string,
-                mode: "insensitive",
-              },
-            },
-          },
-        },
-        orderBy: {
-          name: "asc",
-        },
-      })
+    ? await searchBarbershopsByServiceName(search as string)
     : [];
 
   return (

@@ -1,7 +1,7 @@
 import { streamText, convertToModelMessages, tool, stepCountIs } from "ai";
 import { openai } from "@ai-sdk/openai";
 import z from "zod";
-import { prisma } from "@/lib/prisma";
+import { listBarbershopsWithServices } from "@/lib/services/barbershop-service";
 import { getDateAvailableTimeSlots } from "@/app/_actions/get-date-available-time-slots";
 import { createBooking } from "@/app/_actions/create-booking";
 
@@ -78,34 +78,7 @@ export const POST = async (request: Request) => {
           name: z.string().optional().describe("Nome opcional da barbearia"),
         }),
         execute: async ({ name }) => {
-          if (!name?.trim()) {
-            const barbershops = await prisma.barbershop.findMany({
-              include: {
-                services: true,
-              },
-            });
-            return barbershops.map((barbershop) => ({
-              barbershopId: barbershop.id,
-              name: barbershop.name,
-              address: barbershop.address,
-              services: barbershop.services.map((service) => ({
-                id: service.id,
-                name: service.name,
-                price: service.priceInCents / 100,
-              })),
-            }));
-          }
-          const barbershops = await prisma.barbershop.findMany({
-            where: {
-              name: {
-                contains: name,
-                mode: "insensitive",
-              },
-            },
-            include: {
-              services: true,
-            },
-          });
+          const barbershops = await listBarbershopsWithServices(name);
           return barbershops.map((barbershop) => ({
             barbershopId: barbershop.id,
             name: barbershop.name,

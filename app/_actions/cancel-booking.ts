@@ -1,10 +1,11 @@
 "use server";
-import { actionClient } from "@/lib/action-client";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authActionClient } from "@/lib/safe-action";
+import {
+  getBookingById,
+  markBookingCancelled,
+} from "@/lib/services/booking-service";
 import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import Stripe from "stripe";
 import { z } from "zod";
 
@@ -12,23 +13,10 @@ const inputSchema = z.object({
   bookingId: z.uuid(),
 });
 
-export const cancelBooking = actionClient
+export const cancelBooking = authActionClient
   .inputSchema(inputSchema)
-  .action(async ({ parsedInput: { bookingId } }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session?.user) {
-      returnValidationErrors(inputSchema, {
-        _errors: ["Unauthorized"],
-      });
-    }
-
-    const booking = await prisma.booking.findUnique({
-      where: {
-        id: bookingId,
-      },
-    });
+  .action(async ({ parsedInput: { bookingId }, ctx }) => {
+    const booking = await getBookingById(bookingId);
 
     if (!booking) {
       returnValidationErrors(inputSchema, {
@@ -36,7 +24,7 @@ export const cancelBooking = actionClient
       });
     }
 
-    if (booking.userId !== session.user.id) {
+    if (booking.userId !== ctx.user.id) {
       returnValidationErrors(inputSchema, {
         _errors: ["Você não tem permissão para cancelar esta reserva"],
       });
@@ -81,15 +69,7 @@ export const cancelBooking = actionClient
       }
     }
 
-    const updatedBooking = await prisma.booking.update({
-      where: {
-        id: bookingId,
-      },
-      data: {
-        cancelled: true,
-        cancelledAt: new Date(),
-      },
-    });
+    const updatedBooking = await markBookingCancelled(bookingId);
     revalidatePath("/bookings");
     return updatedBooking;
   });
