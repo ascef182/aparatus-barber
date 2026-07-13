@@ -1,0 +1,22 @@
+{
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "onboarding": {
+    "title": "Barbershop erstellen",
+    "namePlaceholder": "Name des Barbershops",
+    "slugPlaceholder": "web-adresse",
+    "addressPlaceholder": "Straße und Hausnummer",
+    "postalCodePlaceholder": "PLZ",
+    "cityPlaceholder": "Stadt",
+    "submit": "Barbershop erstellen",
+    "submitting": "Wird erstellt...",
+    "successTitle": "Barbershop erstellt!",
+    "successBookingPage": "Ihre Buchungsseite:"
+  },
+  "tenant": {
+    "comingSoon": "Online-Buchung demnächst verfügbar.",
+    "suspended": "Buchung vorübergehend nicht verfügbar."
+  }
+}

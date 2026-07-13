@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "./_components/ui/sonner";
 import QueryProvider from "./_providers/query-provider";
@@ -15,25 +17,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aparatus Barber — Agende seu corte com inteligência",
+  title: "Aparatus — Online booking for barbershops",
   description:
-    "Plataforma moderna de agendamento para barbearias. Encontre a barbearia ideal, escolha o serviço, pague online e converse com nossa IA.",
+    "Modern scheduling platform for barbershops and salons. Online booking, staff management and payments.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <NextIntlClientProvider>
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

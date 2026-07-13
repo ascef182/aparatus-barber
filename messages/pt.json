@@ -1,0 +1,22 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro. Tente novamente."
+  },
+  "onboarding": {
+    "title": "Criar sua barbearia",
+    "namePlaceholder": "Nome da barbearia",
+    "slugPlaceholder": "endereco-web",
+    "addressPlaceholder": "Endereço (rua e número)",
+    "postalCodePlaceholder": "Código postal",
+    "cityPlaceholder": "Cidade",
+    "submit": "Criar barbearia",
+    "submitting": "Criando...",
+    "successTitle": "Barbearia criada!",
+    "successBookingPage": "Sua página de agendamento:"
+  },
+  "tenant": {
+    "comingSoon": "Agendamento online em breve.",
+    "suspended": "Agendamento temporariamente indisponível."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again."
+  },
+  "onboarding": {
+    "title": "Create your barbershop",
+    "namePlaceholder": "Barbershop name",
+    "slugPlaceholder": "web-address",
+    "addressPlaceholder": "Street and number",
+    "postalCodePlaceholder": "Postal code",
+    "cityPlaceholder": "City",
+    "submit": "Create barbershop",
+    "submitting": "Creating...",
+    "successTitle": "Barbershop created!",
+    "successBookingPage": "Your booking page:"
+  },
+  "tenant": {
+    "comingSoon": "Online booking coming soon.",
+    "suspended": "Booking temporarily unavailable."
+  }
+}
