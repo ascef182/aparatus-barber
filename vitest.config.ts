@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     globalSetup: ["tests/setup/global-setup.ts"],
+    setupFiles: ["tests/setup/env.ts"],
     // Testcontainers: primeiro run baixa a imagem do Postgres
     hookTimeout: 120_000,
     testTimeout: 30_000,
