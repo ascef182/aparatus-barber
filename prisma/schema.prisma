@@ -59,9 +59,21 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
+  // Plugin admin (Better Auth): SuperAdmin da plataforma
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  // Plugin twoFactor (Better Auth)
+  twoFactorEnabled Boolean?
+  // Preferência de idioma do usuário (i18n)
+  locale        String?
   sessions      Session[]
   accounts      Account[]
   bookings      Booking[]
+  members       Member[]
+  invitations   Invitation[]
+  twoFactors    TwoFactor[]
 
   @@unique([email])
   @@map("user")
@@ -77,9 +89,113 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Plugin organization: organização ativa na sessão
+  activeOrganizationId String?
+  // Plugin admin: impersonation de suporte
+  impersonatedBy       String?
 
   @@unique([token])
   @@map("session")
+}
+
+// ===== TENANT (Organization = barbearia/rede) =====
+
+enum OrgStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CHURNED
+}
+
+model Organization {
+  id        String   @id
+  name      String
+  slug      String   @unique // subdomínio: {slug}.aparatus.app
+  logo      String?
+  createdAt DateTime @default(now())
+  metadata  String?
+
+  // Extensões próprias (fora do plugin Better Auth):
+  timezone      String    @default("Europe/Berlin")
+  defaultLocale String    @default("de")
+  currency      String    @default("EUR") // ISO 4217
+  status        OrgStatus @default(TRIALING)
+  brandingJson  Json? // tokens de branding validados por Zod
+  stripeCustomerId       String? @unique
+  stripeConnectAccountId String? @unique
+
+  members     Member[]
+  invitations Invitation[]
+  locations   Location[]
+
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String // "owner" | "manager" | "professional" | "receptionist"
+  createdAt      DateTime     @default(now())
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  inviter        User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified    Boolean @default(false)
+
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+// ===== ESTRUTURA DO TENANT =====
+
+model Location {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  addressLine1   String
+  addressLine2   String?
+  postalCode     String
+  city           String
+  countryCode    String       @default("DE")
+  phone          String?
+  timezone       String? // override do timezone do tenant (raro)
+  openingHoursJson Json? // horário por weekday, validado por Zod
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+
+  @@index([organizationId])
+  @@map("location")
 }
 
 model Account {
