@@ -28,7 +28,10 @@ let locationB: { id: string };
 beforeAll(async () => {
   await prisma.organization.createMany({
     data: [
-      { id: orgA.id, name: "Tenant A", slug: orgA.slug },
+      // GROWTH (limite de 3 locais) porque o teste de createLocation cria uma
+      // segunda filial em A além da seedada aqui — Starter (default) já
+      // estaria no limite com 1.
+      { id: orgA.id, name: "Tenant A", slug: orgA.slug, subscriptionPlan: "GROWTH" },
       { id: orgB.id, name: "Tenant B", slug: orgB.slug },
     ],
   });
@@ -51,6 +54,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await prisma.auditLog.deleteMany({
+    where: { organizationId: { in: [orgA.id, orgB.id] } },
+  });
+  await prisma.tenantImpressum.deleteMany({
+    where: { organizationId: { in: [orgA.id, orgB.id] } },
+  });
   await prisma.location.deleteMany({
     where: { organizationId: { in: [orgA.id, orgB.id] } },
   });
@@ -153,6 +162,60 @@ describe("Suite 2 — extension fail-closed", () => {
     await expect(
       db.organization.findUnique({ where: { id: orgA.id } }),
     ).resolves.not.toBeNull();
+  });
+
+  test("AuditLog: fail-closed sem contexto, escopado sob tenant, bypass em platform scope", async () => {
+    await expect(
+      db.auditLog.create({
+        data: { entity: "Booking", action: "BOOKING_CREATED" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.auditLog.create({
+        data: { entity: "Booking", action: "BOOKING_CREATED", entityId: "b-a" },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.auditLog.create({
+        data: { entity: "Booking", action: "BOOKING_CREATED", entityId: "b-b" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.auditLog.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.entityId === "b-b")).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.auditLog.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("TenantImpressum: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.tenantImpressum.create({
+        data: { organizationId: orgA.id, legalName: "x", addressLine1: "x", postalCode: "x", city: "x", updatedBy: "u" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.tenantImpressum.create({
+        data: { organizationId: orgA.id, legalName: "Barbearia A", addressLine1: "Astraße 1", postalCode: "10115", city: "Berlin", updatedBy: "u-a" },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.tenantImpressum.create({
+        data: { organizationId: orgB.id, legalName: "Barbearia B", addressLine1: "Bstraße 2", postalCode: "80331", city: "München", updatedBy: "u-b" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.tenantImpressum.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.legalName === "Barbearia B")).toBe(false);
+
+    await prisma.tenantImpressum.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
   });
 });
 

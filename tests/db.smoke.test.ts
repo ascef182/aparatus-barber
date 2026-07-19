@@ -1,25 +1,18 @@
-import { afterAll, expect, test } from "vitest";
-import { createTestPrismaClient } from "./helpers/db";
+import { afterAll, describe, expect, test } from "vitest";
+import { randomUUID } from "node:crypto";
+import { prisma } from "@/lib/prisma";
 
-const prisma = createTestPrismaClient();
+const id = randomUUID();
 
-afterAll(() => prisma.$disconnect());
+afterAll(async () => {
+  await prisma.organization.deleteMany({ where: { id } });
+  await prisma.$disconnect();
+});
 
-test("migrations aplicadas: cria e lê um registro", async () => {
-  const created = await prisma.barbershop.create({
-    data: {
-      name: "Smoke Test Shop",
-      address: "Teststraße 1, Berlin",
-      description: "smoke",
-      imageUrl: "https://example.com/x.png",
-      phones: ["+49 30 000000"],
-    },
+describe("database smoke", () => {
+  test("creates and reads an organization", async () => {
+    await prisma.organization.create({ data: { id, name: "Smoke tenant", slug: `smoke-${id.slice(0, 8)}` } });
+    const organization = await prisma.organization.findUnique({ where: { id } });
+    expect(organization?.name).toBe("Smoke tenant");
   });
-
-  const found = await prisma.barbershop.findUnique({
-    where: { id: created.id },
-  });
-  expect(found?.name).toBe("Smoke Test Shop");
-
-  await prisma.barbershop.delete({ where: { id: created.id } });
 });

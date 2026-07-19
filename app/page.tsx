@@ -1,57 +1,23 @@
-import Image from "next/image";
-import Header from "./_components/header";
-import SearchInput from "./_components/search-input";
-import banner from "../public/banner.png";
-import { listBarbershops } from "@/lib/services/barbershop-service";
-import BarbershopItem from "./_components/barbershop-item";
-import Footer from "./_components/footer";
-import {
-  PageContainer,
-  PageSection,
-  PageSectionScroller,
-  PageSectionTitle,
-} from "./_components/ui/page";
-import QuickSearchButtons from "./_components/quick-search-buttons";
+import { SiteNav } from "@/app/_components/marketing/site-nav";
+import { Hero } from "@/app/_components/marketing/hero";
+import { FeaturesSection } from "@/app/_components/marketing/features-section";
+import { HowItWorks } from "@/app/_components/marketing/how-it-works";
+import { PricingSection } from "@/app/_components/marketing/pricing-section";
+import { FaqSection } from "@/app/_components/marketing/faq-section";
+import { FinalCta } from "@/app/_components/marketing/final-cta";
+import { SiteFooter } from "@/app/_components/marketing/site-footer";
 
-const Home = async () => {
-  const recommendedBarbershops = await listBarbershops("asc");
-  const popularBarbershops = await listBarbershops("desc");
+export default function PlatformHome() {
   return (
-    <main>
-      <Header />
-      <PageContainer>
-        <SearchInput />
-
-        <QuickSearchButtons />
-
-        <Image
-          src={banner}
-          alt="Agende agora!"
-          sizes="100vw"
-          className="h-auto w-full"
-        />
-
-        <PageSection>
-          <PageSectionTitle>Recomendados</PageSectionTitle>
-          <PageSectionScroller>
-            {recommendedBarbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barbershop={barbershop} />
-            ))}
-          </PageSectionScroller>
-        </PageSection>
-
-        <PageSection>
-          <PageSectionTitle>Populares</PageSectionTitle>
-          <PageSectionScroller>
-            {popularBarbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barbershop={barbershop} />
-            ))}
-          </PageSectionScroller>
-        </PageSection>
-      </PageContainer>
-      <Footer />
+    <main className="bg-neutral-950">
+      <SiteNav />
+      <Hero />
+      <FeaturesSection />
+      <HowItWorks />
+      <PricingSection />
+      <FaqSection />
+      <FinalCta />
+      <SiteFooter />
     </main>
   );
-};
-
-export default Home;
+}

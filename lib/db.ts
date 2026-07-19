@@ -7,11 +7,26 @@ import {
 
 /**
  * Models cuja tabela tem coluna organizationId e DEVEM ser escopados por
- * tenant. Cresce na Fase 2 (Staff, Service, Booking, Customer...).
+ * tenant. Todo model novo com organizationId entra aqui E na suite de
+ * isolamento (tests/tenant-isolation.test.ts) — regra de PR.
  * Member/Invitation ficam de fora: são gerenciados pelo plugin organization
  * do Better Auth, que opera pelo client cru (lib/prisma).
  */
-const TENANT_MODELS = new Set(["Location"]);
+const TENANT_MODELS = new Set([
+  "Location",
+  "Staff",
+  "StaffWorkingHours",
+  "StaffAbsence",
+  "ClosedPeriod",
+  "Service",
+  "StaffService",
+  "Customer",
+  "Coupon",
+  "Booking",
+  "TenantSettings",
+  "AuditLog",
+  "TenantImpressum",
+]);
 
 // Operações cujo `where` aceita filtro composto (lista não-única).
 const WHERE_OPS = new Set([

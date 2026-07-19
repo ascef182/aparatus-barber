@@ -35,7 +35,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["lib/services/**", "lib/prisma.ts", "lib/db.ts", "tests/**"],
+    files: ["lib/services/**", "lib/prisma.ts", "lib/db.ts", "tests/**", "scripts/**"],
     rules: {
       "no-restricted-imports": "off",
     },

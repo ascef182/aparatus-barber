@@ -1,9 +1,8 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE, type AppLocale } from "./locales";
 
-export const SUPPORTED_LOCALES = ["de", "en", "pt"] as const;
-export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
-export const DEFAULT_LOCALE: AppLocale = "de";
+export { SUPPORTED_LOCALES, DEFAULT_LOCALE, type AppLocale };
 
 function isSupported(locale: string | undefined): locale is AppLocale {
   return !!locale && (SUPPORTED_LOCALES as readonly string[]).includes(locale);

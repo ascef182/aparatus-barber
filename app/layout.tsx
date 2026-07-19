@@ -4,7 +4,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "./_components/ui/sonner";
+import { TooltipProvider } from "./_components/ui/tooltip";
 import QueryProvider from "./_providers/query-provider";
+import { ThemeProvider } from "./_providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aparatus — Online booking for barbershops",
+  title: "Aparatus — The complete booking platform for barbershops",
   description:
-    "Modern scheduling platform for barbershops and salons. Online booking, staff management and payments.",
+    "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern barbershop needs, in one multi-tenant SaaS.",
 };
 
 export default async function RootLayout({
@@ -29,15 +31,19 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider>
-          <QueryProvider>
-            {children}
-            <Toaster />
-          </QueryProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              <TooltipProvider>
+                {children}
+                <Toaster />
+              </TooltipProvider>
+            </QueryProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
