@@ -11,7 +11,7 @@ import { logger } from "@/lib/logger";
 Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
 
 const connection = { url: process.env.REDIS_URL ?? "redis://localhost:6379" };
-const from = process.env.EMAIL_FROM ?? "Aparatus <bookings@aparatus.app>";
+const from = process.env.EMAIL_FROM ?? "Bladiq <bookings@bladiq.com>";
 // Construído sob demanda: o Resend SDK lança no construtor se a API key
 // estiver ausente/vazia, o que derrubaria o worker inteiro no boot.
 function getResend() {
@@ -50,8 +50,8 @@ const invitationsWorker = new Worker<InvitationNotificationJob>("invitation-noti
   await getResend().emails.send({
     from,
     to: job.data.email,
-    subject: `Convite para ${job.data.organizationName} — Aparatus`,
-    text: `Você foi convidado para a equipe de ${job.data.organizationName} na Aparatus.\n\nClique para aceitar: ${job.data.inviteUrl}`,
+    subject: `Convite para ${job.data.organizationName} — Bladiq`,
+    text: `Você foi convidado para a equipe de ${job.data.organizationName} na Bladiq.\n\nClique para aceitar: ${job.data.inviteUrl}`,
   });
 }, { connection, concurrency: 10 });
 

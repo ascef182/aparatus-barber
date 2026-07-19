@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aparatus — The complete booking platform for barbershops",
+  title: "Bladiq — The complete booking platform for barbershops",
   description:
     "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern barbershop needs, in one multi-tenant SaaS.",
 };

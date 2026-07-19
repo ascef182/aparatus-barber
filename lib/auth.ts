@@ -21,7 +21,7 @@ const authRootDomain = getRootDomain();
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
-const emailFrom = process.env.EMAIL_FROM ?? "Aparatus <bookings@aparatus.app>";
+const emailFrom = process.env.EMAIL_FROM ?? "Bladiq <bookings@bladiq.com>";
 
 // O SDK do Resend (v3+) retorna { data, error } em vez de lançar em erro de
 // API (domínio não verificado, remetente inválido, etc.) — sem este check,
@@ -49,7 +49,7 @@ async function sendEmail(params: { to: string; subject: string; text: string }) 
 }
 
 export const auth = betterAuth({
-  appName: "Aparatus",
+  appName: "Bladiq",
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   // Sessão do login criado no fluxo de assinatura (pagou -> cadastrou com o
   // e-mail do pagamento -> reivindica a subscription). Não BLOQUEAMOS no
@@ -63,7 +63,7 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Redefinir senha — Aparatus",
+        subject: "Redefinir senha — Bladiq",
         text: `Clique no link para redefinir sua senha: ${url}\n\nSe você não pediu isso, ignore este e-mail.`,
       });
     },
@@ -74,8 +74,8 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Confirme seu e-mail — Aparatus",
-        text: `Clique no link para confirmar este e-mail: ${url}\n\nSe você não criou uma conta na Aparatus, alguém pode ter usado seu e-mail por engano — ignore este e-mail e a conta não será confirmada.`,
+        subject: "Confirme seu e-mail — Bladiq",
+        text: `Clique no link para confirmar este e-mail: ${url}\n\nSe você não criou uma conta na Bladiq, alguém pode ter usado seu e-mail por engano — ignore este e-mail e a conta não será confirmada.`,
       });
     },
   },

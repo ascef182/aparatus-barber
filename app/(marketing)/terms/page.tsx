@@ -12,7 +12,7 @@ export default async function TermsPage() {
         <section>
           <h2>1. Service description</h2>
           <p>
-            Aparatus is a SaaS booking platform for barbershops and salons (&ldquo;tenants&rdquo;). Tenants subscribe
+            Bladiq is a SaaS booking platform for barbershops and salons (&ldquo;tenants&rdquo;). Tenants subscribe
             to a plan (Starter, Growth, or Pro) to manage services, staff, and online bookings on their own
             subdomain.
           </p>
@@ -43,7 +43,7 @@ export default async function TermsPage() {
         <section>
           <h2>5. Liability</h2>
           <p>
-            The service is provided &ldquo;as is&rdquo;. To the extent permitted by law, Aparatus is not liable for
+            The service is provided &ldquo;as is&rdquo;. To the extent permitted by law, Bladiq is not liable for
             indirect or consequential damages arising from use of the platform.
           </p>
         </section>
@@ -64,7 +64,7 @@ export default async function TermsPage() {
       <section>
         <h2>1. Leistungsbeschreibung</h2>
         <p>
-          Aparatus ist eine SaaS-Buchungsplattform für Barbershops und Salons (&ldquo;Mandanten&rdquo;). Mandanten
+          Bladiq ist eine SaaS-Buchungsplattform für Barbershops und Salons (&ldquo;Mandanten&rdquo;). Mandanten
           abonnieren einen Plan (Starter, Growth oder Pro), um Services, Personal und Online-Buchungen auf ihrer
           eigenen Subdomain zu verwalten.
         </p>
@@ -95,7 +95,7 @@ export default async function TermsPage() {
       <section>
         <h2>5. Haftung</h2>
         <p>
-          Der Dienst wird &ldquo;wie besehen&rdquo; bereitgestellt. Soweit gesetzlich zulässig, haftet Aparatus nicht
+          Der Dienst wird &ldquo;wie besehen&rdquo; bereitgestellt. Soweit gesetzlich zulässig, haftet Bladiq nicht
           für mittelbare oder Folgeschäden aus der Nutzung der Plattform.
         </p>
       </section>

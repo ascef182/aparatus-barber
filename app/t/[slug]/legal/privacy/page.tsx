@@ -4,7 +4,7 @@ import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { getRootDomain } from "@/lib/tenant-host";
 
 /**
- * Privacy da barbearia (tenant) — Aparatus é o processor dos dados de
+ * Privacy da barbearia (tenant) — Bladiq é o processor dos dados de
  * agendamento; referencia a política da plataforma. Impressum por-tenant
  * (dados configuráveis pelo dono) fica para uma fase seguinte — cada
  * barbearia que opera na Alemanha precisa do próprio Impressum com dados
@@ -21,8 +21,8 @@ export default async function TenantPrivacyPage(props: { params: Promise<{ slug:
       <h1 className="mb-6 text-2xl font-semibold">{isEn ? "Privacy Notice" : "Datenschutzhinweis"} — {organization.name}</h1>
       <p className="mb-4">
         {isEn
-          ? `${organization.name} uses the Aparatus booking platform to manage appointments. Aparatus processes your booking data (name, email, phone, appointment details) as a data processor on behalf of ${organization.name}, under a Data Processing Agreement.`
-          : `${organization.name} nutzt die Aparatus-Buchungsplattform zur Terminverwaltung. Aparatus verarbeitet Ihre Buchungsdaten (Name, E-Mail, Telefon, Termindetails) als Auftragsverarbeiter im Auftrag von ${organization.name}, gemäß einem Auftragsverarbeitungsvertrag.`}
+          ? `${organization.name} uses the Bladiq booking platform to manage appointments. Bladiq processes your booking data (name, email, phone, appointment details) as a data processor on behalf of ${organization.name}, under a Data Processing Agreement.`
+          : `${organization.name} nutzt die Bladiq-Buchungsplattform zur Terminverwaltung. Bladiq verarbeitet Ihre Buchungsdaten (Name, E-Mail, Telefon, Termindetails) als Auftragsverarbeiter im Auftrag von ${organization.name}, gemäß einem Auftragsverarbeitungsvertrag.`}
       </p>
       <p className="mb-4">
         {isEn

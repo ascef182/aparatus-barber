@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Aparatus Barber</h1>
+  <h1>Bladiq</h1>
   <p>Modern barbershop booking platform with an AI scheduling assistant</p>
   <p>
     <a href="#features">Features</a>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -30,7 +30,7 @@
 
 ## About
 
-**Aparatus Barber** is a full-stack online booking platform for barbershops. Customers can browse barbershops, view services and pricing, pick available time slots, and pay securely via Stripe. The app also features an **AI assistant** that lets users book appointments through natural conversation.
+**Bladiq** is a full-stack online booking platform for barbershops. Customers can browse barbershops, view services and pricing, pick available time slots, and pay securely via Stripe. The app also features an **AI assistant** that lets users book appointments through natural conversation.
 
 Built as a portfolio project to demonstrate production-grade architecture: Next.js 16 App Router, Server Actions, OAuth authentication, real payment processing, and generative AI integration — all shipped solo under CazaTech.
 

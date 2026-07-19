@@ -10,7 +10,7 @@ export default async function DpaPage() {
       <LegalPage title="Data Processing Agreement (DPA)">
         <p>
           This Data Processing Agreement forms part of the Terms of Service between the tenant
-          (&ldquo;Controller&rdquo;) and Aparatus (&ldquo;Processor&rdquo;) and applies whenever Aparatus processes
+          (&ldquo;Controller&rdquo;) and Bladiq (&ldquo;Processor&rdquo;) and applies whenever Bladiq processes
           personal data of the Controller&apos;s customers on the Controller&apos;s behalf (Art. 28 GDPR).
           Acceptance is recorded with version, timestamp, IP address, and user agent at signup.
         </p>
@@ -35,7 +35,7 @@ export default async function DpaPage() {
         <section>
           <h2>4. Data subject requests</h2>
           <p>
-            Aparatus provides self-service erasure and export endpoints for end customers. The Controller must
+            Bladiq provides self-service erasure and export endpoints for end customers. The Controller must
             forward any data subject request it cannot resolve directly.
           </p>
         </section>
@@ -54,8 +54,8 @@ export default async function DpaPage() {
     <LegalPage title="Auftragsverarbeitungsvertrag (AVV)">
       <p>
         Dieser Auftragsverarbeitungsvertrag ist Bestandteil der AGB zwischen dem Mandanten
-        (&ldquo;Verantwortlicher&rdquo;) und Aparatus (&ldquo;Auftragsverarbeiter&rdquo;) und gilt, wann immer
-        Aparatus personenbezogene Daten der Kunden des Mandanten in dessen Auftrag verarbeitet (Art. 28 DSGVO). Die
+        (&ldquo;Verantwortlicher&rdquo;) und Bladiq (&ldquo;Auftragsverarbeiter&rdquo;) und gilt, wann immer
+        Bladiq personenbezogene Daten der Kunden des Mandanten in dessen Auftrag verarbeitet (Art. 28 DSGVO). Die
         Zustimmung wird bei der Registrierung mit Version, Zeitstempel, IP-Adresse und User-Agent protokolliert.
       </p>
       <section>
@@ -80,7 +80,7 @@ export default async function DpaPage() {
       <section>
         <h2>4. Betroffenenanfragen</h2>
         <p>
-          Aparatus stellt Selbstbedienungs-Endpunkte für Löschung und Export für Endkunden bereit. Der
+          Bladiq stellt Selbstbedienungs-Endpunkte für Löschung und Export für Endkunden bereit. Der
           Verantwortliche muss Anfragen, die er nicht direkt lösen kann, weiterleiten.
         </p>
       </section>

@@ -13,7 +13,7 @@ export function HeroPreview({ previewCaption }: { previewCaption: string }) {
           <span className="size-2.5 rounded-full bg-neutral-700" />
           <span className="size-2.5 rounded-full bg-neutral-700" />
           <span className="ml-3 truncate rounded-md bg-neutral-800 px-3 py-1 text-xs text-neutral-500">
-            suabarbearia.aparatus.app
+            suabarbearia.bladiq.com
           </span>
         </div>
         {/* screen */}

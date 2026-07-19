@@ -6,11 +6,11 @@ product
 
 ## Users
 
-Owners, managers, receptionists, and professionals run a barbershop through Aparatus. They need to keep the day moving, protect revenue, and understand the health of the business without relying on spreadsheets or disconnected tools.
+Owners, managers, receptionists, and professionals run a barbershop through Bladiq. They need to keep the day moving, protect revenue, and understand the health of the business without relying on spreadsheets or disconnected tools.
 
 ## Product Purpose
 
-Aparatus combines white-label online booking, payments, team operations, and compliant customer management for barbershops. Its dashboard must turn bookings into confident daily decisions: what needs attention now, how the team is performing, and how the business is growing.
+Bladiq combines white-label online booking, payments, team operations, and compliant customer management for barbershops. Its dashboard must turn bookings into confident daily decisions: what needs attention now, how the team is performing, and how the business is growing.
 
 ## Brand Personality
 

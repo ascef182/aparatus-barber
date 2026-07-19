@@ -12,7 +12,7 @@ export default async function PrivacyPage() {
         <section>
           <h2>1. Who we are</h2>
           <p>
-            Aparatus (&ldquo;we&rdquo;, &ldquo;us&rdquo;) operates a booking platform used by barbershops and salons
+            Bladiq (&ldquo;we&rdquo;, &ldquo;us&rdquo;) operates a booking platform used by barbershops and salons
             (&ldquo;tenants&rdquo;) to manage appointments. This policy explains how we process personal data when
             you visit our platform, sign up as a tenant, or book an appointment through a tenant&apos;s page.
           </p>
@@ -67,7 +67,7 @@ export default async function PrivacyPage() {
       <section>
         <h2>1. Verantwortlicher</h2>
         <p>
-          Aparatus (&ldquo;wir&rdquo;) betreibt eine Buchungsplattform für Barbershops und Salons
+          Bladiq (&ldquo;wir&rdquo;) betreibt eine Buchungsplattform für Barbershops und Salons
           (&ldquo;Mandanten&rdquo;). Diese Erklärung beschreibt, wie wir personenbezogene Daten verarbeiten, wenn Sie
           unsere Plattform besuchen, sich als Mandant registrieren oder über die Seite eines Mandanten einen Termin
           buchen.
