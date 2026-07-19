@@ -27,9 +27,23 @@ const emailFrom = process.env.EMAIL_FROM ?? "Aparatus <bookings@aparatus.app>";
 // API (domínio não verificado, remetente inválido, etc.) — sem este check,
 // falhas de entrega ficam invisíveis: a rota do Better Auth responde 200
 // mesmo com o e-mail nunca saindo.
+//
+// Fora de produção, se o Resend falhar (ex.: domínio remetente não
+// verificado na conta usada em dev), não bloqueia o fluxo: loga o conteúdo
+// do e-mail (com a URL de verificação/reset) no console e segue — permite
+// testar verificação de e-mail e redefinição de senha localmente sem
+// depender de um domínio verificado. Em produção o comportamento não muda:
+// continua lançando, para nunca mascarar uma falha real de entrega.
 async function sendEmail(params: { to: string; subject: string; text: string }) {
   const { error } = await getResend().emails.send({ from: emailFrom, ...params });
   if (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[dev] Resend falhou (${error.message}); e-mail não enviado de verdade — conteúdo abaixo:\n` +
+          `Para: ${params.to}\nAssunto: ${params.subject}\n${params.text}`,
+      );
+      return;
+    }
     throw new Error(`Falha ao enviar e-mail via Resend: ${error.message}`);
   }
 }
