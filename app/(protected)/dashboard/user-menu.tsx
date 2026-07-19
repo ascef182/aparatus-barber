@@ -5,6 +5,7 @@ import { LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { getRootUrl } from "@/lib/tenant-host";
 import { Avatar, AvatarFallback } from "@/app/_components/ui/avatar";
 import {

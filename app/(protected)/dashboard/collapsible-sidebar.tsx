@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useSyncExternalStore, type ComponentProps } from "react";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarNav, type NavItem } from "./sidebar-nav";
@@ -9,10 +9,27 @@ import { UserMenu } from "./user-menu";
 
 const STORAGE_KEY = "aparatus-sidebar-collapsed";
 
-// Lido em useEffect (não no useState inicial) pra renderizar expandido no
-// primeiro paint igual ao servidor — evita mismatch de hidratação. Custa um
-// flash breve pra quem já colapsou antes, aceitável (mesmo trade-off que
-// next-themes faria sem o script bloqueante que ele injeta só pro tema).
+// useSyncExternalStore (não useEffect+setState) pra ler localStorage com
+// segurança de hidratação: getServerSnapshot sempre devolve expandido
+// (igual ao servidor), getSnapshot lê o valor real assim que monta no
+// cliente — mesmo trade-off de flash breve de antes, só que pela via que o
+// próprio React recomenda pra sincronizar com um external store.
+const listeners = new Set<() => void>();
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+function getSnapshot() {
+  return localStorage.getItem(STORAGE_KEY) === "1";
+}
+function getServerSnapshot() {
+  return false;
+}
+function setCollapsedStorage(value: boolean) {
+  localStorage.setItem(STORAGE_KEY, value ? "1" : "0");
+  listeners.forEach((listener) => listener());
+}
+
 export function CollapsibleSidebar({
   organizationName,
   navItems,
@@ -22,16 +39,10 @@ export function CollapsibleSidebar({
   navItems: NavItem[];
   userMenuProps: ComponentProps<typeof UserMenu>;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    setCollapsed(localStorage.getItem(STORAGE_KEY) === "1");
-  }, []);
+  const collapsed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+    setCollapsedStorage(!collapsed);
   }
 
   return (
