@@ -1,0 +1,26 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { Check, ChevronLeft, ChevronRight, CircleDollarSign, UserRoundX } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { completeBooking, markBookingNoShow, recordOnSitePayment } from "@/app/_actions/dashboard-operations";
+import { Button } from "@/app/_components/ui/button";
+
+type Item = { id: string; startAt: string; customer: string; service: string; staff: string; status: string; priceInCents: number; discountInCents: number; paymentReceivedInCents: number };
+function localDay(value: Date | string, timezone: string) { return new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(new Date(value)); }
+
+function BookingActions({ booking, role }: { booking: Item; role: string }) {
+  const t = useTranslations("dashboard.agenda"); const canOperate = ["owner", "manager", "professional", "receptionist"].includes(role) && !["COMPLETED", "CANCELLED", "NO_SHOW", "PENDING_PAYMENT"].includes(booking.status);
+  const complete = useAction(completeBooking, { onSuccess: () => toast.success(t("completed")), onError: ({ error }) => toast.error(error.serverError ?? t("operationError")) });
+  const noShow = useAction(markBookingNoShow, { onSuccess: () => toast.success(t("noShowMarked")), onError: ({ error }) => toast.error(error.serverError ?? t("operationError")) });
+  const pay = useAction(recordOnSitePayment, { onSuccess: () => toast.success(t("paymentRecorded")), onError: ({ error }) => toast.error(error.serverError ?? t("operationError")) });
+  if (!canOperate) return null; const outstanding = booking.priceInCents - booking.discountInCents - booking.paymentReceivedInCents;
+  return <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/70 pt-2"><button type="button" onClick={() => complete.execute({ bookingId: booking.id })} disabled={complete.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-primary hover:bg-primary/10"><Check className="size-3" />{t("complete")}</button>{outstanding > 0 && <button type="button" onClick={() => pay.execute({ bookingId: booking.id })} disabled={pay.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"><CircleDollarSign className="size-3" />{t("recordPayment")}</button>}<button type="button" onClick={() => noShow.execute({ bookingId: booking.id })} disabled={noShow.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"><UserRoundX className="size-3" />{t("noShow")}</button></div>;
+}
+
+export function Agenda({ bookings, timezone, locale, nowISO, role }: { bookings: Item[]; timezone: string; locale: string; nowISO: string; role: string; currency: string }) {
+  const t = useTranslations("dashboard.agenda"); const [offset, setOffset] = useState(0); const now = useMemo(() => new Date(nowISO).getTime(), [nowISO]); const days = useMemo(() => Array.from({ length: 7 }, (_, i) => new Date(now + (offset * 7 + i) * 86400000)), [now, offset]); const formatter = new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "short", timeZone: timezone });
+  return <section className="p-5 md:p-8"><header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-sm font-medium text-primary">{t("operation")}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{t("title")}</h1></div><div className="flex gap-2"><Button variant="outline" size="sm" aria-label={t("previous")} onClick={() => setOffset((value) => value - 1)}><ChevronLeft className="size-4" /></Button><Button variant="outline" size="sm" onClick={() => setOffset(0)}>{t("today")}</Button><Button variant="outline" size="sm" aria-label={t("next")} onClick={() => setOffset((value) => value + 1)}><ChevronRight className="size-4" /></Button></div></header><div className="grid gap-3 lg:grid-cols-7">{days.map((day) => { const dayBookings = bookings.filter((item) => localDay(item.startAt, timezone) === localDay(day, timezone)); return <div className="min-h-56 rounded-xl border bg-card" key={day.toISOString()}><h2 className="border-b px-3 py-3 text-sm font-semibold capitalize">{formatter.format(day)}<span className="ml-2 text-xs font-normal text-muted-foreground">{dayBookings.length}</span></h2><div className="grid gap-2 p-2">{dayBookings.map((item) => <article className="rounded-lg bg-muted/60 p-2.5 text-xs" key={item.id}><div className="flex items-start justify-between gap-2"><b>{new Intl.DateTimeFormat(locale, { timeStyle: "short", timeZone: timezone }).format(new Date(item.startAt))}</b><span className="rounded bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">{item.status}</span></div><p className="mt-1 font-medium">{item.service}</p><p className="mt-0.5 text-muted-foreground">{item.customer} · {item.staff}</p><BookingActions booking={item} role={role} /></article>)}{!dayBookings.length && <p className="px-2 py-5 text-xs text-muted-foreground">{t("noAppointments")}</p>}</div></div>; })}</div></section>;
+}

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Toaster } from "./_components/ui/sonner";
+import { TooltipProvider } from "./_components/ui/tooltip";
 import QueryProvider from "./_providers/query-provider";
+import { ThemeProvider } from "./_providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,25 +20,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aparatus Barber — Agende seu corte com inteligência",
+  title: "Bladiq — The complete booking platform for barbershops",
   description:
-    "Plataforma moderna de agendamento para barbearias. Encontre a barbearia ideal, escolha o serviço, pague online e converse com nossa IA.",
+    "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern barbershop needs, in one multi-tenant SaaS.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              <TooltipProvider>
+                {children}
+                <Toaster />
+                <Analytics />
+              </TooltipProvider>
+            </QueryProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

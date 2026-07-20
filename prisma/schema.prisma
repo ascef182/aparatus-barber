@@ -15,40 +15,329 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Barbershop {
-  id          String              @id @default(uuid())
-  name        String
-  address     String
-  description String
-  imageUrl    String
-  phones      String[]
-  services    BarbershopService[]
-  bookings    Booking[]
+// ===== AGENDAMENTO (Fase 2) =====
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
 }
 
-model BarbershopService {
-  id           String     @id @default(uuid())
-  name         String
-  description  String
-  imageUrl     String
-  barbershopId String
-  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
-  priceInCents Int
-  bookings     Booking[]
+enum BookingSource {
+  WEB
+  CHATBOT
+  DASHBOARD
+  RECURRING
+}
+
+enum PaymentMode {
+  ON_SITE
+  DEPOSIT
+  FULL_PREPAYMENT
+}
+
+enum SubscriptionPlan {
+  STARTER
+  GROWTH
+  PRO
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum PaymentStatus {
+  NONE
+  PENDING
+  PAID
+  PARTIALLY_REFUNDED
+  REFUNDED
+  FAILED
+}
+
+enum AbsenceType {
+  VACATION
+  SICK
+  BLOCK
+  OTHER
+}
+
+enum ClosedPeriodSource {
+  MANUAL
+  HOLIDAY_IMPORT
+}
+
+enum SettingsScope {
+  ORGANIZATION
+  LOCATION
+  STAFF
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+}
+
+enum CouponScope {
+  ALL_SERVICES
+  SELECTED_SERVICES
+}
+
+enum CompensationType {
+  MONTHLY
+  HOURLY
+  PER_SERVICE_COMMISSION
+}
+
+model Staff {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  locationId     String
+  location       Location     @relation(fields: [locationId], references: [id])
+  memberId       String?      @unique // vínculo opcional a Member (staff sem login existe)
+  invitationId   String?      @unique
+  displayName    String
+  bio            String?
+  imageUrl       String?
+  jobTitle       String?
+  color          String? // cor no calendário do dashboard
+  allowOverbooking Boolean    @default(false)
+  commissionBps  Int? // comissão em basis points (4000 = 40%)
+  compensationType CompensationType?
+  compensationAmountInCents Int?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  workingHours   StaffWorkingHours[]
+  absences       StaffAbsence[]
+  services       StaffService[]
+  bookings       Booking[]
+
+  @@index([organizationId, locationId])
+  @@map("staff")
+}
+
+model StaffWorkingHours {
+  id             String    @id @default(uuid())
+  organizationId String
+  staffId        String
+  staff          Staff     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  weekday        Int // 0 (domingo) – 6 (sábado)
+  startTime      String // "09:00" no timezone do tenant
+  endTime        String
+  validFrom      DateTime? @db.Timestamptz
+  validUntil     DateTime? @db.Timestamptz
+
+  @@index([staffId, weekday])
+  @@index([organizationId])
+  @@map("staffWorkingHours")
+}
+
+model StaffAbsence {
+  id             String      @id @default(uuid())
+  organizationId String
+  staffId        String
+  staff          Staff       @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  type           AbsenceType @default(BLOCK)
+  startAt        DateTime    @db.Timestamptz
+  endAt          DateTime    @db.Timestamptz
+  note           String?
+
+  @@index([staffId, startAt])
+  @@index([organizationId, startAt])
+  @@map("staffAbsence")
+}
+
+model ClosedPeriod {
+  id             String             @id @default(uuid())
+  organizationId String
+  locationId     String? // null = todas as filiais
+  name           String
+  startAt        DateTime           @db.Timestamptz
+  endAt          DateTime           @db.Timestamptz
+  source         ClosedPeriodSource @default(MANUAL)
+
+  @@index([organizationId, startAt])
+  @@map("closedPeriod")
+}
+
+model Service {
+  id                  String       @id @default(uuid())
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  locationId          String? // null = todas as filiais
+  name                String
+  description         String?
+  imageUrl            String?
+  durationMinutes     Int
+  bufferBeforeMinutes Int          @default(0)
+  bufferAfterMinutes  Int          @default(0)
+  priceInCents        Int
+  currency            String       @default("EUR")
+  depositInCents      Int?
+  paymentMode         PaymentMode? // null = regra padrão do tenant
+  depositPercent      Int?         // obrigatório quando paymentMode = DEPOSIT
+  isActive            Boolean      @default(true)
+  sortOrder           Int          @default(0)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @default(now()) @updatedAt
+  staff               StaffService[]
+  couponServices      CouponService[]
+  images              ServiceImage[]
+  bookings            Booking[]
+
+  @@index([organizationId, isActive])
+  @@map("service")
+}
+
+model ServiceImage {
+  id             String   @id @default(uuid())
+  organizationId String
+  serviceId      String
+  service        Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  url            String
+  publicId       String?
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, serviceId])
+  @@map("serviceImage")
+}
+
+model StaffService {
+  organizationId String
+  staffId        String
+  staff          Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, serviceId])
+  @@index([organizationId])
+  @@index([serviceId])
+  @@map("staffService")
+}
+
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String? // null = guest/walk-in
+  name           String
+  email          String?
+  phone          String?
+  locale         String?
+  notes          String?
+  noShowCount    Int          @default(0)
+  isBlocked      Boolean      @default(false)
+  gdprErasedAt   DateTime?    @db.Timestamptz
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  bookings       Booking[]
+
+  @@unique([organizationId, userId])
+  @@index([organizationId, email])
+  @@map("customer")
+}
+
+model Coupon {
+  id             String     @id @default(uuid())
+  organizationId String
+  code           String // sempre armazenado uppercase
+  type           CouponType
+  value          Int // PERCENT: 1–100; FIXED: cents
+  validFrom      DateTime?  @db.Timestamptz
+  validUntil     DateTime?  @db.Timestamptz
+  maxRedemptions Int?
+  scope          CouponScope @default(ALL_SERVICES)
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  bookings       Booking[]
+  services       CouponService[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, isActive])
+  @@map("coupon")
+}
+
+model CouponService {
+  organizationId String
+  couponId       String
+  coupon         Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, serviceId])
+  @@index([organizationId])
+  @@index([serviceId])
+  @@map("couponService")
 }
 
 model Booking {
-  id             String            @id @default(uuid())
+  id             String        @id @default(uuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  locationId     String
+  staffId        String
+  staff          Staff         @relation(fields: [staffId], references: [id])
   serviceId      String
-  service        BarbershopService @relation(fields: [serviceId], references: [id])
-  barbershopId   String
-  barbershop     Barbershop        @relation(fields: [barbershopId], references: [id])
-  userId         String
-  user           User              @relation(fields: [userId], references: [id])
-  date           DateTime          @db.Timestamptz
-  cancelled      Boolean?          @default(false)
-  cancelledAt    DateTime?         @db.Timestamptz
-  stripeChargeId String?
+  service        Service       @relation(fields: [serviceId], references: [id])
+  customerId     String
+  customer       Customer      @relation(fields: [customerId], references: [id])
+  startAt        DateTime      @db.Timestamptz
+  endAt          DateTime      @db.Timestamptz // início + duração + buffers
+  status         BookingStatus
+  source         BookingSource @default(WEB)
+  priceInCents   Int // snapshot no momento do booking
+  currency       String        @default("EUR")
+  discountInCents Int          @default(0)
+  couponId       String?
+  coupon         Coupon?       @relation(fields: [couponId], references: [id])
+  paymentMode    PaymentMode   @default(ON_SITE)
+  paymentStatus  PaymentStatus @default(NONE)
+  paymentReceivedInCents Int   @default(0)
+  onlinePaymentAmountInCents Int @default(0)
+  refundedAmountInCents  Int   @default(0)
+  paidAt                 DateTime? @db.Timestamptz
+  completedAt            DateTime? @db.Timestamptz
+  noShowAt               DateTime? @db.Timestamptz
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  stripeCheckoutSessionId String? @unique
+  cancellationFeeInCents Int?
+  cancelledAt    DateTime?     @db.Timestamptz
+  cancelledBy    String? // userId
+  cancellationReason String?
+  expiresAt      DateTime?     @db.Timestamptz // hold p/ PENDING_PAYMENT
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now()) @updatedAt
+
+  @@index([organizationId, startAt])
+  @@index([staffId, startAt])
+  @@index([customerId, startAt])
+  @@index([organizationId, status])
+  @@map("booking")
+}
+
+model TenantSettings {
+  id             String        @id @default(uuid())
+  organizationId String
+  scope          SettingsScope @default(ORGANIZATION)
+  scopeId        String? // locationId/staffId quando aplicável
+  version        Int
+  data           Json
+  createdAt      DateTime      @default(now()) // append-only: nova row a cada mudança
+  createdBy      String
+
+  @@index([organizationId, scope, scopeId, createdAt(sort: Desc)])
+  @@map("tenantSettings")
 }
 
 model User {
@@ -59,9 +348,20 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
+  // Plugin admin (Better Auth): SuperAdmin da plataforma
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  // Plugin twoFactor (Better Auth)
+  twoFactorEnabled Boolean?
+  // Preferência de idioma do usuário (i18n)
+  locale        String?
   sessions      Session[]
   accounts      Account[]
-  bookings      Booking[]
+  members       Member[]
+  invitations   Invitation[]
+  twoFactors    TwoFactor[]
 
   @@unique([email])
   @@map("user")
@@ -77,9 +377,202 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Plugin organization: organização ativa na sessão
+  activeOrganizationId String?
+  // Plugin admin: impersonation de suporte
+  impersonatedBy       String?
 
   @@unique([token])
   @@map("session")
+}
+
+// ===== TENANT (Organization = barbearia/rede) =====
+
+enum OrgStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CHURNED
+}
+
+model Organization {
+  id        String   @id
+  name      String
+  slug      String   @unique // subdomínio: {slug}.aparatus.app
+  logo      String?
+  coverImageUrl String? // hero da página pública (app/t/[slug])
+  createdAt DateTime @default(now())
+  metadata  String?
+
+  // Extensões próprias (fora do plugin Better Auth):
+  timezone      String    @default("Europe/Berlin")
+  defaultLocale String    @default("de")
+  currency      String    @default("EUR") // ISO 4217
+  status        OrgStatus @default(TRIALING)
+  brandingJson  Json? // tokens de branding validados por Zod
+  stripeCustomerId       String? @unique
+  stripeConnectAccountId String? @unique
+  chargesEnabled         Boolean @default(false) // Stripe Connect account.updated
+  payoutsEnabled         Boolean @default(false)
+  subscriptionPlan       SubscriptionPlan?
+  subscriptionStatus     SubscriptionStatus @default(TRIALING)
+  stripeSubscriptionId   String? @unique
+  subscriptionCurrentPeriodEnd DateTime? @db.Timestamptz
+  trialEndsAt            DateTime? @db.Timestamptz
+  gracePeriodEndsAt      DateTime? @db.Timestamptz
+
+  // Diretório público cross-tenant (lib/services/directory-service.ts):
+  // opt-in do dono, nunca automático.
+  isListed  Boolean   @default(false)
+  listedAt  DateTime? @db.Timestamptz
+
+  members     Member[]
+  invitations Invitation[]
+  locations   Location[]
+  staff       Staff[]
+  services    Service[]
+  customers   Customer[]
+  bookings    Booking[]
+
+  @@map("organization")
+}
+
+/** Eventos Stripe processados, para tornar os webhooks idempotentes. */
+model StripeEvent {
+  id          String   @id // Stripe event id
+  type        String
+  accountId   String?
+  processedAt DateTime @default(now())
+
+  @@map("stripeEvent")
+}
+
+/**
+ * Trilha de auditoria (GDPR + operacional) — append-only, nunca update/delete
+ * pela aplicação. organizationId null = evento de plataforma (ex.: impersonation).
+ * Entra em TENANT_MODELS (lib/db.ts) quando organizationId presente.
+ */
+model AuditLog {
+  id             String   @id @default(uuid())
+  organizationId String?
+  actorId        String? // userId de quem executou a ação
+  entity         String // "Booking", "Customer", "Member", "Subscription", ...
+  entityId       String?
+  action         String // "BOOKING_CREATED", "CUSTOMER_ERASED", "DPA_ACCEPTED", ...
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([entity, entityId])
+  @@map("auditLog")
+}
+
+/** Consentimentos (cookies, marketing) — imutável, escopo de plataforma. */
+model ConsentLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  type      String // "cookies" | "marketing" | "dpa"
+  version   String
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, type])
+  @@map("consentLog")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String // "owner" | "manager" | "professional" | "receptionist"
+  createdAt      DateTime     @default(now())
+  // Prazo para ativar 2FA antes do redirect obrigatório (dashboard/layout.tsx).
+  // Guardado (não computado de createdAt) para não mover retroativamente o
+  // prazo de quem já tem conta se a política mudar depois.
+  mfaGracePeriodEndsAt DateTime?
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  inviter        User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified    Boolean @default(false)
+
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+// ===== ESTRUTURA DO TENANT =====
+
+model Location {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  addressLine1   String
+  addressLine2   String?
+  postalCode     String
+  city           String
+  countryCode    String       @default("DE")
+  phone          String?
+  description    String? // curta, exibida na página pública de agendamento
+  timezone       String? // override do timezone do tenant (raro)
+  openingHoursJson Json? // horário por weekday, validado por Zod
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  staff          Staff[]
+
+  @@index([organizationId])
+  @@index([city])
+  @@map("location")
+}
+
+model TenantImpressum {
+  id             String   @id @default(uuid())
+  organizationId String   @unique
+  legalName      String
+  addressLine1   String
+  postalCode     String
+  city           String
+  country        String   @default("DE")
+  representedBy  String?
+  phone          String?
+  email          String?
+  registerCourt  String?
+  registerNumber String?
+  vatId          String?
+  updatedAt      DateTime @updatedAt
+  updatedBy      String
+
+  @@map("tenantImpressum")
 }
 
 model Account {
