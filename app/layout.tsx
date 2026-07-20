@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Toaster } from "./_components/ui/sonner";
 import { TooltipProvider } from "./_components/ui/tooltip";
@@ -41,6 +42,7 @@ export default async function RootLayout({
               <TooltipProvider>
                 {children}
                 <Toaster />
+                <Analytics />
               </TooltipProvider>
             </QueryProvider>
           </ThemeProvider>
