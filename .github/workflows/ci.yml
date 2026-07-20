@@ -8,12 +8,42 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    # Redis real (não Testcontainers) — lib/rate-limit.ts e o worker BullMQ
+    # conectam direto em REDIS_URL, sem provisionamento dinâmico como o
+    # Postgres de teste (esse sim via Testcontainers, tests/setup/global-setup.ts).
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
-      # Só precisa existir para prisma.config.ts (validado no postinstall
-      # via `prisma generate`, que não conecta de fato no banco) — os testes
-      # usam seu próprio Postgres efêmero via Testcontainers
-      # (tests/setup/global-setup.ts), com DATABASE_URL real definida ali.
+      # DATABASE_URL só precisa existir pra prisma.config.ts (validado no
+      # postinstall via `prisma generate`, que não conecta de fato no banco)
+      # — os testes usam seu próprio Postgres efêmero via Testcontainers,
+      # com DATABASE_URL real definida ali. O resto são placeholders/fakes
+      # (repo público — nunca segredos reais aqui) só pra código que exige
+      # a variável estar presente (Better Auth, Stripe SDK) mesmo sem uma
+      # chamada de rede real acontecer nos testes.
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ci_placeholder"
+      REDIS_URL: "redis://localhost:6379"
+      BETTER_AUTH_SECRET: "ci-placeholder-secret"
+      BETTER_AUTH_URL: "http://lvh.me:3000"
+      NEXT_PUBLIC_APP_URL: "http://lvh.me:3000"
+      NEXT_PUBLIC_ROOT_DOMAIN: "lvh.me:3000"
+      STRIPE_SECRET_KEY: "sk_test_ci_placeholder_0000000000000000000000000"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_ci_placeholder_0000000000000000000000000"
+      STRIPE_BILLING_WEBHOOK_SECRET: "whsec_ci_placeholder"
+      STRIPE_CONNECT_WEBHOOK_SECRET: "whsec_ci_placeholder"
+      STRIPE_PRICE_STARTER_MONTHLY: "price_ci_placeholder_starter"
+      STRIPE_PRICE_GROWTH_MONTHLY: "price_ci_placeholder_growth"
+      STRIPE_PRICE_PRO_MONTHLY: "price_ci_placeholder_pro"
+      RESEND_API_KEY: "re_ci_placeholder"
+      EMAIL_FROM: "Bladiq <bookings@bladiq.com>"
     steps:
       - uses: actions/checkout@v4
 
