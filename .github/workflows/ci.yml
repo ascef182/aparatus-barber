@@ -8,6 +8,12 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      # Só precisa existir para prisma.config.ts (validado no postinstall
+      # via `prisma generate`, que não conecta de fato no banco) — os testes
+      # usam seu próprio Postgres efêmero via Testcontainers
+      # (tests/setup/global-setup.ts), com DATABASE_URL real definida ali.
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ci_placeholder"
     steps:
       - uses: actions/checkout@v4
 
