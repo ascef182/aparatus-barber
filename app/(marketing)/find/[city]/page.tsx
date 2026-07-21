@@ -4,6 +4,7 @@ import { SiteNav } from "@/app/_components/marketing/site-nav";
 import { SiteFooter } from "@/app/_components/marketing/site-footer";
 import { listBusinessesByCity } from "@/lib/services/directory-service";
 import { getTenantUrl } from "@/lib/tenant-host";
+import { ChooseBusinessLink } from "./choose-business-link";
 
 export default async function FindCityPage({
   params,
@@ -46,12 +47,13 @@ export default async function FindCityPage({
                     <p className="text-sm text-neutral-400">
                       {location.addressLine1}, {location.postalCode} {location.city}
                     </p>
-                    <a
+                    <ChooseBusinessLink
+                      slug={location.organization.slug}
                       href={getTenantUrl(location.organization.slug)}
                       className="mt-2 inline-block text-sm text-blue-400 hover:underline"
                     >
                       {t("viewBusiness")}
-                    </a>
+                    </ChooseBusinessLink>
                   </div>
                 </li>
               );
