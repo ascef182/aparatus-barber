@@ -4,6 +4,16 @@
  * clients — o tenant vem SEMPRE do host, nunca de input do cliente.
  */
 
+/**
+ * Subdomínios que nunca podem virar slug de tenant — nem por resolução de
+ * host (resolveTenantSlug) nem por criação de Organization
+ * (create-organization.ts). "app" é reservado pro futuro app de descoberta
+ * do cliente final em app.bladiq.com (hoje prototipado em /app neste
+ * mesmo domínio, ver app/app/page.tsx) — um repositório separado, não este
+ * app multi-tenant.
+ */
+export const RESERVED_SUBDOMAINS = ["www", "app", "api", "admin"] as const;
+
 export function getRootDomain(): string {
   return process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
 }
@@ -44,6 +54,6 @@ export function resolveTenantSlug(host: string | null): string | null {
   if (normalized === root || normalized === `www.${root}`) return null;
   if (!normalized.endsWith(`.${root}`)) return null;
   const slug = normalized.slice(0, -(root.length + 1));
-  if (!slug || slug === "www" || slug.includes(".")) return null;
+  if (!slug || slug.includes(".") || (RESERVED_SUBDOMAINS as readonly string[]).includes(slug)) return null;
   return slug;
 }

@@ -16,6 +16,7 @@ import { getStripe } from "@/lib/stripe";
 import { logAuditEvent } from "@/lib/services/audit-service";
 import { ensureMfaGracePeriod } from "@/lib/services/member-service";
 import { upsertImpressum } from "@/lib/services/impressum-service";
+import { RESERVED_SUBDOMAINS } from "@/lib/tenant-host";
 
 const inputSchema = z.object({
   name: z.string().min(2).max(80),
@@ -26,6 +27,10 @@ const inputSchema = z.object({
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "Use apenas letras minúsculas, números e hífens.",
+    )
+    .refine(
+      (slug) => !(RESERVED_SUBDOMAINS as readonly string[]).includes(slug),
+      "Esse nome é reservado, escolha outro.",
     ),
   addressLine1: z.string().min(3).max(120),
   postalCode: z.string().min(3).max(12),
@@ -42,12 +47,15 @@ const inputSchema = z.object({
   registerCourt: z.string().max(120).optional(),
   registerNumber: z.string().max(60).optional(),
   vatId: z.string().max(40).optional(),
-  // Checkout Session criado em start-plan-checkout.ts, antes de existir
-  // conta/organização (funil pay-first) — quando presente, a Organization
-  // nasce já com assinatura ativa. Ausente = cadastro grátis via /sign-up;
-  // a Organization nasce nos defaults do Prisma (TRIALING, sem plano) e o
-  // paywall de 7 dias (isFreeTrialExpired) passa a valer.
+  // Legado: Checkout Session de um funil pay-first hoje desativado (os
+  // botões de preço vão direto para /sign-up). Mantido só para não quebrar
+  // uma claim em andamento; nunca mais é gerado por código novo.
   sessionId: z.string().min(1).optional(),
+  // Plano escolhido antes do cadastro grátis (query string ?plan= vinda da
+  // landing) — sem Checkout Stripe nenhum ainda, só para a Organization já
+  // nascer com o plano "pretendido" e a tela de billing lembrar a escolha
+  // quando o teste de 7 dias acabar (ver isFreeTrialExpired).
+  intendedPlan: z.enum(["STARTER", "GROWTH", "PRO"]).optional(),
   dpaAccepted: z.literal(true, "É necessário aceitar o Acordo de Processamento de Dados (DPA)."),
 });
 
@@ -61,7 +69,7 @@ export const createOrganization = authActionClient
   .inputSchema(inputSchema)
   .action(
     async ({ parsedInput: {
-      name, slug, addressLine1, postalCode, city, sessionId,
+      name, slug, addressLine1, postalCode, city, sessionId, intendedPlan,
       phone, description, legalName, representedBy, contactEmail, country,
       registerCourt, registerNumber, vatId,
     }, ctx }) => {
@@ -119,9 +127,19 @@ export const createOrganization = authActionClient
         });
       }
       // Sem claim (cadastro grátis via /sign-up): a Organization fica nos
-      // defaults do Prisma (status/subscriptionStatus=TRIALING, sem plano,
-      // sem stripeSubscriptionId) — isFreeTrialExpired() passa a contar os
-      // 7 dias de graça a partir de createdAt.
+      // defaults do Prisma (status/subscriptionStatus=TRIALING, sem
+      // stripeSubscriptionId) — isFreeTrialExpired() passa a contar os
+      // 7 dias de graça a partir de createdAt. Se veio um plano escolhido
+      // na landing, grava só como "intenção" (subscriptionPlan), sem
+      // nenhuma cobrança — a assinatura Stripe de verdade só é criada
+      // depois, quando o dono assina em /dashboard/billing.
+      else if (intendedPlan) {
+        const { prisma } = await import("@/lib/prisma");
+        await prisma.organization.update({
+          where: { id: organization.id },
+          data: { subscriptionPlan: intendedPlan },
+        });
+      }
 
       await ensureMfaGracePeriod(organization.id, ctx.user.id);
 

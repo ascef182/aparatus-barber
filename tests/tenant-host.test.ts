@@ -18,6 +18,12 @@ describe("resolveTenantSlug", () => {
     expect(resolveTenantSlug("www.bladiq.com")).toBeNull();
   });
 
+  test("subdomínios reservados não são tenant", () => {
+    expect(resolveTenantSlug("app.bladiq.com")).toBeNull();
+    expect(resolveTenantSlug("api.bladiq.com")).toBeNull();
+    expect(resolveTenantSlug("admin.bladiq.com")).toBeNull();
+  });
+
   test("host de outra zona não é tenant", () => {
     expect(resolveTenantSlug("evil.com")).toBeNull();
     expect(resolveTenantSlug("bladiq.com.evil.com")).toBeNull();
