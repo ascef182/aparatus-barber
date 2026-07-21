@@ -4,6 +4,8 @@ import { Resend } from "resend";
 import { getBookingForNotification, expireStaleHolds } from "@/lib/services/booking-service";
 import { buildNotificationEmail, enqueueBookingNotification, scheduleStaleHoldSweep } from "@/lib/notifications";
 import type { BookingNotificationJob, InvitationNotificationJob } from "@/lib/notifications";
+import { getEmailTranslator } from "@/lib/email-translations";
+import { renderBrandedEmail } from "@/lib/email-template";
 import { logger } from "@/lib/logger";
 
 // Processo separado do web — precisa do próprio Sentry.init (não passa
@@ -47,11 +49,22 @@ maintenanceWorker.on("failed", (job, err) => {
 });
 
 const invitationsWorker = new Worker<InvitationNotificationJob>("invitation-notifications", async (job) => {
+  const t = getEmailTranslator(job.data.locale);
+  const vars = { organization: job.data.organizationName };
+  const { html, text } = renderBrandedEmail({
+    preheader: t("invitation.heading"),
+    heading: t("invitation.heading"),
+    paragraphs: [t("invitation.body", vars)],
+    ctaLabel: t("invitation.cta"),
+    ctaUrl: job.data.inviteUrl,
+    footerNote: t("footer", vars),
+  });
   await getResend().emails.send({
     from,
     to: job.data.email,
-    subject: `Convite para ${job.data.organizationName} — Bladiq`,
-    text: `Você foi convidado para a equipe de ${job.data.organizationName} na Bladiq.\n\nClique para aceitar: ${job.data.inviteUrl}`,
+    subject: t("invitation.subject", vars),
+    html,
+    text,
   });
 }, { connection, concurrency: 10 });
 

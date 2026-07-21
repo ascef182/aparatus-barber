@@ -1,4 +1,6 @@
 import { Queue } from "bullmq";
+import { getEmailTranslator } from "@/lib/email-translations";
+import { renderBrandedEmail } from "@/lib/email-template";
 
 export type BookingNotificationJob = {
   bookingId: string;
@@ -36,13 +38,15 @@ export type NotificationBooking = {
   organization: { name: string; defaultLocale: string; timezone: string };
 };
 
-export type NotificationEmail = { to: string; subject: string; text: string };
+export type NotificationEmail = { to: string; subject: string; html: string; text: string };
 
 export type InvitationNotificationJob = {
   invitationId: string;
   email: string;
   organizationName: string;
   inviteUrl: string;
+  /** Locale da organização que convidou (defaultLocale) — o convidado ainda não tem User/locale próprio neste ponto. */
+  locale: string;
 };
 
 /**
@@ -76,15 +80,24 @@ export function buildNotificationEmail(
   if (!booking.customer.email) return null;
   if (job.type === "reminder" && booking.status !== "CONFIRMED") return null;
   if (job.type === "confirmation" && booking.status !== "CONFIRMED") return null;
-  const start = new Intl.DateTimeFormat(booking.customer.locale ?? booking.organization.defaultLocale, {
+
+  const locale = booking.customer.locale ?? booking.organization.defaultLocale;
+  const date = new Intl.DateTimeFormat(locale, {
     dateStyle: "full",
     timeStyle: "short",
     timeZone: booking.organization.timezone,
   }).format(booking.startAt);
-  const subject =
-    job.type === "reminder" ? `Lembrete: ${booking.service.name}`
-    : job.type === "cancellation" ? `Reserva cancelada: ${booking.service.name}`
-    : job.type === "expired" ? `Reserva expirada: ${booking.service.name}`
-    : `Reserva confirmada: ${booking.service.name}`;
-  return { to: booking.customer.email, subject, text: `${booking.organization.name}\n${booking.service.name}\n${start}` };
+
+  const t = getEmailTranslator(locale);
+  const vars = { service: booking.service.name, organization: booking.organization.name, date };
+  const key = `booking.${job.type}` as const;
+
+  const { html, text } = renderBrandedEmail({
+    preheader: t(`${key}.heading`),
+    heading: t(`${key}.heading`),
+    paragraphs: [t(`${key}.body`, vars)],
+    footerNote: t("footer", { organization: booking.organization.name }),
+  });
+
+  return { to: booking.customer.email, subject: t(`${key}.subject`, vars), html, text };
 }
