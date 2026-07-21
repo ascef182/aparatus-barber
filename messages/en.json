@@ -622,6 +622,14 @@
     "CONSTRUCTION": "Construction",
     "OTHER": "Other"
   },
+  "app": {
+    "searchPlaceholder": "Search by name or city",
+    "bannerTitle": "Find and book at your own pace",
+    "bannerSubtitle": "Barbershops, salons, clinics, and more — all in one place.",
+    "featuredTitle": "Recommended",
+    "resultsTitle": "Results",
+    "empty": "No businesses found."
+  },
   "emails": {
     "footer": "Sent by {organization} via Bladiq — online booking for modern barbershops.",
     "genericFooter": "Bladiq — online booking for modern barbershops.",

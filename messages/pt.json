@@ -622,6 +622,14 @@
     "CONSTRUCTION": "Pedreiro",
     "OTHER": "Outro"
   },
+  "app": {
+    "searchPlaceholder": "Pesquise por nome ou cidade",
+    "bannerTitle": "Encontre e agende no seu ritmo",
+    "bannerSubtitle": "Barbearias, salões, clínicas e mais — tudo num só lugar.",
+    "featuredTitle": "Recomendados",
+    "resultsTitle": "Resultados",
+    "empty": "Nenhum negócio encontrado."
+  },
   "emails": {
     "footer": "Enviado por {organization} via Bladiq — agendamento online para barbearias modernas.",
     "genericFooter": "Bladiq — agendamento online para barbearias modernas.",

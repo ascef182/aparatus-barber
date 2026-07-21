@@ -622,6 +622,14 @@
     "CONSTRUCTION": "Bauhandwerk",
     "OTHER": "Sonstiges"
   },
+  "app": {
+    "searchPlaceholder": "Nach Name oder Stadt suchen",
+    "bannerTitle": "Finden und buchen, ganz in Ihrem Tempo",
+    "bannerSubtitle": "Friseursalons, Kliniken und mehr — alles an einem Ort.",
+    "featuredTitle": "Empfohlen",
+    "resultsTitle": "Ergebnisse",
+    "empty": "Keine Unternehmen gefunden."
+  },
   "emails": {
     "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für moderne Barbershops.",
     "genericFooter": "Bladiq — Online-Buchung für moderne Barbershops.",
