@@ -7,6 +7,8 @@ import { prisma } from "./prisma";
 import { ac, roles } from "./auth/permissions";
 import { authSecondaryStorage } from "./rate-limit";
 import { getRootDomain } from "./tenant-host";
+import { getEmailTranslator } from "./email-translations";
+import { renderBrandedEmail } from "./email-template";
 
 // Mesma derivação de protocolo de lib/tenant-host.ts (getTenantUrl/getRootUrl)
 // — "https://" quebra em dev local, Next dev não serve TLS.
@@ -34,7 +36,7 @@ const emailFrom = process.env.EMAIL_FROM ?? "Bladiq <bookings@bladiq.com>";
 // testar verificação de e-mail e redefinição de senha localmente sem
 // depender de um domínio verificado. Em produção o comportamento não muda:
 // continua lançando, para nunca mascarar uma falha real de entrega.
-async function sendEmail(params: { to: string; subject: string; text: string }) {
+async function sendEmail(params: { to: string; subject: string; html: string; text: string }) {
   const { error } = await getResend().emails.send({ from: emailFrom, ...params });
   if (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -46,6 +48,14 @@ async function sendEmail(params: { to: string; subject: string; text: string }) 
     }
     throw new Error(`Falha ao enviar e-mail via Resend: ${error.message}`);
   }
+}
+
+// Better Auth não tipa additionalFields custom (locale é uma coluna real em
+// User, mas não registrada em additionalFields) — leitura best-effort via
+// cast, sem quebrar se ausente. getEmailTranslator já cai pro default se
+// undefined/inválido.
+function userLocale(user: object): string | undefined {
+  return (user as { locale?: string | null }).locale ?? undefined;
 }
 
 export const auth = betterAuth({
@@ -61,22 +71,32 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      await sendEmail({
-        to: user.email,
-        subject: "Redefinir senha — Bladiq",
-        text: `Clique no link para redefinir sua senha: ${url}\n\nSe você não pediu isso, ignore este e-mail.`,
+      const t = getEmailTranslator(userLocale(user));
+      const { html, text } = renderBrandedEmail({
+        preheader: t("passwordReset.heading"),
+        heading: t("passwordReset.heading"),
+        paragraphs: [t("passwordReset.body")],
+        ctaLabel: t("passwordReset.cta"),
+        ctaUrl: url,
+        footerNote: t("genericFooter"),
       });
+      await sendEmail({ to: user.email, subject: t("passwordReset.subject"), html, text });
     },
   },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      await sendEmail({
-        to: user.email,
-        subject: "Confirme seu e-mail — Bladiq",
-        text: `Clique no link para confirmar este e-mail: ${url}\n\nSe você não criou uma conta na Bladiq, alguém pode ter usado seu e-mail por engano — ignore este e-mail e a conta não será confirmada.`,
+      const t = getEmailTranslator(userLocale(user));
+      const { html, text } = renderBrandedEmail({
+        preheader: t("emailVerification.heading"),
+        heading: t("emailVerification.heading"),
+        paragraphs: [t("emailVerification.body")],
+        ctaLabel: t("emailVerification.cta"),
+        ctaUrl: url,
+        footerNote: t("genericFooter"),
       });
+      await sendEmail({ to: user.email, subject: t("emailVerification.subject"), html, text });
     },
   },
   session: {

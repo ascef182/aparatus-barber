@@ -54,14 +54,33 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await prisma.auditLog.deleteMany({
-    where: { organizationId: { in: [orgA.id, orgB.id] } },
-  });
-  await prisma.tenantImpressum.deleteMany({
-    where: { organizationId: { in: [orgA.id, orgB.id] } },
-  });
-  await prisma.location.deleteMany({
-    where: { organizationId: { in: [orgA.id, orgB.id] } },
+  // Modelos tenant-scoped agora vivem atrás de RLS (não só do extension
+  // JS) -- o client `prisma` cru conecta como app_runtime, restrito por
+  // política. Limpeza cross-tenant usa o bypass sancionado (platform
+  // scope), igual a qualquer operação administrativa real do app.
+  await runWithPlatformScope(async () => {
+    await db.couponService.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.serviceImage.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.service.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.coupon.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    // auditLog é append-only por design (UPDATE/DELETE revogados de
+    // app_runtime na migração de RLS) -- nem o app real apaga entradas de
+    // auditoria, então o teste também não. As linhas seedadas somem com o
+    // container efêmero do Testcontainers ao final da suíte.
+    await db.tenantImpressum.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.location.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
   });
   await prisma.organization.deleteMany({
     where: { id: { in: [orgA.id, orgB.id] } },
@@ -117,7 +136,9 @@ describe("Suite 2 — extension fail-closed", () => {
       ),
     ).rejects.toThrow();
     // B permanece intacta:
-    const b = await prisma.location.findUnique({ where: { id: locationB.id } });
+    const b = await runWithPlatformScope(() =>
+      db.location.findUnique({ where: { id: locationB.id } }),
+    );
     expect(b?.name).toBe("Filial B");
   });
 
@@ -142,9 +163,10 @@ describe("Suite 2 — extension fail-closed", () => {
       db.location.updateMany({ data: { isActive: true } }),
     );
     expect(result.count).toBeGreaterThan(0);
-    const all = await prisma.location.findMany({
-      where: { organizationId: orgB.id },
-    });
+    const all = await runWithPlatformScope(() =>
+      db.location.findMany({ where: { organizationId: orgB.id } }),
+    );
+    expect(all.length).toBeGreaterThan(0);
     expect(all.every((l) => l.name !== "hacked")).toBe(true);
   });
 
@@ -215,7 +237,95 @@ describe("Suite 2 — extension fail-closed", () => {
     expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
     expect(seenByA.some((entry) => entry.legalName === "Barbearia B")).toBe(false);
 
-    await prisma.tenantImpressum.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+    await runWithPlatformScope(() =>
+      db.tenantImpressum.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+  });
+
+  test("ServiceImage: fail-closed sem contexto, escopado sob tenant", async () => {
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.create({
+        data: { organizationId: orgA.id, name: "Corte A", durationMinutes: 30, priceInCents: 2000 },
+      }),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.create({
+        data: { organizationId: orgB.id, name: "Corte B", durationMinutes: 30, priceInCents: 2000 },
+      }),
+    );
+
+    await expect(
+      db.serviceImage.create({
+        data: { organizationId: orgA.id, serviceId: serviceA.id, url: "https://example.com/a.jpg" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.serviceImage.create({
+        data: { organizationId: orgA.id, serviceId: serviceA.id, url: "https://example.com/a.jpg" },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.serviceImage.create({
+        data: { organizationId: orgB.id, serviceId: serviceB.id, url: "https://example.com/b.jpg" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.serviceImage.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.url === "https://example.com/b.jpg")).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.serviceImage.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("CouponService: fail-closed sem contexto, escopado sob tenant", async () => {
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.findFirstOrThrow(),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.findFirstOrThrow(),
+    );
+    const couponA = await runWithTenant(orgA.id, () =>
+      db.coupon.create({
+        data: { organizationId: orgA.id, code: "ISOA", type: "PERCENT", value: 10 },
+      }),
+    );
+    const couponB = await runWithTenant(orgB.id, () =>
+      db.coupon.create({
+        data: { organizationId: orgB.id, code: "ISOB", type: "PERCENT", value: 10 },
+      }),
+    );
+
+    await expect(
+      db.couponService.create({
+        data: { organizationId: orgA.id, couponId: couponA.id, serviceId: serviceA.id },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.couponService.create({
+        data: { organizationId: orgA.id, couponId: couponA.id, serviceId: serviceA.id },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.couponService.create({
+        data: { organizationId: orgB.id, couponId: couponB.id, serviceId: serviceB.id },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.couponService.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.couponId === couponB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.couponService.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
   });
 });
 

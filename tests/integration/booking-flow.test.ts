@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { db } from "@/lib/db";
-import { runWithTenant } from "@/lib/tenant-context";
+import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import {
   cancelBooking,
   createBooking,
@@ -18,48 +18,54 @@ let customerId: string;
 
 beforeAll(async () => {
   await prisma.organization.create({ data: { id: org.id, name: "Booking Flow Org", slug: org.slug } });
-  const location = await prisma.location.create({
-    data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
-  });
-  locationId = location.id;
-  const staff = await prisma.staff.create({
-    data: { organizationId: org.id, locationId, displayName: "Ana" },
-  });
-  staffId = staff.id;
+  await runWithPlatformScope(async () => {
+    const location = await db.location.create({
+      data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+    });
+    locationId = location.id;
+    const staff = await db.staff.create({
+      data: { organizationId: org.id, locationId, displayName: "Ana" },
+    });
+    staffId = staff.id;
 
-  const onSite = await prisma.service.create({
-    data: { organizationId: org.id, name: "Corte", durationMinutes: 30, priceInCents: 3000, paymentMode: "ON_SITE" },
-  });
-  onSiteServiceId = onSite.id;
-  const prepaid = await prisma.service.create({
-    data: { organizationId: org.id, name: "Corte premium", durationMinutes: 30, priceInCents: 5000, paymentMode: "FULL_PREPAYMENT" },
-  });
-  prepaidServiceId = prepaid.id;
-  await prisma.staffService.createMany({
-    data: [
-      { organizationId: org.id, staffId, serviceId: onSiteServiceId },
-      { organizationId: org.id, staffId, serviceId: prepaidServiceId },
-    ],
-  });
-  await prisma.staffWorkingHours.create({
-    data: { organizationId: org.id, staffId, weekday: 1, startTime: "00:00", endTime: "23:59" },
-  });
+    const onSite = await db.service.create({
+      data: { organizationId: org.id, name: "Corte", durationMinutes: 30, priceInCents: 3000, paymentMode: "ON_SITE" },
+    });
+    onSiteServiceId = onSite.id;
+    const prepaid = await db.service.create({
+      data: { organizationId: org.id, name: "Corte premium", durationMinutes: 30, priceInCents: 5000, paymentMode: "FULL_PREPAYMENT" },
+    });
+    prepaidServiceId = prepaid.id;
+    await db.staffService.createMany({
+      data: [
+        { organizationId: org.id, staffId, serviceId: onSiteServiceId },
+        { organizationId: org.id, staffId, serviceId: prepaidServiceId },
+      ],
+    });
+    await db.staffWorkingHours.create({
+      data: { organizationId: org.id, staffId, weekday: 1, startTime: "00:00", endTime: "23:59" },
+    });
 
-  const customer = await prisma.customer.create({
-    data: { organizationId: org.id, name: "Cliente Teste", email: "cliente@example.com" },
+    const customer = await db.customer.create({
+      data: { organizationId: org.id, name: "Cliente Teste", email: "cliente@example.com" },
+    });
+    customerId = customer.id;
   });
-  customerId = customer.id;
 });
 
 afterAll(async () => {
-  await prisma.auditLog.deleteMany({ where: { organizationId: org.id } });
-  await prisma.booking.deleteMany({ where: { organizationId: org.id } });
-  await prisma.customer.deleteMany({ where: { organizationId: org.id } });
-  await prisma.staffWorkingHours.deleteMany({ where: { organizationId: org.id } });
-  await prisma.staffService.deleteMany({ where: { organizationId: org.id } });
-  await prisma.service.deleteMany({ where: { organizationId: org.id } });
-  await prisma.staff.deleteMany({ where: { organizationId: org.id } });
-  await prisma.location.deleteMany({ where: { organizationId: org.id } });
+  // auditLog é append-only por design (UPDATE/DELETE revogados de
+  // app_runtime na migração de RLS) -- as linhas somem com o container
+  // efêmero do Testcontainers ao final da suíte.
+  await runWithPlatformScope(async () => {
+    await db.booking.deleteMany({ where: { organizationId: org.id } });
+    await db.customer.deleteMany({ where: { organizationId: org.id } });
+    await db.staffWorkingHours.deleteMany({ where: { organizationId: org.id } });
+    await db.staffService.deleteMany({ where: { organizationId: org.id } });
+    await db.service.deleteMany({ where: { organizationId: org.id } });
+    await db.staff.deleteMany({ where: { organizationId: org.id } });
+    await db.location.deleteMany({ where: { organizationId: org.id } });
+  });
   await prisma.organization.delete({ where: { id: org.id } });
   await prisma.$disconnect();
 });
@@ -149,7 +155,7 @@ describe("fluxo de booking", () => {
     );
     const expiredIds = await expireStaleHolds();
     expect(expiredIds).toContain(booking.id);
-    const reloaded = await prisma.booking.findUniqueOrThrow({ where: { id: booking.id } });
+    const reloaded = await runWithPlatformScope(() => db.booking.findUniqueOrThrow({ where: { id: booking.id } }));
     expect(reloaded.status).toBe("CANCELLED");
   });
 
@@ -231,15 +237,19 @@ describe("fluxo de booking", () => {
         customer: { name: "Guest Audit", email: "guestaudit@example.com" },
       }),
     );
-    const createdLog = await prisma.auditLog.findFirst({
-      where: { organizationId: org.id, action: "BOOKING_CREATED", entityId: booking.id },
-    });
+    const createdLog = await runWithPlatformScope(() =>
+      db.auditLog.findFirst({
+        where: { organizationId: org.id, action: "BOOKING_CREATED", entityId: booking.id },
+      }),
+    );
     expect(createdLog).not.toBeNull();
 
     await runWithTenant(org.id, () => cancelBooking(booking.id, "staff-user-1"));
-    const cancelledLog = await prisma.auditLog.findFirst({
-      where: { organizationId: org.id, action: "BOOKING_CANCELLED", entityId: booking.id },
-    });
+    const cancelledLog = await runWithPlatformScope(() =>
+      db.auditLog.findFirst({
+        where: { organizationId: org.id, action: "BOOKING_CANCELLED", entityId: booking.id },
+      }),
+    );
     expect(cancelledLog).not.toBeNull();
     expect(cancelledLog?.actorId).toBe("staff-user-1");
   });

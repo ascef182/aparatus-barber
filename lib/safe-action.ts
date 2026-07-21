@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { hasPermission, type PermissionCheck } from "@/lib/auth/permissions";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
-import { getMembership } from "@/lib/services/member-service";
+import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
@@ -94,12 +94,28 @@ export const tenantActionClient = authActionClient.use(async ({ next }) => {
 /**
  * Cliente para actions de staff do tenant (dashboard), exigindo membership
  * com a permissão dada. Ex.: staffActionClient({ service: ["manage"] }).
+ *
+ * Mesmo gate de MFA de app/(protected)/dashboard/layout.tsx, mas aqui — sem
+ * isso, o redirect da página é só cosmético: um owner/superadmin sem 2FA
+ * passado o prazo de graça ainda conseguiria invocar a action direto (POST),
+ * já que a UI só esconde os botões, não bloqueia o endpoint. O fluxo de
+ * ativar 2FA em si não passa por este client (vai direto no Better Auth via
+ * authClient.twoFactor.*), então essa trava não pode travar quem está
+ * tentando justamente resolver a pendência.
  */
 export function staffActionClient(permission: PermissionCheck) {
   return tenantActionClient.use(async ({ next, ctx }) => {
     const membership = await getMembership(ctx.organization.id, ctx.user.id);
     if (!membership || !hasPermission(membership.role, permission)) {
       throw new ActionError("Sem permissão para esta ação.");
+    }
+    const needsMfaSetup =
+      (membership.role === "owner" || ctx.user.role === "superadmin") && !ctx.user.twoFactorEnabled;
+    if (needsMfaSetup) {
+      const deadline = membership.mfaGracePeriodEndsAt ?? (await ensureMfaGracePeriod(ctx.organization.id, ctx.user.id));
+      if (deadline && deadline < new Date()) {
+        throw new ActionError("Ative a autenticação em duas etapas para continuar (prazo de graça expirado).");
+      }
     }
     return next({ ctx: { membership } });
   });

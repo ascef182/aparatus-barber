@@ -5,7 +5,10 @@ services:
   web:
     build: .
     environment:
+      # DATABASE_URL (owner) só é usada pelo `prisma migrate deploy` do build;
+      # RUNTIME_DATABASE_URL (app_runtime, RLS) é o que o app conecta.
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aparatus
+      RUNTIME_DATABASE_URL: postgresql://app_runtime:app_runtime_change_me@postgres:5432/aparatus
       REDIS_URL: redis://redis:6379
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-development-secret}
       BETTER_AUTH_URL: http://localhost:3000
@@ -26,6 +29,7 @@ services:
     command: sh -c "pnpm db:migrate:deploy && pnpm worker"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aparatus
+      RUNTIME_DATABASE_URL: postgresql://app_runtime:app_runtime_change_me@postgres:5432/aparatus
       REDIS_URL: redis://redis:6379
       RESEND_API_KEY: ${RESEND_API_KEY}
       EMAIL_FROM: ${EMAIL_FROM}

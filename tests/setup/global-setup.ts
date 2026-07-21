@@ -20,6 +20,15 @@ export async function setup(project: TestProject) {
   });
 
   project.provide("databaseUrl", databaseUrl);
+
+  // A migração de RLS (20260720120000_add_rls_policies) cria a role
+  // restrita app_runtime nesse mesmo container -- lib/prisma.ts agora lê
+  // RUNTIME_DATABASE_URL para toda query em runtime, então os testes
+  // precisam apontar para ela também.
+  const appRuntimeUrl = new URL(databaseUrl);
+  appRuntimeUrl.username = "app_runtime";
+  appRuntimeUrl.password = "app_runtime_change_me";
+  project.provide("appRuntimeDatabaseUrl", appRuntimeUrl.toString());
 }
 
 export async function teardown() {
@@ -29,5 +38,6 @@ export async function teardown() {
 declare module "vitest" {
   export interface ProvidedContext {
     databaseUrl: string;
+    appRuntimeDatabaseUrl: string;
   }
 }

@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { runWithTenant } from "@/lib/tenant-context";
+import { db } from "@/lib/db";
+import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { getResolvedRules, saveRules } from "@/lib/services/settings-service";
 import { defaultRules, parseSettings } from "@/lib/rules/schemas";
 
@@ -11,20 +12,26 @@ let staffId: string;
 
 beforeAll(async () => {
   await prisma.organization.create({ data: { id: org.id, name: "Rules Org", slug: org.slug } });
-  const location = await prisma.location.create({
-    data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+  await runWithPlatformScope(async () => {
+    const location = await db.location.create({
+      data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+    });
+    locationId = location.id;
+    const staff = await db.staff.create({
+      data: { organizationId: org.id, locationId, displayName: "Ana" },
+    });
+    staffId = staff.id;
   });
-  locationId = location.id;
-  const staff = await prisma.staff.create({
-    data: { organizationId: org.id, locationId, displayName: "Ana" },
-  });
-  staffId = staff.id;
 });
 
 afterAll(async () => {
-  await prisma.tenantSettings.deleteMany({ where: { organizationId: org.id } });
-  await prisma.staff.deleteMany({ where: { organizationId: org.id } });
-  await prisma.location.deleteMany({ where: { organizationId: org.id } });
+  // tenantSettings é append-only por design (UPDATE/DELETE revogados de
+  // app_runtime na migração de RLS, mesma semântica de auditLog) -- as
+  // linhas somem com o container efêmero do Testcontainers.
+  await runWithPlatformScope(async () => {
+    await db.staff.deleteMany({ where: { organizationId: org.id } });
+    await db.location.deleteMany({ where: { organizationId: org.id } });
+  });
   await prisma.organization.delete({ where: { id: org.id } });
   await prisma.$disconnect();
 });

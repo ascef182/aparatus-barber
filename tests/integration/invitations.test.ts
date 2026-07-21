@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
+import { runWithPlatformScope } from "@/lib/tenant-context";
 import { getInvitationById, listMembers, listPendingInvitations } from "@/lib/services/member-service";
 import { logAuditEvent } from "@/lib/services/audit-service";
 
@@ -27,7 +29,10 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await prisma.auditLog.deleteMany({ where: { organizationId: org.id } });
+  // auditLog é append-only por design (UPDATE/DELETE revogados de
+  // app_runtime na migração de RLS) -- nem o app real apaga entradas de
+  // auditoria, então o teste também não; as linhas somem com o container
+  // efêmero do Testcontainers ao final da suíte.
   await prisma.invitation.deleteMany({ where: { organizationId: org.id } });
   await prisma.member.deleteMany({ where: { organizationId: org.id } });
   await prisma.user.deleteMany({ where: { id: { in: [ownerUserId, inviteeUserId] } } });
@@ -126,7 +131,9 @@ describe("aceite de convite — status transita e membership passa a existir", (
     const invitation = await getInvitationById(invitationId);
     expect(invitation!.status).toBe("accepted");
 
-    const auditRows = await prisma.auditLog.findMany({ where: { organizationId: org.id, action: "INVITE_ACCEPTED" } });
+    const auditRows = await runWithPlatformScope(() =>
+      db.auditLog.findMany({ where: { organizationId: org.id, action: "INVITE_ACCEPTED" } }),
+    );
     expect(auditRows).toHaveLength(1);
   });
 });

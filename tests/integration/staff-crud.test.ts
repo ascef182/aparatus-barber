@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { db } from "@/lib/db";
-import { runWithTenant } from "@/lib/tenant-context";
+import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { updateStaffSchema } from "@/app/_actions/manage-operations.schemas";
 import { removeMemberSchema, updateMemberRoleSchema } from "@/app/_actions/manage-members.schemas";
 
@@ -31,32 +31,36 @@ beforeAll(async () => {
       { id: orgB.id, name: "Tenant B", slug: orgB.slug },
     ],
   });
-  locationA = await prisma.location.create({
-    data: { organizationId: orgA.id, name: "Filial A", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
-  });
-  const locationB = await prisma.location.create({
-    data: { organizationId: orgB.id, name: "Filial B", addressLine1: "Str 2", postalCode: "80331", city: "München" },
-  });
-  serviceA1 = await prisma.service.create({
-    data: { organizationId: orgA.id, name: "Corte", durationMinutes: 30, priceInCents: 3000 },
-  });
-  serviceA2 = await prisma.service.create({
-    data: { organizationId: orgA.id, name: "Barba", durationMinutes: 20, priceInCents: 2000 },
-  });
-  staffA = await prisma.staff.create({
-    data: { organizationId: orgA.id, locationId: locationA.id, displayName: "Ana" },
-  });
-  await prisma.staffService.create({ data: { organizationId: orgA.id, staffId: staffA.id, serviceId: serviceA1.id } });
-  staffB = await prisma.staff.create({
-    data: { organizationId: orgB.id, locationId: locationB.id, displayName: "Bruno" },
+  await runWithPlatformScope(async () => {
+    locationA = await db.location.create({
+      data: { organizationId: orgA.id, name: "Filial A", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+    });
+    const locationB = await db.location.create({
+      data: { organizationId: orgB.id, name: "Filial B", addressLine1: "Str 2", postalCode: "80331", city: "München" },
+    });
+    serviceA1 = await db.service.create({
+      data: { organizationId: orgA.id, name: "Corte", durationMinutes: 30, priceInCents: 3000 },
+    });
+    serviceA2 = await db.service.create({
+      data: { organizationId: orgA.id, name: "Barba", durationMinutes: 20, priceInCents: 2000 },
+    });
+    staffA = await db.staff.create({
+      data: { organizationId: orgA.id, locationId: locationA.id, displayName: "Ana" },
+    });
+    await db.staffService.create({ data: { organizationId: orgA.id, staffId: staffA.id, serviceId: serviceA1.id } });
+    staffB = await db.staff.create({
+      data: { organizationId: orgB.id, locationId: locationB.id, displayName: "Bruno" },
+    });
   });
 });
 
 afterAll(async () => {
-  await prisma.staffService.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
-  await prisma.staff.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
-  await prisma.service.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
-  await prisma.location.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+  await runWithPlatformScope(async () => {
+    await db.staffService.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+    await db.staff.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+    await db.service.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+    await db.location.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } });
+  });
   await prisma.organization.deleteMany({ where: { id: { in: [orgA.id, orgB.id] } } });
   await prisma.$disconnect();
 });
@@ -93,7 +97,9 @@ describe("updateStaff — lógica de edição e resync de serviços (mesma sequ�
       await db.staffService.createMany({ data: [{ organizationId: orgA.id, staffId: staffA.id, serviceId: serviceA2.id }] });
     });
 
-    const updated = await prisma.staff.findUniqueOrThrow({ where: { id: staffA.id }, include: { services: true } });
+    const updated = await runWithPlatformScope(() =>
+      db.staff.findUniqueOrThrow({ where: { id: staffA.id }, include: { services: true } }),
+    );
     expect(updated.displayName).toBe("Ana Silva");
     expect(updated.jobTitle).toBe("Barbeira sênior");
     expect(updated.services.map((s) => s.serviceId)).toEqual([serviceA2.id]);
@@ -101,12 +107,12 @@ describe("updateStaff — lógica de edição e resync de serviços (mesma sequ�
 
   test("desativar e reativar alterna isActive preservando o restante dos dados", async () => {
     await runWithTenant(orgA.id, () => db.staff.update({ where: { id: staffA.id }, data: { isActive: false } }));
-    let staff = await prisma.staff.findUniqueOrThrow({ where: { id: staffA.id } });
+    let staff = await runWithPlatformScope(() => db.staff.findUniqueOrThrow({ where: { id: staffA.id } }));
     expect(staff.isActive).toBe(false);
     expect(staff.displayName).toBe("Ana Silva");
 
     await runWithTenant(orgA.id, () => db.staff.update({ where: { id: staffA.id }, data: { isActive: true } }));
-    staff = await prisma.staff.findUniqueOrThrow({ where: { id: staffA.id } });
+    staff = await runWithPlatformScope(() => db.staff.findUniqueOrThrow({ where: { id: staffA.id } }));
     expect(staff.isActive).toBe(true);
   });
 
@@ -114,7 +120,7 @@ describe("updateStaff — lógica de edição e resync de serviços (mesma sequ�
     await expect(
       runWithTenant(orgA.id, () => db.staff.update({ where: { id: staffB.id }, data: { displayName: "Hack" } })),
     ).rejects.toThrow();
-    const untouched = await prisma.staff.findUniqueOrThrow({ where: { id: staffB.id } });
+    const untouched = await runWithPlatformScope(() => db.staff.findUniqueOrThrow({ where: { id: staffB.id } }));
     expect(untouched.displayName).toBe("Bruno");
   });
 });

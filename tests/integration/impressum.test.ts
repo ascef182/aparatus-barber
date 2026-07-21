@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { runWithTenant } from "@/lib/tenant-context";
+import { db } from "@/lib/db";
+import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { getImpressum, upsertImpressum } from "@/lib/services/impressum-service";
 import { createLocation } from "@/lib/services/location-service";
 
@@ -23,23 +24,29 @@ beforeAll(async () => {
   await prisma.organization.createMany({
     data: allOrgIds.map((id, i) => ({ id, name: `Org ${i}`, slug: [orgCrud, orgDeBlocked, orgDeConfigured, orgNonDe][i].slug })),
   });
-  await prisma.location.create({
-    data: { organizationId: orgDeBlocked.id, name: "Filial DE", addressLine1: "x", postalCode: "x", city: "x", countryCode: "DE" },
-  });
-  await prisma.location.create({
-    data: { organizationId: orgDeConfigured.id, name: "Filial DE", addressLine1: "x", postalCode: "x", city: "x", countryCode: "DE" },
+  await runWithPlatformScope(async () => {
+    await db.location.create({
+      data: { organizationId: orgDeBlocked.id, name: "Filial DE", addressLine1: "x", postalCode: "x", city: "x", countryCode: "DE" },
+    });
+    await db.location.create({
+      data: { organizationId: orgDeConfigured.id, name: "Filial DE", addressLine1: "x", postalCode: "x", city: "x", countryCode: "DE" },
+    });
   });
   await runWithTenant(orgDeConfigured.id, () =>
     upsertImpressum({ legalName: "Barbearia DE OK GmbH", addressLine1: "Astraße 1", postalCode: "10115", city: "Berlin" }, "user-1"),
   );
-  await prisma.location.create({
-    data: { organizationId: orgNonDe.id, name: "Filial AT", addressLine1: "x", postalCode: "x", city: "x", countryCode: "AT" },
-  });
+  await runWithPlatformScope(() =>
+    db.location.create({
+      data: { organizationId: orgNonDe.id, name: "Filial AT", addressLine1: "x", postalCode: "x", city: "x", countryCode: "AT" },
+    }),
+  );
 });
 
 afterAll(async () => {
-  await prisma.tenantImpressum.deleteMany({ where: { organizationId: { in: allOrgIds } } });
-  await prisma.location.deleteMany({ where: { organizationId: { in: allOrgIds } } });
+  await runWithPlatformScope(async () => {
+    await db.tenantImpressum.deleteMany({ where: { organizationId: { in: allOrgIds } } });
+    await db.location.deleteMany({ where: { organizationId: { in: allOrgIds } } });
+  });
   await prisma.organization.deleteMany({ where: { id: { in: allOrgIds } } });
   await prisma.$disconnect();
 });
@@ -73,7 +80,10 @@ describe("upsertImpressum / getImpressum", () => {
 
 describe("condição de bloqueio (Location DE + sem Impressum)", () => {
   async function isBlocked(organizationId: string) {
-    const hasGermanLocation = (await prisma.location.count({ where: { organizationId, countryCode: "DE" } })) > 0;
+    const hasGermanLocation =
+      (await runWithPlatformScope(() =>
+        db.location.count({ where: { organizationId, countryCode: "DE" } }),
+      )) > 0;
     const impressum = await runWithTenant(organizationId, getImpressum);
     return hasGermanLocation && !impressum;
   }
@@ -114,16 +124,23 @@ describe("onboarding: location + Impressum na mesma passada (evita o bloqueio j�
       );
     });
 
-    const hasGermanLocation = (await prisma.location.count({ where: { organizationId: org.id, countryCode: "DE" } })) > 0;
+    const hasGermanLocation =
+      (await runWithPlatformScope(() =>
+        db.location.count({ where: { organizationId: org.id, countryCode: "DE" } }),
+      )) > 0;
     const impressum = await runWithTenant(org.id, getImpressum);
     expect(hasGermanLocation && !impressum).toBe(false);
 
-    const location = await prisma.location.findFirstOrThrow({ where: { organizationId: org.id } });
+    const location = await runWithPlatformScope(() =>
+      db.location.findFirstOrThrow({ where: { organizationId: org.id } }),
+    );
     expect(location.phone).toBe("+49 30 1234567");
     expect(location.description).toBe("Cortes modernos no coração de Berlim.");
 
-    await prisma.tenantImpressum.deleteMany({ where: { organizationId: org.id } });
-    await prisma.location.deleteMany({ where: { organizationId: org.id } });
+    await runWithPlatformScope(async () => {
+      await db.tenantImpressum.deleteMany({ where: { organizationId: org.id } });
+      await db.location.deleteMany({ where: { organizationId: org.id } });
+    });
     await prisma.organization.delete({ where: { id: org.id } });
   });
 });

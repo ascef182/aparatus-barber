@@ -1,7 +1,12 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const connectionString = `${process.env.DATABASE_URL}`;
+// RUNTIME_DATABASE_URL conecta como a role restrita `app_runtime` (RLS,
+// sem BYPASSRLS) -- é o que web e worker usam para toda query em runtime.
+// DATABASE_URL continua sendo a role owner, usada só por
+// `prisma migrate dev`/`deploy` (precisa de DDL/CREATE POLICY), nunca pelo
+// client em runtime. Ver prisma/migrations/20260720120000_add_rls_policies.
+const connectionString = `${process.env.RUNTIME_DATABASE_URL}`;
 
 const adapter = new PrismaPg({ connectionString });
 
