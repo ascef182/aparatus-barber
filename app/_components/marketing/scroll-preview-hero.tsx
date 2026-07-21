@@ -287,12 +287,14 @@ export function ScrollPreviewHero({
       <div className="flex flex-col justify-center md:motion-safe:sticky md:motion-safe:top-16 md:motion-safe:h-[calc(100vh-4rem)] md:motion-safe:overflow-hidden">
         <div className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(87,175,120,0.24),transparent_65%)]" aria-hidden />
         <div className="mx-auto flex w-full max-w-7xl flex-col justify-center px-6 py-10 lg:py-14">
-          <div className="flex flex-col-reverse justify-center gap-8 md:flex-row md:items-start md:gap-10 xl:gap-[72px]">
+          <div className="flex flex-col-reverse justify-center gap-8 md:flex-row md:items-center md:gap-10 xl:gap-[72px]">
             {/* preview do celular — sem abas clicáveis, só o efeito de
                 scroll troca o conteúdo (useMotionValueEvent acima).
-                md:mt-11 alinha o topo com o <h1>, compensando a badge acima
-                dele na coluna de texto */}
-            <div className="flex min-w-0 flex-col items-center md:mt-11 md:w-[320px] md:shrink-0">
+                md:items-center (no pai) centraliza o celular com o bloco de
+                texto em vez de tentar um offset manual pra alinhar topos —
+                o celular é mais alto que o texto, então centralizar reparte
+                a diferença em vez de deixar tudo sobrando embaixo. */}
+            <div className="flex min-w-0 flex-col items-center md:w-[320px] md:shrink-0">
               <PreviewStack tabs={tabs} active={active} />
             </div>
 
