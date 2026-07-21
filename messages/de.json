@@ -623,6 +623,7 @@
     "OTHER": "Sonstiges"
   },
   "app": {
+    "continueWith": "Weiter mit {name}",
     "searchPlaceholder": "Nach Name oder Stadt suchen",
     "bannerTitle": "Finden und buchen, ganz in Ihrem Tempo",
     "bannerSubtitle": "Friseursalons, Kliniken und mehr — alles an einem Ort.",

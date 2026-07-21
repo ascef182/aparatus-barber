@@ -623,6 +623,7 @@
     "OTHER": "Outro"
   },
   "app": {
+    "continueWith": "Continuar em {name}",
     "searchPlaceholder": "Pesquise por nome ou cidade",
     "bannerTitle": "Encontre e agende no seu ritmo",
     "bannerSubtitle": "Barbearias, salões, clínicas e mais — tudo num só lugar.",

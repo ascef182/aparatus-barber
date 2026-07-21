@@ -10,6 +10,7 @@ export function BusinessCard({ business }: { business: Business }) {
   return (
     <ChooseBusinessLink
       slug={business.organization.slug}
+      name={business.organization.name}
       href={getTenantUrl(business.organization.slug)}
       className="relative block h-48 w-64 shrink-0 overflow-hidden rounded-xl bg-muted"
     >

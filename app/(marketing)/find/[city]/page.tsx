@@ -49,6 +49,7 @@ export default async function FindCityPage({
                     </p>
                     <ChooseBusinessLink
                       slug={location.organization.slug}
+                      name={location.organization.name}
                       href={getTenantUrl(location.organization.slug)}
                       className="mt-2 inline-block text-sm text-blue-400 hover:underline"
                     >

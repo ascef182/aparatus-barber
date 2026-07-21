@@ -1,17 +1,40 @@
-const LAST_SHOP_SLUG_KEY = "bladiq:lastShopSlug";
+const LAST_SHOP_KEY = "bladiq:lastShop";
+
+export type LastShop = { slug: string; name: string };
 
 /**
- * Lembrança local de qual barbearia o cliente escolheu por último — usada
- * pela rota de entrada do futuro app de cliente final (wrapper TWA/WKWebView
- * apontando pra /app) pra pular o diretório e abrir direto no subdomínio
- * certo. SSR-safe: no servidor, sempre retorna/ignora sem tocar localStorage.
+ * Lembrança local do último negócio escolhido — usada só pra mostrar um
+ * atalho opcional ("Continuar em X") na home de /app, nunca pra
+ * redirecionar sozinho: um redirect automático aqui prendia quem volta
+ * pra /app querendo buscar outro negócio num loop de volta pro mesmo
+ * subdomínio. SSR-safe: no servidor, sempre retorna/ignora sem tocar
+ * localStorage.
  */
-export function saveLastShopSlug(slug: string): void {
+export function saveLastShopSlug(slug: string, name: string): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(LAST_SHOP_SLUG_KEY, slug);
+  window.localStorage.setItem(LAST_SHOP_KEY, JSON.stringify({ slug, name }));
 }
 
-export function getLastShopSlug(): string | null {
+// Cache pela string bruta: getLastShop() é usado como getSnapshot de
+// useSyncExternalStore, que exige referência estável quando o valor não
+// mudou — sem isso, um novo objeto a cada chamada (JSON.parse) faz o React
+// achar que a store mudou a cada render e entrar em loop infinito.
+let cache: { raw: string | null; value: LastShop | null } = { raw: undefined as unknown as string, value: null };
+
+export function getLastShop(): LastShop | null {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(LAST_SHOP_SLUG_KEY);
+  const raw = window.localStorage.getItem(LAST_SHOP_KEY);
+  if (raw === cache.raw) return cache.value;
+
+  let value: LastShop | null = null;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed?.slug === "string" && typeof parsed?.name === "string") value = parsed;
+    } catch {
+      value = null;
+    }
+  }
+  cache = { raw, value };
+  return value;
 }

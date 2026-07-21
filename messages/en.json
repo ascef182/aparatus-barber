@@ -623,6 +623,7 @@
     "OTHER": "Other"
   },
   "app": {
+    "continueWith": "Continue with {name}",
     "searchPlaceholder": "Search by name or city",
     "bannerTitle": "Find and book at your own pace",
     "bannerSubtitle": "Barbershops, salons, clinics, and more — all in one place.",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { listFeaturedBusinesses, searchBusinesses } from "@/lib/services/directory-service";
-import { CustomerAppRedirect } from "./customer-app-redirect";
+import { LastVisitedCard } from "./last-visited-card";
 import { AppSearchBar } from "./search-bar";
 import { CategoryPills } from "./category-pills";
 import { BusinessCard } from "./business-card";
@@ -16,8 +16,8 @@ const VALID_CATEGORIES = [
  * sem sessão, cliente não "loga" numa barbearia. Server Component de
  * verdade agora (não só um redirect stub): busca/categoria via searchParams
  * viram uma query real (searchBusinesses); sem filtro, mostra recomendados.
- * CustomerAppRedirect (client, localStorage) só pula pro subdomínio se o
- * cliente já tiver escolhido um negócio antes.
+ * LastVisitedCard (client, localStorage) é só um atalho opcional pro
+ * último negócio escolhido — nunca redireciona sozinho.
  */
 export default async function CustomerAppHomePage({
   searchParams,
@@ -35,7 +35,6 @@ export default async function CustomerAppHomePage({
 
   return (
     <main className="min-h-screen bg-background">
-      <CustomerAppRedirect />
       <header className="border-b p-5">
         <Link href="/" className="text-lg font-bold">
           Bladiq
@@ -43,6 +42,7 @@ export default async function CustomerAppHomePage({
       </header>
 
       <div className="flex flex-col gap-6 p-5">
+        {!hasFilter && <LastVisitedCard />}
         <AppSearchBar placeholder={t("searchPlaceholder")} initialQuery={q} />
         <CategoryPills active={category} />
 
