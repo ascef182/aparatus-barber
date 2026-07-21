@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { retrieveClaimableCheckoutSession } from "@/lib/services/subscription-claim-service";
+import { listOrganizationsForUser } from "@/lib/services/member-service";
+import { getTenantUrl } from "@/lib/tenant-host";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { Button } from "@/app/_components/ui/button";
 import { ClaimAccountForm } from "./claim-account-form";
@@ -39,12 +41,16 @@ function InvalidSession({
   );
 }
 
+const PLAN_SLUGS = ["starter", "growth", "pro"] as const;
+const PLAN_BY_SLUG = { starter: "STARTER", growth: "GROWTH", pro: "PRO" } as const;
+
 export default async function OnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ session_id?: string; plan?: string }>;
 }) {
-  const { session_id: sessionId } = await searchParams;
+  const { session_id: sessionId, plan: rawPlan } = await searchParams;
+  const planSlug = PLAN_SLUGS.find((slug) => slug === rawPlan?.toLowerCase());
 
   // Sem session_id: cadastro grátis (funil /sign-up, sem Checkout Stripe).
   // Logado sem organização ainda -> wizard direto; deslogado -> /sign-up
@@ -52,11 +58,23 @@ export default async function OnboardingPage({
   if (!sessionId) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user) {
-      redirect("/sign-up");
+      redirect(planSlug ? `/sign-up?plan=${planSlug}` : "/sign-up");
     }
+
+    // Defesa em profundidade: quem já tem organização não deve ver o wizard
+    // de novo (ex.: chegou aqui direto, sem passar pelo callbackURL correto
+    // do botão do Google em /sign-in). Mesma lógica de app/sign-in/page.tsx.
+    const memberships = await listOrganizationsForUser(session.user.id);
+    if (memberships.length === 1) {
+      redirect(getTenantUrl(memberships[0]!.organization.slug, "/dashboard"));
+    }
+    if (memberships.length > 1) {
+      redirect("/sign-in");
+    }
+
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <OnboardingWizardForm />
+        <OnboardingWizardForm intendedPlan={planSlug ? PLAN_BY_SLUG[planSlug] : undefined} />
       </main>
     );
   }

@@ -7,6 +7,7 @@ import { listOrganizationsForUser } from "@/lib/services/member-service";
 import { getTenantUrl } from "@/lib/tenant-host";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { Button } from "@/app/_components/ui/button";
+import { AuthSplitLayout } from "@/app/_components/auth-split-layout";
 import { SignInForm } from "./sign-in-form";
 
 export default async function SignInPage() {
@@ -15,9 +16,9 @@ export default async function SignInPage() {
 
   if (!session?.user) {
     return (
-      <main className="flex min-h-screen items-center justify-center p-6">
+      <AuthSplitLayout quote={t("quote")} quoteAuthor={t("quoteAuthor")}>
         <SignInForm />
-      </main>
+      </AuthSplitLayout>
     );
   }
 
