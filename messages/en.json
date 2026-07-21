@@ -168,7 +168,27 @@
       "previous": "Previous",
       "today": "Today",
       "next": "Next",
-      "complete": "Complete", "noShow": "No-show", "recordPayment": "Record payment", "completed": "Appointment completed.", "noShowMarked": "No-show recorded.", "paymentRecorded": "Payment recorded.", "operationError": "Could not update the appointment.", "noAppointments": "No appointments"
+      "complete": "Complete", "noShow": "No-show", "recordPayment": "Record payment", "completed": "Appointment completed.", "noShowMarked": "No-show recorded.", "paymentRecorded": "Payment recorded.", "operationError": "Could not update the appointment.", "noAppointments": "No appointments",
+      "addWalkIn": "Add walk-in",
+      "newBooking": {
+        "title": "New booking",
+        "chooseService": "Service",
+        "chooseStaff": "Staff",
+        "chooseDate": "Date",
+        "loadingSlots": "Loading slots…",
+        "noSlots": "No slots available for this date.",
+        "slotsError": "Could not load slots. Try again.",
+        "continue": "Continue",
+        "back": "Back",
+        "namePlaceholder": "Customer name",
+        "emailPlaceholder": "Email (optional)",
+        "phonePlaceholder": "Phone (optional)",
+        "contactRequired": "Enter the customer's email or phone.",
+        "confirm": "Create booking",
+        "creating": "Creating…",
+        "created": "Booking created.",
+        "createError": "Could not create the booking."
+      }
     },
     "overview": { "businessPulse": "Business pulse", "operationsPulse": "Operations pulse", "title": "Overview", "ownerDescription": "What is happening in your shop, with clear numbers for the next decision.", "managerDescription": "Follow the operational pace and keep the team aligned.", "today": "Today", "days": "{count} days", "received": "Revenue received", "planned": "Planned revenue", "customers": "Customers", "completed": "Completed", "netOfRefunds": "Net of refunds", "validBookings": "Valid bookings", "uniqueInPeriod": "Unique in period", "fromBookings": "from {count} bookings", "appointments": "Appointments", "noShows": "No-shows", "pendingPayments": "Pending payments", "inPeriod": "In period", "noShowCount": "{count} no-shows", "needAttention": "Need attention", "revenueEvolution": "Revenue evolution", "dailyVolume": "Daily volume", "chartDescription": "Planned and received in the selected period.", "dailyVolumeDescription": "Bookings and completed appointments.", "teamPerformance": "Team performance", "teamPerformanceDescription": "Completed appointments in the period.", "completedShort": "completed", "noData": "No data in this period yet.", "attention": "Needs attention", "openAgenda": "Open agenda", "allClear": "No pending payments in this period.", "nextStep": "Next step", "noShowPrompt": "There are no-shows in this period. Use the records to identify customers who need earlier confirmation.", "healthyPrompt": "Operations are on track. Follow the Agenda to anticipate upcoming appointments.", "viewAgenda": "View agenda" },
     "billing": {

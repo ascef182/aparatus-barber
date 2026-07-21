@@ -1,8 +1,9 @@
 import { addMinutes } from "date-fns";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getAvailableSlots } from "@/lib/scheduling/availability";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
-import { findOrCreateGuestCustomer } from "@/lib/services/customer-service";
+import { findOrCreateCustomerForUser, findOrCreateGuestCustomer } from "@/lib/services/customer-service";
 import { getResolvedRules } from "@/lib/services/settings-service";
 import { enqueueBookingNotification } from "@/lib/notifications";
 import { checkCancellation } from "@/lib/rules/policies/cancellation";
@@ -13,9 +14,33 @@ export type CreateBookingInput = {
   serviceId: string;
   staffId: string;
   startAt: Date;
-  customer: { name: string; email: string; phone?: string; locale?: string };
   source?: "WEB" | "DASHBOARD";
-};
+} & (
+  | { customer: { name: string; email?: string; phone?: string; locale?: string }; customerUser?: undefined }
+  // Cliente logado na área de conta (app/t/[slug]/account) — identidade vem
+  // da sessão (ctx.user, resolvido pelo customerActionClient), nunca de
+  // input do cliente, o que descarta o risco de spoofing que
+  // findOrCreateGuestCustomer precisa guardar contra no wizard sem login.
+  | { customerUser: { id: string; name: string; email: string }; customer?: undefined }
+);
+
+const SLOT_TAKEN_MESSAGE = "Este horário não está mais disponível.";
+
+/**
+ * Invalidação de cache do dashboard é best-effort: fora do lifecycle de uma
+ * request Next real (Server Action/Route Handler) — como nos testes de
+ * integração, que chamam createBooking()/confirmBookingFromCheckoutSession()
+ * diretamente — revalidatePath lança "static generation store missing".
+ * Nunca deixamos isso derrubar a criação/confirmação do booking em si.
+ */
+function revalidateBookingCaches() {
+  try {
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/agenda");
+  } catch {
+    // sem request store ativo (ex.: chamada direta em teste/script) — ok, ignora.
+  }
+}
 
 /** Server-only booking boundary used by the public wizard and dashboard. */
 export async function createBooking(input: CreateBookingInput) {
@@ -39,45 +64,61 @@ export async function createBooking(input: CreateBookingInput) {
     dateISO: input.startAt.toISOString().slice(0, 10),
   });
   if (!slots.some((slot) => slot.startAt.getTime() === input.startAt.getTime())) {
-    throw new Error("Este horário não está mais disponível.");
+    throw new Error(SLOT_TAKEN_MESSAGE);
   }
 
+  const isDashboardBooking = input.source === "DASHBOARD";
   const paymentMode = service.paymentMode ?? rules.paymentMode;
-  const requiresOnlinePayment = paymentMode !== "ON_SITE";
-  const customer = await findOrCreateGuestCustomer(input.customer);
+  const requiresOnlinePayment = !isDashboardBooking && paymentMode !== "ON_SITE";
+  const customer = input.customerUser
+    ? await findOrCreateCustomerForUser(input.customerUser)
+    : await findOrCreateGuestCustomer(input.customer);
   const totalMinutes = service.bufferBeforeMinutes + service.durationMinutes + service.bufferAfterMinutes;
   const priceInCents = service.priceInCents;
   const chargeAmount = paymentMode === "DEPOSIT"
     ? Math.round(priceInCents * (service.depositPercent ?? 0) / 100)
     : priceInCents;
 
-  const booking = await db.booking.create({
-    data: {
-      organizationId,
-      locationId: staff.locationId,
-      staffId: staff.id,
-      serviceId: service.id,
-      customerId: customer.id,
-      startAt: input.startAt,
-      endAt: addMinutes(input.startAt, totalMinutes),
-      status: requiresOnlinePayment ? "PENDING_PAYMENT" : "CONFIRMED",
-      source: input.source ?? "WEB",
-      priceInCents,
-      currency: service.currency,
-      paymentMode,
-      paymentStatus: requiresOnlinePayment ? "PENDING" : "NONE",
-      paymentReceivedInCents: 0,
-      onlinePaymentAmountInCents: requiresOnlinePayment ? chargeAmount : 0,
-      expiresAt: requiresOnlinePayment ? addMinutes(new Date(), 30) : null,
-      notes: chargeAmount === priceInCents ? null : `online_amount=${chargeAmount}`,
-    },
-  });
+  let booking;
+  try {
+    booking = await db.booking.create({
+      data: {
+        organizationId,
+        locationId: staff.locationId,
+        staffId: staff.id,
+        serviceId: service.id,
+        customerId: customer.id,
+        startAt: input.startAt,
+        endAt: addMinutes(input.startAt, totalMinutes),
+        status: requiresOnlinePayment ? "PENDING_PAYMENT" : "CONFIRMED",
+        source: input.source ?? "WEB",
+        priceInCents,
+        currency: service.currency,
+        paymentMode,
+        paymentStatus: requiresOnlinePayment ? "PENDING" : "NONE",
+        paymentReceivedInCents: 0,
+        onlinePaymentAmountInCents: requiresOnlinePayment ? chargeAmount : 0,
+        expiresAt: requiresOnlinePayment ? addMinutes(new Date(), 30) : null,
+        notes: chargeAmount === priceInCents ? null : `online_amount=${chargeAmount}`,
+      },
+    });
+  } catch (error) {
+    // A pré-checagem via getAvailableSlots não é atômica com o insert — se
+    // duas requisições passarem por ela para o mesmo slot, a constraint GIST
+    // do banco (booking_no_overlap) rejeita a segunda. Sem este catch, a
+    // mensagem crua do Postgres vazaria pro cliente final.
+    if (error instanceof Error && /exclusion constraint/i.test(error.message)) {
+      throw new Error(SLOT_TAKEN_MESSAGE);
+    }
+    throw error;
+  }
   if (!requiresOnlinePayment) {
     await enqueueBookingNotification({ bookingId: booking.id, type: "confirmation" });
     await enqueueBookingNotification({ bookingId: booking.id, type: "reminder" }, Math.max(0, booking.startAt.getTime() - Date.now() - 24 * 60 * 60 * 1000));
   }
   logger({ organizationId, bookingId: booking.id }).info({ status: booking.status }, "booking.created");
   await logAuditEvent({ entity: "Booking", action: "BOOKING_CREATED", entityId: booking.id });
+  revalidateBookingCaches();
   return booking;
 }
 
@@ -113,6 +154,17 @@ export function listBookings(range?: { from: Date; to: Date }) {
     where: range ? { startAt: { gte: range.from, lt: range.to } } : undefined,
     include: { service: true, customer: true, staff: true },
     orderBy: { startAt: "asc" },
+  });
+}
+
+/** Reservas do cliente logado na área de conta — sempre filtradas pelo
+ * customerId já resolvido da sessão (ver customerActionClient), nunca por
+ * um id vindo do cliente. */
+export function listBookingsForCustomer(customerId: string) {
+  return db.booking.findMany({
+    where: { customerId },
+    include: { service: true, staff: true },
+    orderBy: { startAt: "desc" },
   });
 }
 
@@ -153,6 +205,7 @@ export async function confirmBookingFromCheckoutSession(input: {
         entityId: booking.id,
         organizationId: booking.organizationId,
       });
+      revalidateBookingCaches();
     }
     return booking;
   });

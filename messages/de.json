@@ -168,7 +168,27 @@
       "previous": "Zurück",
       "today": "Heute",
       "next": "Weiter",
-      "complete": "Abschließen", "noShow": "Nicht erschienen", "recordPayment": "Zahlung erfassen", "completed": "Termin abgeschlossen.", "noShowMarked": "Nicht-Erscheinen erfasst.", "paymentRecorded": "Zahlung erfasst.", "operationError": "Termin konnte nicht aktualisiert werden.", "noAppointments": "Keine Termine"
+      "complete": "Abschließen", "noShow": "Nicht erschienen", "recordPayment": "Zahlung erfassen", "completed": "Termin abgeschlossen.", "noShowMarked": "Nicht-Erscheinen erfasst.", "paymentRecorded": "Zahlung erfasst.", "operationError": "Termin konnte nicht aktualisiert werden.", "noAppointments": "Keine Termine",
+      "addWalkIn": "Laufkunde hinzufügen",
+      "newBooking": {
+        "title": "Neue Buchung",
+        "chooseService": "Dienstleistung",
+        "chooseStaff": "Mitarbeiter",
+        "chooseDate": "Datum",
+        "loadingSlots": "Zeiten werden geladen…",
+        "noSlots": "Keine verfügbaren Zeiten für dieses Datum.",
+        "slotsError": "Zeiten konnten nicht geladen werden. Bitte erneut versuchen.",
+        "continue": "Weiter",
+        "back": "Zurück",
+        "namePlaceholder": "Name des Kunden",
+        "emailPlaceholder": "E-Mail (optional)",
+        "phonePlaceholder": "Telefon (optional)",
+        "contactRequired": "Bitte E-Mail oder Telefon des Kunden angeben.",
+        "confirm": "Buchung erstellen",
+        "creating": "Wird erstellt…",
+        "created": "Buchung erstellt.",
+        "createError": "Buchung konnte nicht erstellt werden."
+      }
     },
     "overview": { "businessPulse": "Geschäftsüberblick", "operationsPulse": "Betriebsüberblick", "title": "Übersicht", "ownerDescription": "Was in Ihrem Salon passiert, mit klaren Zahlen für die nächste Entscheidung.", "managerDescription": "Behalten Sie den Betrieb im Blick und stimmen Sie das Team ab.", "today": "Heute", "days": "{count} Tage", "received": "Erhaltene Einnahmen", "planned": "Geplante Einnahmen", "customers": "Kunden", "completed": "Abgeschlossen", "netOfRefunds": "Nach Erstattungen", "validBookings": "Gültige Termine", "uniqueInPeriod": "Einzigartig im Zeitraum", "fromBookings": "von {count} Terminen", "appointments": "Termine", "noShows": "Nicht erschienen", "pendingPayments": "Ausstehende Zahlungen", "inPeriod": "Im Zeitraum", "noShowCount": "{count} Ausfälle", "needAttention": "Benötigen Aufmerksamkeit", "revenueEvolution": "Umsatzentwicklung", "dailyVolume": "Tagesvolumen", "chartDescription": "Geplant und erhalten im ausgewählten Zeitraum.", "dailyVolumeDescription": "Termine und abgeschlossene Behandlungen.", "teamPerformance": "Teamleistung", "teamPerformanceDescription": "Abgeschlossene Behandlungen im Zeitraum.", "completedShort": "abgeschlossen", "noData": "Noch keine Daten in diesem Zeitraum.", "attention": "Benötigt Aufmerksamkeit", "openAgenda": "Agenda öffnen", "allClear": "Keine ausstehenden Zahlungen in diesem Zeitraum.", "nextStep": "Nächster Schritt", "noShowPrompt": "Es gibt Ausfälle im Zeitraum. Nutzen Sie die Daten für frühere Bestätigungen.", "healthyPrompt": "Der Betrieb läuft gut. Nutzen Sie die Agenda für kommende Termine.", "viewAgenda": "Agenda ansehen" },
     "billing": {

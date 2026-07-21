@@ -168,7 +168,27 @@
       "previous": "Anterior",
       "today": "Hoje",
       "next": "Próxima",
-      "complete": "Concluir", "noShow": "Falta", "recordPayment": "Baixar pagamento", "completed": "Atendimento concluído.", "noShowMarked": "Falta registrada.", "paymentRecorded": "Pagamento registrado.", "operationError": "Não foi possível atualizar o agendamento.", "noAppointments": "Sem agendamentos"
+      "complete": "Concluir", "noShow": "Falta", "recordPayment": "Baixar pagamento", "completed": "Atendimento concluído.", "noShowMarked": "Falta registrada.", "paymentRecorded": "Pagamento registrado.", "operationError": "Não foi possível atualizar o agendamento.", "noAppointments": "Sem agendamentos",
+      "addWalkIn": "Adicionar walk-in",
+      "newBooking": {
+        "title": "Nova reserva",
+        "chooseService": "Serviço",
+        "chooseStaff": "Profissional",
+        "chooseDate": "Data",
+        "loadingSlots": "Carregando horários…",
+        "noSlots": "Nenhum horário disponível para esta data.",
+        "slotsError": "Não foi possível carregar os horários. Tente novamente.",
+        "continue": "Continuar",
+        "back": "Voltar",
+        "namePlaceholder": "Nome do cliente",
+        "emailPlaceholder": "E-mail (opcional)",
+        "phonePlaceholder": "Telefone (opcional)",
+        "contactRequired": "Informe e-mail ou telefone do cliente.",
+        "confirm": "Criar reserva",
+        "creating": "Criando…",
+        "created": "Reserva criada.",
+        "createError": "Não foi possível criar a reserva."
+      }
     },
     "overview": { "businessPulse": "Pulso do negócio", "operationsPulse": "Pulso da operação", "title": "Visão geral", "ownerDescription": "O que está acontecendo na sua barbearia, com números claros para decidir o próximo passo.", "managerDescription": "Acompanhe o ritmo da operação e mantenha a equipe alinhada.", "today": "Hoje", "days": "{count} dias", "received": "Receita recebida", "planned": "Receita prevista", "customers": "Clientes", "completed": "Concluídos", "netOfRefunds": "Líquido de reembolsos", "validBookings": "Agendamentos válidos", "uniqueInPeriod": "Únicos no período", "fromBookings": "de {count} agendamentos", "appointments": "Agendamentos", "noShows": "Faltas", "pendingPayments": "Pagamentos pendentes", "inPeriod": "No período", "noShowCount": "{count} faltas", "needAttention": "Exigem atenção", "revenueEvolution": "Evolução da receita", "dailyVolume": "Volume diário", "chartDescription": "Previsto e recebido no período selecionado.", "dailyVolumeDescription": "Agendamentos e atendimentos concluídos.", "teamPerformance": "Desempenho da equipe", "teamPerformanceDescription": "Atendimentos concluídos no período.", "completedShort": "concluídos", "noData": "Ainda não há dados no período.", "attention": "Precisa de atenção", "openAgenda": "Abrir agenda", "allClear": "Nenhum pagamento pendente neste período.", "nextStep": "Próximo passo", "noShowPrompt": "Há faltas no período. Use os registros para identificar clientes que precisam de confirmação antecipada.", "healthyPrompt": "A operação está em ordem. Acompanhe a Agenda para antecipar os próximos atendimentos.", "viewAgenda": "Ver agenda" },
     "billing": {

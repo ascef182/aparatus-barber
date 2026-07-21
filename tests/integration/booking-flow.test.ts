@@ -134,6 +134,41 @@ describe("fluxo de booking", () => {
     expect(String(error.message)).toMatch(/exclusion constraint/i);
   });
 
+  test("createBooking concorrente no mesmo slot: um sucesso, um erro amigável (não a mensagem crua do Postgres)", async () => {
+    const attempt = () =>
+      runWithTenant(org.id, () =>
+        createBooking({
+          serviceId: onSiteServiceId,
+          staffId,
+          startAt: at(13),
+          customer: { name: "Guest Race", email: "guestrace@example.com" },
+        }),
+      );
+    const results = await Promise.allSettled([attempt(), attempt()]);
+    const fulfilled = results.filter((r) => r.status === "fulfilled");
+    const rejected = results.filter((r) => r.status === "rejected");
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    const error = (rejected[0] as PromiseRejectedResult).reason;
+    expect(String(error.message)).toBe("Este horário não está mais disponível.");
+    expect(String(error.message)).not.toMatch(/exclusion constraint/i);
+  });
+
+  test("reserva DASHBOARD (walk-in) confirma direto mesmo para serviço de pré-pagamento", async () => {
+    const booking = await runWithTenant(org.id, () =>
+      createBooking({
+        serviceId: prepaidServiceId,
+        staffId,
+        startAt: at(17),
+        customer: { name: "Walk-in", phone: "+4915112345" },
+        source: "DASHBOARD",
+      }),
+    );
+    expect(booking.status).toBe("CONFIRMED");
+    expect(booking.paymentStatus).toBe("NONE");
+    expect(booking.source).toBe("DASHBOARD");
+  });
+
   test("expireStaleHolds cancela hold expirado e libera o slot", async () => {
     const booking = await runWithTenant(org.id, () =>
       db.booking.create({

@@ -64,6 +64,19 @@ describe("RBAC de actions — getMembership (DB) + hasPermission", () => {
     const membership = await getMembership(org.id, randomUUID());
     expect(membership).toBeNull();
   });
+
+  test("professional não passa em booking:create (o que create-manual-booking exige) — só read_own/update/cancel", async () => {
+    const membership = await getMembership(org.id, professionalUserId);
+    expect(membership).not.toBeNull();
+    expect(hasPermission(membership!.role, { booking: ["create"] })).toBe(false);
+    expect(hasPermission(membership!.role, { booking: ["read_own"] })).toBe(true);
+  });
+
+  test("owner passa em booking:create", async () => {
+    const membership = await getMembership(org.id, ownerUserId);
+    expect(membership).not.toBeNull();
+    expect(hasPermission(membership!.role, { booking: ["create"] })).toBe(true);
+  });
 });
 
 describe("organizationId do cliente é sempre ignorado pelo input schema da action", () => {
