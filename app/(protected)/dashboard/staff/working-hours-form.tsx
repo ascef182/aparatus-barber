@@ -44,8 +44,8 @@ export function WorkingHoursForm({
   return (
     <form className="flex flex-col gap-2" onSubmit={submit}>
       {WEEKDAY_KEYS.map((key, weekday) => (
-        <div key={weekday} className="flex items-center gap-2 text-sm">
-          <label className="flex w-28 items-center gap-2">
+        <div key={weekday} className="flex flex-wrap items-center gap-2 text-sm">
+          <label className="flex w-full items-center gap-2 sm:w-28">
             <input
               type="checkbox"
               checked={days[weekday]!.enabled}

@@ -25,9 +25,9 @@ export function ClosedPeriodForm() {
       }}
     >
       <input className="rounded-md border p-2" placeholder={t("reasonPlaceholder")} value={name} onChange={(e) => setName(e.target.value)} required />
-      <div className="flex gap-2">
-        <input type="datetime-local" className="rounded-md border p-2" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
-        <input type="datetime-local" className="rounded-md border p-2" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
+        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
       </div>
       <button type="submit" disabled={action.isPending} className="w-fit rounded-md border px-3 py-2 text-sm">
         {action.isPending ? "..." : t("closePeriodSubmit")}

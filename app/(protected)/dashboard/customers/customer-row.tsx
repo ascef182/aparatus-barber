@@ -8,8 +8,10 @@ import { updateCustomer } from "@/app/_actions/manage-operations";
 
 export function CustomerRow({
   customer,
+  labels,
 }: {
   customer: { id: string; name: string; email: string | null; phone: string | null; notes: string | null; isBlocked: boolean };
+  labels: { contact: string; status: string };
 }) {
   const t = useTranslations("dashboard.customers");
   const [editing, setEditing] = useState(false);
@@ -22,14 +24,20 @@ export function CustomerRow({
 
   if (!editing) {
     return (
-      <tr className="border-t">
-        <td className="p-3">
+      <tr className="block border-t p-3 md:table-row md:p-0">
+        <td className="block py-1 md:table-cell md:p-3 md:py-3">
           <b>{customer.name}</b>
           {customer.notes && <p className="text-muted-foreground">{customer.notes}</p>}
         </td>
-        <td className="p-3">{customer.email ?? customer.phone ?? "—"}</td>
-        <td className="p-3">{customer.isBlocked ? t("blocked") : t("active")}</td>
-        <td className="p-3">
+        <td className="block py-1 md:table-cell md:p-3 md:py-3">
+          <span className="mr-1 font-medium text-muted-foreground md:hidden">{labels.contact}: </span>
+          {customer.email ?? customer.phone ?? "—"}
+        </td>
+        <td className="block py-1 md:table-cell md:p-3 md:py-3">
+          <span className="mr-1 font-medium text-muted-foreground md:hidden">{labels.status}: </span>
+          {customer.isBlocked ? t("blocked") : t("active")}
+        </td>
+        <td className="block py-1 md:table-cell md:p-3 md:py-3">
           <button type="button" className="text-xs underline" onClick={() => setEditing(true)}>
             {t("edit")}
           </button>
@@ -39,8 +47,8 @@ export function CustomerRow({
   }
 
   return (
-    <tr className="border-t bg-muted/20">
-      <td className="p-3" colSpan={4}>
+    <tr className="block border-t bg-muted/20 p-3 md:table-row md:p-0">
+      <td className="block md:table-cell md:p-3" colSpan={4}>
         <div className="flex flex-col gap-2">
           <textarea
             className="rounded-md border p-2 text-sm"

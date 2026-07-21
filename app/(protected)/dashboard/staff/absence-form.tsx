@@ -25,9 +25,9 @@ export function AbsenceForm({ staffId, onDone }: { staffId: string; onDone?: () 
         action.execute({ staffId, startAt: new Date(startAt), endAt: new Date(endAt), type });
       }}
     >
-      <div className="flex gap-2">
-        <input type="datetime-local" className="rounded-md border p-2" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
-        <input type="datetime-local" className="rounded-md border p-2" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
+        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
       </div>
       <select className="rounded-md border p-2" value={type} onChange={(e) => setType(e.target.value as typeof type)}>
         <option value="VACATION">{t("absenceVacation")}</option>

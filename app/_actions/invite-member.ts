@@ -42,6 +42,7 @@ export const inviteMember = staffWriteActionClient({ staff: ["manage"] })
       email: invitation.email,
       organizationName: ctx.organization.name,
       inviteUrl,
+      locale: ctx.organization.defaultLocale,
     });
     await logAuditEvent({
       entity: "Invitation",
