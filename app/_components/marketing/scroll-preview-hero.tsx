@@ -137,13 +137,13 @@ function TabScreen({ id }: { id: string }) {
 function PhonePanel({ id, title, subtitle }: { id: string; title: string; subtitle: string }) {
   const Icon = TAB_ICONS[id] ?? Clock;
   return (
-    <div className="relative mx-auto w-full max-w-[280px] px-2">
+    <div className="relative mx-auto w-full max-w-[300px] px-2">
       <div
         className="absolute inset-x-6 top-6 -z-10 h-40 rounded-full bg-primary/25 blur-3xl"
         aria-hidden
       />
       <div className="overflow-hidden rounded-[2.5rem] bg-neutral-900 p-2 shadow-2xl shadow-black/50 ring-1 ring-white/10">
-        <div className="flex h-[clamp(440px,52vh,580px)] flex-col overflow-hidden rounded-[2rem] bg-black px-5 ring-1 ring-white/10">
+        <div className="flex h-[clamp(380px,42vh,460px)] flex-col overflow-hidden rounded-[2rem] bg-black px-5 ring-1 ring-white/10">
           <div className="flex items-center justify-between pt-3 pb-1 text-xs text-white">
             <span className="font-semibold">9:41</span>
             <div className="flex items-end gap-1">
@@ -185,7 +185,7 @@ function TabRail({
     <div
       role="tablist"
       aria-label="Preview do produto"
-      className="flex shrink-0 gap-2 overflow-x-auto [scrollbar-width:none] md:flex-col md:overflow-visible [&::-webkit-scrollbar]:hidden"
+      className="flex w-full shrink-0 flex-wrap justify-center gap-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {tabs.map((t, i) => {
         const isActive = i === active;
@@ -197,10 +197,10 @@ function TabRail({
             aria-selected={isActive}
             onClick={() => onSelect(i)}
             className={cn(
-              "whitespace-nowrap rounded-xl px-4 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
+              "whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
               isActive
                 ? "bg-white/10 font-semibold text-white ring-1 ring-white/15"
-                : "font-medium text-neutral-400 hover:bg-white/5 hover:text-white",
+                : "text-neutral-400 hover:bg-white/5 hover:text-white",
             )}
           >
             {t.label}
@@ -213,7 +213,7 @@ function TabRail({
 
 function PreviewStack({ tabs, active }: { tabs: PreviewTab[]; active: number }) {
   return (
-    <div className="relative w-full min-w-0 md:flex-1">
+    <div className="relative w-full min-w-0">
       {tabs.map((t, i) => {
         const isActive = i === active;
         return (
@@ -310,8 +310,13 @@ export function ScrollPreviewHero({
         <div className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(87,175,120,0.24),transparent_65%)]" aria-hidden />
         <div className="mx-auto flex w-full max-w-7xl flex-col justify-center px-6 py-10 lg:py-14">
           <div className="flex flex-col-reverse justify-center gap-8 md:flex-row md:items-start md:gap-10 xl:gap-[72px]">
-            {/* abas + preview do celular — md:mt-11 alinha o topo com o <h1>, compensando a badge acima dele na coluna de texto */}
-            <div className="flex min-w-0 flex-col gap-5 md:mt-11 md:w-[340px] md:shrink-0 md:flex-row md:gap-4">
+            {/* abas + preview do celular — pílulas horizontais em cima do
+                celular (não mais uma coluna ao lado dele disputando
+                largura), pra dar a largura toda pro mockup em vez de
+                espremê-lo contra a régua de abas verticais.
+                md:mt-11 alinha o topo com o <h1>, compensando a badge acima
+                dele na coluna de texto */}
+            <div className="flex min-w-0 flex-col items-center gap-5 md:mt-11 md:w-[320px] md:shrink-0">
               <TabRail tabs={tabs} active={active} onSelect={handleSelect} />
               <PreviewStack tabs={tabs} active={active} />
             </div>
