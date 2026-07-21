@@ -26,11 +26,14 @@ function flag(name: string): boolean {
 }
 
 function assertLocalDatabase() {
-  const url = process.env.DATABASE_URL ?? "";
+  // RUNTIME_DATABASE_URL é o que @/lib/prisma (usado abaixo) de fato conecta
+  // -- DATABASE_URL (role owner) só existe para migrações. Fallback para
+  // DATABASE_URL cobre o período de transição antes do Deploy B.
+  const url = process.env.RUNTIME_DATABASE_URL ?? process.env.DATABASE_URL ?? "";
   const looksLocal = /localhost|127\.0\.0\.1|::1/i.test(url);
   if (!looksLocal && !flag("force")) {
     throw new Error(
-      `DATABASE_URL não parece apontar para um banco local (${url.replace(/:[^:@]*@/, ":***@")}). ` +
+      `O banco de runtime não parece ser local (${url.replace(/:[^:@]*@/, ":***@")}). ` +
         "Passe --force se tiver certeza de que quer rodar mesmo assim.",
     );
   }

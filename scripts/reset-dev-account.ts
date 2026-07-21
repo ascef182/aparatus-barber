@@ -10,7 +10,19 @@
  * Refuses to run against anything that doesn't look like a local DB unless
  * --force is also passed.
  */
-import { prisma } from "@/lib/prisma";
+import "dotenv/config";
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+// Conecta direto como a role owner (DATABASE_URL), não pela singleton de
+// `@/lib/prisma` (que conecta como app_runtime, restrita por RLS -- ver
+// prisma/migrations/20260720120000_add_rls_policies). Este script é
+// ferramenta administrativa de dev, não tráfego de runtime do app: apagar
+// Booking/TenantImpressum/AuditLog de qualquer tenant é exatamente o tipo
+// de operação que a role de runtime não pode (nem deve) fazer.
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 
 function arg(name: string): string | undefined {
   const prefix = `--${name}=`;
