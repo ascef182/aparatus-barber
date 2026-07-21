@@ -1,10 +1,13 @@
-"use client";
-
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { startPlanCheckout } from "@/app/_actions/start-plan-checkout";
+import Link from "next/link";
 import { Button } from "@/app/_components/ui/button";
+import { getRootUrl } from "@/lib/tenant-host";
 
+/**
+ * Leva direto para o cadastro grátis (sem Stripe Checkout aqui) — o plano
+ * escolhido vai junto na query string e é lembrado até a hora de assinar de
+ * verdade, depois do período de teste (ver app/_actions/create-organization.ts
+ * e app/(protected)/dashboard/billing/billing-controls.tsx).
+ */
 export function PricingCtaButton({
   plan,
   label,
@@ -12,18 +15,9 @@ export function PricingCtaButton({
   plan: "STARTER" | "GROWTH" | "PRO";
   label: string;
 }) {
-  const { execute, isPending } = useAction(startPlanCheckout, {
-    onSuccess: ({ data }) => {
-      if (data?.url) window.location.assign(data.url);
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError ?? "Não foi possível iniciar o checkout.");
-    },
-  });
-
   return (
-    <Button className="w-full" disabled={isPending} onClick={() => execute({ plan })}>
-      {isPending ? "..." : label}
+    <Button asChild className="w-full">
+      <Link href={getRootUrl(`/sign-up?plan=${plan.toLowerCase()}`)}>{label}</Link>
     </Button>
   );
 }
