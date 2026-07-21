@@ -5,7 +5,7 @@
   },
   "pricing": {
     "title": "Online-Buchung für Ihren Barbershop",
-    "subtitle": "14 Tage kostenlos. Jederzeit kündbar.",
+    "subtitle": "7 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
     "starterName": "Starter",
     "starterTagline": "Für den Einstieg",
     "growthName": "Growth",
@@ -18,7 +18,7 @@
     "staff": "{count, plural, one {# Mitarbeiter} other {# Mitarbeiter}}",
     "unlimitedStaff": "Unbegrenzte Mitarbeiter",
     "cta": "Kostenlos testen",
-    "trialNote": "Karte für die Testphase erforderlich — keine Abbuchung in den ersten 14 Tagen.",
+    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 7 Testtagen weiter nutzen möchten.",
     "popularBadge": "Am beliebtesten",
     "featureOnlineBooking": "Unbegrenzte Online-Buchungen",
     "featureStripePayments": "Zahlungen über Stripe",
@@ -87,7 +87,9 @@
     "emailInUse": "Es existiert bereits ein Konto mit dieser E-Mail.",
     "goToSignIn": "Anmelden",
     "alreadyHavePrefix": "Bereits ein Konto?",
-    "genericError": "Etwas ist schiefgelaufen."
+    "genericError": "Etwas ist schiefgelaufen.",
+    "quote": "Geben Sie Ihrem Barbershop das Buchungserlebnis, das er verdient.",
+    "quoteAuthor": "Bladiq"
   },
   "tenant": {
     "comingSoon": "Online-Buchung demnächst verfügbar.",
@@ -180,6 +182,7 @@
       "saasSubscription": "SaaS-Abonnement",
       "manageSubscription": "Abonnement verwalten",
       "subscribeTo": "{plan} abonnieren",
+      "subscribeToChosen": "{plan} abonnieren (Ihr Plan)",
       "customerPayments": "Kundenzahlungen",
       "customerPaymentsDesc": "Verbinden Sie Ihr Stripe-Express-Konto, um Anzahlungen und Vorauszahlungen zu akzeptieren.",
       "connectStripe": "Stripe verbinden",
@@ -467,7 +470,28 @@
       "trustGdpr": "DSGVO-konform",
       "trustStripe": "Zahlungen über Stripe",
       "trustLanguages": "Deutsch · Englisch · Portugiesisch",
-      "previewCaption": "Produktvorschau folgt in Kürze"
+      "tabs": {
+        "booking": {
+          "label": "Buchung",
+          "title": "Termin wählen",
+          "subtitle": "Kunden buchen in wenigen Klicks — kein Konto nötig."
+        },
+        "availability": {
+          "label": "Verfügbarkeit",
+          "title": "Immer synchron",
+          "subtitle": "Arbeitszeiten, Abwesenheiten und Schließzeiten aktualisieren sich in Echtzeit."
+        },
+        "payments": {
+          "label": "Zahlungen",
+          "title": "Bezahlt werden, wie Sie wollen",
+          "subtitle": "Anzahlung, volle Vorauszahlung oder vor Ort — pro Service wählbar."
+        },
+        "team": {
+          "label": "Team",
+          "title": "Alle an einem Ort",
+          "subtitle": "Team mit rollenbasiertem Zugriff auf Termine und Einstellungen einladen."
+        }
+      }
     },
     "features": {
       "title": "Alles, was Ihr Barbershop braucht",
@@ -488,7 +512,7 @@
     "howItWorks": {
       "title": "So funktioniert's",
       "step1Title": "1. Kostenlose Testphase starten",
-      "step1Body": "14 Tage kostenlos, Kreditkarte erforderlich, aber keine Abbuchung.",
+      "step1Body": "7 Tage kostenlos, keine Kreditkarte nötig.",
       "step2Title": "2. Barbershop einrichten",
       "step2Body": "Team, Leistungen und Öffnungszeiten hinzufügen.",
       "step3Title": "3. Ihren Link teilen",
@@ -496,8 +520,8 @@
     },
     "faq": {
       "title": "Häufige Fragen",
-      "q1": "Brauche ich eine Kreditkarte für die kostenlose Testphase?",
-      "a1": "Ja, aber Sie werden während der 14 Testtage nicht belastet. Kündigen Sie jederzeit vor Ablauf der Frist.",
+      "q1": "Brauche ich eine Kreditkarte, um zu starten?",
+      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
@@ -507,9 +531,22 @@
       "q5": "Funktioniert es in anderen Sprachen?",
       "a5": "Ja, das Dashboard und die Buchungsseite sind auf Deutsch, Englisch und Portugiesisch verfügbar."
     },
+    "mobileShowcase": {
+      "title": "Ihr Barbershop, in jeder Hosentasche",
+      "subtitle": "Dasselbe Dashboard, das Ihr Team am Desktop nutzt, einsatzbereit auf jedem Handy — Termine prüfen, Kunden anlegen oder Buchungen bestätigen, von überall.",
+      "quickActions": "Schnellzugriff",
+      "features": {
+        "overview": "Übersicht",
+        "agenda": "Termine",
+        "services": "Leistungen",
+        "customers": "Kunden",
+        "staff": "Team",
+        "more": "Mehr"
+      }
+    },
     "finalCta": {
       "title": "Bereit, Ihren Barbershop zu modernisieren?",
-      "subtitle": "Jetzt starten — 14 Tage kostenlos, unverbindlich.",
+      "subtitle": "Jetzt starten — 7 Tage kostenlos, keine Kreditkarte nötig.",
       "cta": "Kostenlos testen"
     },
     "footer": {
@@ -539,7 +576,9 @@
     "startFree": "Meinen Barbershop kostenlos erstellen",
     "pickShopTitle": "Wählen Sie Ihren Barbershop",
     "noAccountPrefix": "Noch kein Konto?",
-    "noAccountLink": "Kostenloses Konto erstellen"
+    "noAccountLink": "Kostenloses Konto erstellen",
+    "quote": "Jeder gute Haarschnitt beginnt mit einem guten Terminkalender.",
+    "quoteAuthor": "Bladiq"
   },
   "directory": {
     "find": {
@@ -552,6 +591,50 @@
       "backToCities": "← Alle Städte",
       "empty": "In dieser Stadt sind noch keine Unternehmen gelistet.",
       "viewBusiness": "Ansehen & buchen"
+    }
+  },
+  "emails": {
+    "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für moderne Barbershops.",
+    "genericFooter": "Bladiq — Online-Buchung für moderne Barbershops.",
+    "booking": {
+      "confirmation": {
+        "subject": "Gebucht! ✂️ {service} bei {organization}",
+        "heading": "Alles klar",
+        "body": "Ihr Termin für {service} bei {organization} ist bestätigt für {date}. Wir erinnern Sie rechtzeitig — bis dahin!"
+      },
+      "reminder": {
+        "subject": "Bis morgen — {service} bei {organization}",
+        "heading": "Bis bald!",
+        "body": "Kurze Erinnerung: Ihr Termin für {service} bei {organization} steht an — {date}."
+      },
+      "cancellation": {
+        "subject": "Ihr Termin wurde storniert",
+        "heading": "Termin storniert",
+        "body": "Ihr Termin für {service} bei {organization} am {date} wurde storniert. Sie können jederzeit gerne einen neuen Termin buchen."
+      },
+      "expired": {
+        "subject": "Ihre Reservierung ist abgelaufen",
+        "heading": "Der Termin ist weg",
+        "body": "Die Zahlung ist nicht rechtzeitig eingegangen, daher wurde Ihr reservierter Termin für {service} bei {organization} wieder freigegeben. Kein Problem — buchen Sie einfach erneut, wann es Ihnen passt."
+      }
+    },
+    "invitation": {
+      "subject": "{organization} hat Sie ins Team bei Bladiq eingeladen",
+      "heading": "Sie sind eingeladen!",
+      "body": "{organization} möchte, dass Sie dem Team bei Bladiq beitreten. Klicken Sie unten, um anzunehmen und Ihr Konto einzurichten.",
+      "cta": "Einladung annehmen"
+    },
+    "passwordReset": {
+      "subject": "Bladiq-Passwort zurücksetzen",
+      "heading": "Passwort zurücksetzen",
+      "body": "Klicken Sie unten, um ein neues Passwort festzulegen. Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren — Ihr Passwort ändert sich nicht.",
+      "cta": "Passwort zurücksetzen"
+    },
+    "emailVerification": {
+      "subject": "E-Mail für Bladiq bestätigen",
+      "heading": "E-Mail bestätigen",
+      "body": "Klicken Sie unten, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren. Wenn Sie kein Bladiq-Konto erstellt haben, können Sie diese E-Mail ignorieren.",
+      "cta": "E-Mail bestätigen"
     }
   }
 }

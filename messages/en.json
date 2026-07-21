@@ -5,7 +5,7 @@
   },
   "pricing": {
     "title": "Online booking for your barbershop",
-    "subtitle": "14 days free. Cancel anytime.",
+    "subtitle": "7 days free, no credit card required. Cancel anytime.",
     "starterName": "Starter",
     "starterTagline": "For getting started",
     "growthName": "Growth",
@@ -18,7 +18,7 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "Card required for the trial — no charge for the first 14 days.",
+    "trialNote": "No credit card required — add one only if you keep your shop after the 7-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
@@ -87,7 +87,9 @@
     "emailInUse": "An account with this email already exists.",
     "goToSignIn": "Sign in",
     "alreadyHavePrefix": "Already have an account?",
-    "genericError": "Something went wrong."
+    "genericError": "Something went wrong.",
+    "quote": "Give your barbershop the booking experience it deserves.",
+    "quoteAuthor": "Bladiq"
   },
   "tenant": {
     "comingSoon": "Online booking coming soon.",
@@ -180,6 +182,7 @@
       "saasSubscription": "SaaS subscription",
       "manageSubscription": "Manage subscription",
       "subscribeTo": "Subscribe to {plan}",
+      "subscribeToChosen": "Subscribe to {plan} (your plan)",
       "customerPayments": "Customer payments",
       "customerPaymentsDesc": "Connect your Stripe Express account to accept deposits and prepayments.",
       "connectStripe": "Connect Stripe",
@@ -467,7 +470,28 @@
       "trustGdpr": "GDPR-compliant",
       "trustStripe": "Payments via Stripe",
       "trustLanguages": "German · English · Portuguese",
-      "previewCaption": "Product preview coming soon"
+      "tabs": {
+        "booking": {
+          "label": "Booking",
+          "title": "Pick a time",
+          "subtitle": "Customers book in a few taps — no account needed."
+        },
+        "availability": {
+          "label": "Availability",
+          "title": "Always in sync",
+          "subtitle": "Working hours, absences, and closed periods update in real time."
+        },
+        "payments": {
+          "label": "Payments",
+          "title": "Get paid your way",
+          "subtitle": "Deposit, full prepayment, or pay on-site — you choose per service."
+        },
+        "team": {
+          "label": "Team",
+          "title": "Everyone in one place",
+          "subtitle": "Invite staff with role-based access to bookings and settings."
+        }
+      }
     },
     "features": {
       "title": "Everything your barbershop needs",
@@ -488,7 +512,7 @@
     "howItWorks": {
       "title": "How it works",
       "step1Title": "1. Start your free trial",
-      "step1Body": "14 days free, card required but no charge.",
+      "step1Body": "7 days free, no credit card required.",
       "step2Title": "2. Set up your shop",
       "step2Body": "Add your team, services, and working hours.",
       "step3Title": "3. Share your link",
@@ -496,8 +520,8 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "q1": "Do I need a credit card for the free trial?",
-      "a1": "Yes, but you won't be charged during the 14-day trial. Cancel anytime before it ends.",
+      "q1": "Do I need a credit card to start?",
+      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
@@ -507,9 +531,22 @@
       "q5": "Does it work in other languages?",
       "a5": "Yes, the dashboard and booking page are available in German, English, and Portuguese."
     },
+    "mobileShowcase": {
+      "title": "Your barbershop, in everyone's pocket",
+      "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone — check the schedule, add a customer, or confirm a booking from anywhere.",
+      "quickActions": "Quick actions",
+      "features": {
+        "overview": "Overview",
+        "agenda": "Schedule",
+        "services": "Services",
+        "customers": "Customers",
+        "staff": "Staff",
+        "more": "More"
+      }
+    },
     "finalCta": {
       "title": "Ready to modernize your barbershop?",
-      "subtitle": "Get started now — 14 days free, no commitment.",
+      "subtitle": "Get started now — 7 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {
@@ -539,7 +576,9 @@
     "startFree": "Create my barbershop for free",
     "pickShopTitle": "Choose your barbershop",
     "noAccountPrefix": "No account yet?",
-    "noAccountLink": "Create a free account"
+    "noAccountLink": "Create a free account",
+    "quote": "Every great cut starts with a great appointment book.",
+    "quoteAuthor": "Bladiq"
   },
   "directory": {
     "find": {
@@ -552,6 +591,50 @@
       "backToCities": "← All cities",
       "empty": "No businesses listed in this city yet.",
       "viewBusiness": "View & book"
+    }
+  },
+  "emails": {
+    "footer": "Sent by {organization} via Bladiq — online booking for modern barbershops.",
+    "genericFooter": "Bladiq — online booking for modern barbershops.",
+    "booking": {
+      "confirmation": {
+        "subject": "You're booked! ✂️ {service} at {organization}",
+        "heading": "You're all set",
+        "body": "Your {service} appointment at {organization} is confirmed for {date}. We'll send you a reminder before it's time — see you then!"
+      },
+      "reminder": {
+        "subject": "See you tomorrow — {service} at {organization}",
+        "heading": "See you soon!",
+        "body": "Just a friendly reminder: your {service} appointment at {organization} is coming up on {date}."
+      },
+      "cancellation": {
+        "subject": "Your appointment was cancelled",
+        "heading": "Booking cancelled",
+        "body": "Your {service} appointment at {organization} on {date} has been cancelled. Whenever you're ready, you're welcome to book a new time."
+      },
+      "expired": {
+        "subject": "Your booking hold expired",
+        "heading": "That slot got away",
+        "body": "We didn't receive payment in time, so your hold for {service} at {organization} was released. No worries — feel free to book again whenever suits you."
+      }
+    },
+    "invitation": {
+      "subject": "{organization} invited you to join their team on Bladiq",
+      "heading": "You're invited!",
+      "body": "{organization} would like you to join their team on Bladiq. Click below to accept and set up your account.",
+      "cta": "Accept invitation"
+    },
+    "passwordReset": {
+      "subject": "Reset your Bladiq password",
+      "heading": "Reset your password",
+      "body": "Click below to choose a new password. If you didn't request this, you can safely ignore this email — your password won't change.",
+      "cta": "Reset password"
+    },
+    "emailVerification": {
+      "subject": "Confirm your email for Bladiq",
+      "heading": "Confirm your email",
+      "body": "Click below to confirm your email address and activate your account. If you didn't create a Bladiq account, you can safely ignore this email.",
+      "cta": "Confirm email"
     }
   }
 }

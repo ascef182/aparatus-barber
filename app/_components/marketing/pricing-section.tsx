@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { PLAN_LIMITS } from "@/lib/billing/plan-limits";
 import { PricingCtaButton } from "@/app/_components/pricing-cta-button";
 import { Badge } from "@/app/_components/ui/badge";
+import { Reveal } from "./reveal";
 
 const PLANS = [
   { plan: "STARTER" as const, nameKey: "starterName", taglineKey: "starterTagline" },
@@ -16,23 +17,23 @@ export async function PricingSection() {
   return (
     <section id="pricing" className="border-t border-white/10 bg-neutral-950 px-6 py-24">
       <div className="mx-auto max-w-5xl">
-        <div className="mx-auto max-w-xl text-center">
+        <Reveal className="mx-auto max-w-xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">{t("title")}</h2>
           <p className="mt-4 text-neutral-400">{t("subtitle")}</p>
-        </div>
+        </Reveal>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {PLANS.map(({ plan, nameKey, taglineKey }) => {
+          {PLANS.map(({ plan, nameKey, taglineKey }, i) => {
             const limits = PLAN_LIMITS[plan];
             const price = (limits.priceInCents / 100).toFixed(0);
             const isPopular = plan === "GROWTH";
             return (
+              <Reveal key={plan} delay={i * 0.1} className="h-full">
               <div
-                key={plan}
-                className={`relative flex flex-col gap-4 rounded-xl border p-6 ${
+                className={`relative flex h-full flex-col gap-4 rounded-xl border p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 ${
                   isPopular
-                    ? "border-primary/60 bg-primary/[0.07] shadow-[0_0_0_1px_rgba(87,175,120,0.3)]"
-                    : "border-white/10 bg-white/[0.03]"
+                    ? "border-primary/60 bg-primary/[0.07] shadow-[0_0_0_1px_rgba(87,175,120,0.3)] hover:border-primary/80"
+                    : "border-white/10 bg-white/[0.03] hover:border-white/20"
                 }`}
               >
                 {isPopular && (
@@ -70,6 +71,7 @@ export async function PricingSection() {
                 </ul>
                 <PricingCtaButton plan={plan} label={t("cta")} />
               </div>
+              </Reveal>
             );
           })}
         </div>

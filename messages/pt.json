@@ -5,7 +5,7 @@
   },
   "pricing": {
     "title": "Agendamento online para sua barbearia",
-    "subtitle": "14 dias grátis. Cancele quando quiser.",
+    "subtitle": "7 dias grátis, sem cartão de crédito. Cancele quando quiser.",
     "starterName": "Starter",
     "starterTagline": "Para quem está começando",
     "growthName": "Growth",
@@ -18,7 +18,7 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Cartão necessário para o teste — sem cobrança nos 14 primeiros dias.",
+    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 7 dias de teste.",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
@@ -87,7 +87,9 @@
     "emailInUse": "Já existe uma conta com esse e-mail.",
     "goToSignIn": "Entrar",
     "alreadyHavePrefix": "Já tem conta?",
-    "genericError": "Algo deu errado."
+    "genericError": "Algo deu errado.",
+    "quote": "Dê à sua barbearia a experiência de agendamento que ela merece.",
+    "quoteAuthor": "Bladiq"
   },
   "tenant": {
     "comingSoon": "Agendamento online em breve.",
@@ -180,6 +182,7 @@
       "saasSubscription": "Assinatura SaaS",
       "manageSubscription": "Gerenciar assinatura",
       "subscribeTo": "Assinar {plan}",
+      "subscribeToChosen": "Assinar {plan} (seu plano)",
       "customerPayments": "Pagamentos de clientes",
       "customerPaymentsDesc": "Conecte sua conta Stripe Express para aceitar depósitos e pré-pagamentos.",
       "connectStripe": "Conectar Stripe",
@@ -467,7 +470,28 @@
       "trustGdpr": "Conforme GDPR",
       "trustStripe": "Pagamentos via Stripe",
       "trustLanguages": "Alemão · Inglês · Português",
-      "previewCaption": "Preview do produto em breve"
+      "tabs": {
+        "booking": {
+          "label": "Agendamento",
+          "title": "Escolha um horário",
+          "subtitle": "Clientes agendam em poucos toques — sem precisar de conta."
+        },
+        "availability": {
+          "label": "Disponibilidade",
+          "title": "Sempre sincronizado",
+          "subtitle": "Horários, ausências e períodos fechados atualizam em tempo real."
+        },
+        "payments": {
+          "label": "Pagamentos",
+          "title": "Receba do seu jeito",
+          "subtitle": "Sinal, pagamento total ou no local — você escolhe por serviço."
+        },
+        "team": {
+          "label": "Equipe",
+          "title": "Todo mundo em um só lugar",
+          "subtitle": "Convide a equipe com acesso por papel a agenda e configurações."
+        }
+      }
     },
     "features": {
       "title": "Tudo que sua barbearia precisa",
@@ -488,7 +512,7 @@
     "howItWorks": {
       "title": "Como funciona",
       "step1Title": "1. Comece o teste grátis",
-      "step1Body": "14 dias grátis, cartão necessário mas sem cobrança.",
+      "step1Body": "7 dias grátis, sem cartão de crédito necessário.",
       "step2Title": "2. Configure sua barbearia",
       "step2Body": "Adicione equipe, serviços e horários de funcionamento.",
       "step3Title": "3. Compartilhe seu link",
@@ -496,8 +520,8 @@
     },
     "faq": {
       "title": "Perguntas frequentes",
-      "q1": "Preciso de cartão de crédito para o teste grátis?",
-      "a1": "Sim, mas você não é cobrado durante os 14 dias de teste. Cancele quando quiser antes do fim do período.",
+      "q1": "Preciso de cartão de crédito para começar?",
+      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
@@ -507,9 +531,22 @@
       "q5": "Funciona em outros idiomas?",
       "a5": "Sim, o painel e a página de agendamento estão disponíveis em alemão, inglês e português."
     },
+    "mobileShowcase": {
+      "title": "Sua barbearia, no bolso de todo mundo",
+      "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular — veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.",
+      "quickActions": "Ações rápidas",
+      "features": {
+        "overview": "Visão geral",
+        "agenda": "Agenda",
+        "services": "Serviços",
+        "customers": "Clientes",
+        "staff": "Equipe",
+        "more": "Mais"
+      }
+    },
     "finalCta": {
       "title": "Pronto para modernizar sua barbearia?",
-      "subtitle": "Comece agora — 14 dias grátis, sem compromisso.",
+      "subtitle": "Comece agora — 7 dias grátis, sem cartão necessário.",
       "cta": "Começar teste grátis"
     },
     "footer": {
@@ -539,7 +576,9 @@
     "startFree": "Criar minha barbearia grátis",
     "pickShopTitle": "Escolha sua barbearia",
     "noAccountPrefix": "Não tem conta?",
-    "noAccountLink": "Criar conta grátis"
+    "noAccountLink": "Criar conta grátis",
+    "quote": "Todo corte perfeito começa com uma agenda em dia.",
+    "quoteAuthor": "Bladiq"
   },
   "directory": {
     "find": {
@@ -552,6 +591,50 @@
       "backToCities": "← Todas as cidades",
       "empty": "Nenhum negócio listado nesta cidade ainda.",
       "viewBusiness": "Ver e agendar"
+    }
+  },
+  "emails": {
+    "footer": "Enviado por {organization} via Bladiq — agendamento online para barbearias modernas.",
+    "genericFooter": "Bladiq — agendamento online para barbearias modernas.",
+    "booking": {
+      "confirmation": {
+        "subject": "Reserva confirmada! ✂️ {service} na {organization}",
+        "heading": "Está tudo certo",
+        "body": "Seu horário de {service} na {organization} está confirmado para {date}. Vamos te lembrar antes da hora — até lá!"
+      },
+      "reminder": {
+        "subject": "Até amanhã — {service} na {organization}",
+        "heading": "Até já!",
+        "body": "Só um lembrete amigável: seu horário de {service} na {organization} é em {date}."
+      },
+      "cancellation": {
+        "subject": "Sua reserva foi cancelada",
+        "heading": "Reserva cancelada",
+        "body": "Seu horário de {service} na {organization} em {date} foi cancelado. Quando quiser, fique à vontade pra marcar um novo horário."
+      },
+      "expired": {
+        "subject": "Sua reserva expirou",
+        "heading": "Esse horário escapou",
+        "body": "Não recebemos o pagamento a tempo, então seu horário de {service} na {organization} foi liberado. Sem problemas — pode marcar de novo quando quiser."
+      }
+    },
+    "invitation": {
+      "subject": "{organization} te convidou para a equipe na Bladiq",
+      "heading": "Você foi convidado!",
+      "body": "{organization} quer que você faça parte da equipe na Bladiq. Clique abaixo para aceitar e configurar sua conta.",
+      "cta": "Aceitar convite"
+    },
+    "passwordReset": {
+      "subject": "Redefinir sua senha da Bladiq",
+      "heading": "Redefinir senha",
+      "body": "Clique abaixo para escolher uma nova senha. Se você não pediu isso, pode ignorar este e-mail com segurança — sua senha não vai mudar.",
+      "cta": "Redefinir senha"
+    },
+    "emailVerification": {
+      "subject": "Confirme seu e-mail na Bladiq",
+      "heading": "Confirme seu e-mail",
+      "body": "Clique abaixo para confirmar seu endereço de e-mail e ativar sua conta. Se você não criou uma conta na Bladiq, pode ignorar este e-mail com segurança.",
+      "cta": "Confirmar e-mail"
     }
   }
 }
