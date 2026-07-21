@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { hasPermission, type PermissionCheck } from "@/lib/auth/permissions";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
 import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
+import { findOrCreateCustomerForUser } from "@/lib/services/customer-service";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
@@ -137,6 +138,24 @@ export function staffWriteActionClient(permission: PermissionCheck) {
     return next({ ctx });
   });
 }
+
+/**
+ * Cliente para a área de conta do cliente final ({slug}.{root}/account) —
+ * sessão obrigatória + tenant do host (igual tenantActionClient), mas SEM
+ * checar RBAC de staff: a identidade aqui é um Customer, não um Member. O
+ * Customer é resolvido/criado a partir do próprio usuário da sessão via
+ * findOrCreateCustomerForUser — nunca por e-mail ou id vindo do input, o
+ * que reabriria o mesmo risco de spoofing que findOrCreateGuestCustomer
+ * evita no wizard público (ver lib/services/customer-service.ts).
+ */
+export const customerActionClient = tenantActionClient.use(async ({ next, ctx }) => {
+  const customer = await findOrCreateCustomerForUser({
+    id: ctx.user.id,
+    name: ctx.user.name,
+    email: ctx.user.email,
+  });
+  return next({ ctx: { customer } });
+});
 
 /**
  * Cliente para actions da plataforma (SuperAdmin) — escopo cross-tenant

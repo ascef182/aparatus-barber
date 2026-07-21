@@ -105,6 +105,53 @@
       "vatId": "USt-IdNr.:"
     }
   },
+  "account": {
+    "nav": { "bookings": "Meine Buchungen" },
+    "signOut": "Abmelden",
+    "signingOut": "Abmelden…",
+    "signOutError": "Abmelden fehlgeschlagen.",
+    "bookings": {
+      "title": "Meine Buchungen",
+      "empty": "Du hast noch keine Buchungen.",
+      "cancel": "Stornieren",
+      "cancelling": "Wird storniert…",
+      "cancelled": "Buchung storniert.",
+      "cancelError": "Buchung konnte nicht storniert werden.",
+      "newBooking": {
+        "title": "Neue Buchung",
+        "chooseService": "Dienstleistung wählen",
+        "chooseStaff": "Mitarbeiter",
+        "loadingSlots": "Zeiten werden geladen…",
+        "noSlots": "Keine verfügbaren Zeiten für dieses Datum.",
+        "slotsError": "Zeiten konnten nicht geladen werden. Bitte erneut versuchen.",
+        "creating": "Wird gebucht…",
+        "confirm": "Buchung bestätigen",
+        "created": "Buchung bestätigt!",
+        "createError": "Buchung konnte nicht bestätigt werden."
+      }
+    },
+    "signIn": {
+      "title": "Anmelden",
+      "signUpTitle": "Konto erstellen",
+      "subtitle": "Greife auf deine Buchungen bei {name} zu.",
+      "quote": "Behalte deine Buchungen bei {name} im Blick — alles an einem Ort.",
+      "googleCta": "Mit Google fortfahren",
+      "orDivider": "oder",
+      "nameLabel": "Name",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "emailInUse": "Diese E-Mail ist bereits registriert.",
+      "submit": "Anmelden",
+      "submitSignUp": "Konto erstellen",
+      "submitting": "Wird gesendet…",
+      "noAccountPrefix": "Noch kein Konto?",
+      "noAccountLink": "Konto erstellen",
+      "hasAccountPrefix": "Bereits ein Konto?",
+      "hasAccountLink": "Anmelden",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+    }
+  },
   "roles": {
     "owner": "Inhaber",
     "manager": "Manager",

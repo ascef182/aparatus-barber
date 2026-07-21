@@ -105,6 +105,53 @@
       "vatId": "Nº fiscal (USt-IdNr.):"
     }
   },
+  "account": {
+    "nav": { "bookings": "Minhas reservas" },
+    "signOut": "Sair",
+    "signingOut": "Saindo…",
+    "signOutError": "Não foi possível sair.",
+    "bookings": {
+      "title": "Minhas reservas",
+      "empty": "Você ainda não tem reservas.",
+      "cancel": "Cancelar",
+      "cancelling": "Cancelando…",
+      "cancelled": "Reserva cancelada.",
+      "cancelError": "Não foi possível cancelar a reserva.",
+      "newBooking": {
+        "title": "Nova reserva",
+        "chooseService": "Escolha o serviço",
+        "chooseStaff": "Profissional",
+        "loadingSlots": "Carregando horários…",
+        "noSlots": "Nenhum horário disponível para esta data.",
+        "slotsError": "Não foi possível carregar os horários. Tente novamente.",
+        "creating": "Reservando…",
+        "confirm": "Confirmar reserva",
+        "created": "Reserva confirmada!",
+        "createError": "Não foi possível confirmar sua reserva."
+      }
+    },
+    "signIn": {
+      "title": "Entrar",
+      "signUpTitle": "Criar conta",
+      "subtitle": "Acesse suas reservas em {name}.",
+      "quote": "Acompanhe suas reservas em {name} — tudo em um só lugar.",
+      "googleCta": "Continuar com Google",
+      "orDivider": "ou",
+      "nameLabel": "Nome",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "emailInUse": "Este e-mail já está cadastrado.",
+      "submit": "Entrar",
+      "submitSignUp": "Criar conta",
+      "submitting": "Enviando…",
+      "noAccountPrefix": "Ainda não tem conta?",
+      "noAccountLink": "Criar conta",
+      "hasAccountPrefix": "Já tem conta?",
+      "hasAccountLink": "Entrar",
+      "invalidCredentials": "E-mail ou senha inválidos.",
+      "genericError": "Algo deu errado. Tente novamente."
+    }
+  },
   "roles": {
     "owner": "Dono",
     "manager": "Gerente",

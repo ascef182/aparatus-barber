@@ -105,6 +105,53 @@
       "vatId": "VAT ID:"
     }
   },
+  "account": {
+    "nav": { "bookings": "My bookings" },
+    "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "signOutError": "Could not sign out.",
+    "bookings": {
+      "title": "My bookings",
+      "empty": "You don't have any bookings yet.",
+      "cancel": "Cancel",
+      "cancelling": "Cancelling…",
+      "cancelled": "Booking cancelled.",
+      "cancelError": "Could not cancel the booking.",
+      "newBooking": {
+        "title": "New booking",
+        "chooseService": "Choose a service",
+        "chooseStaff": "Staff",
+        "loadingSlots": "Loading slots…",
+        "noSlots": "No slots available for this date.",
+        "slotsError": "Could not load slots. Try again.",
+        "creating": "Booking…",
+        "confirm": "Confirm booking",
+        "created": "Booking confirmed!",
+        "createError": "Could not confirm your booking."
+      }
+    },
+    "signIn": {
+      "title": "Sign in",
+      "signUpTitle": "Create account",
+      "subtitle": "Access your bookings at {name}.",
+      "quote": "Keep track of your bookings at {name} — all in one place.",
+      "googleCta": "Continue with Google",
+      "orDivider": "or",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "emailInUse": "This email is already registered.",
+      "submit": "Sign in",
+      "submitSignUp": "Create account",
+      "submitting": "Submitting…",
+      "noAccountPrefix": "Don't have an account?",
+      "noAccountLink": "Create account",
+      "hasAccountPrefix": "Already have an account?",
+      "hasAccountLink": "Sign in",
+      "invalidCredentials": "Invalid email or password.",
+      "genericError": "Something went wrong. Try again."
+    }
+  },
   "roles": {
     "owner": "Owner",
     "manager": "Manager",
