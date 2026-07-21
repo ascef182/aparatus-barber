@@ -610,6 +610,18 @@
       "viewBusiness": "Ansehen & buchen"
     }
   },
+  "businessCategories": {
+    "label": "Art des Unternehmens",
+    "BARBERSHOP": "Friseursalon (Herren)",
+    "HAIR_SALON": "Friseursalon",
+    "NAIL_SALON": "Nagelstudio",
+    "BEAUTY_SALON": "Kosmetikstudio",
+    "MEDICAL": "Arztpraxis",
+    "DENTAL": "Zahnarztpraxis",
+    "ELECTRICIAN": "Elektriker",
+    "CONSTRUCTION": "Bauhandwerk",
+    "OTHER": "Sonstiges"
+  },
   "emails": {
     "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für moderne Barbershops.",
     "genericFooter": "Bladiq — Online-Buchung für moderne Barbershops.",

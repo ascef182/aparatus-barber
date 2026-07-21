@@ -610,6 +610,18 @@
       "viewBusiness": "Ver e agendar"
     }
   },
+  "businessCategories": {
+    "label": "Tipo de negócio",
+    "BARBERSHOP": "Barbearia",
+    "HAIR_SALON": "Salão de cabelo",
+    "NAIL_SALON": "Manicure e pedicure",
+    "BEAUTY_SALON": "Salão de beleza",
+    "MEDICAL": "Clínica médica",
+    "DENTAL": "Clínica odontológica",
+    "ELECTRICIAN": "Eletricista",
+    "CONSTRUCTION": "Pedreiro",
+    "OTHER": "Outro"
+  },
   "emails": {
     "footer": "Enviado por {organization} via Bladiq — agendamento online para barbearias modernas.",
     "genericFooter": "Bladiq — agendamento online para barbearias modernas.",

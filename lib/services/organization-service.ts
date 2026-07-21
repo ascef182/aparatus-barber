@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { SubscriptionPlan, SubscriptionStatus } from "@/generated/prisma/client";
+import { db } from "@/lib/db";
+import type { BusinessCategory, SubscriptionPlan, SubscriptionStatus } from "@/generated/prisma/client";
 import { logAuditEvent } from "@/lib/services/audit-service";
+import { runWithTenant } from "@/lib/tenant-context";
 
 // Organization é o próprio limite do tenant — model global, client cru.
 
@@ -16,14 +18,26 @@ export function getOrganizationByStripeSubscriptionId(stripeSubscriptionId: stri
   return prisma.organization.findUnique({ where: { stripeSubscriptionId } });
 }
 
-/** Banner "complete seu setup" no dashboard — sem schema novo, deriva de dados existentes. */
+/**
+ * Banner "complete seu setup" no dashboard — sem schema novo, deriva de
+ * dados existentes.
+ *
+ * Chamado a partir do layout do dashboard (Server Component), que não
+ * passa pela cadeia de safe-action clients e portanto não tem contexto de
+ * tenant no AsyncLocalStorage ainda — por isso abre o próprio runWithTenant
+ * aqui, usando o organizationId já resolvido via host (nunca input do
+ * cliente). Isso também é o que dá a essas leituras a política de RLS
+ * (lib/db.ts), que prisma.<model> cru não tinha.
+ */
 export async function isSetupComplete(organizationId: string): Promise<boolean> {
-  const [hasWorkingHours, hasActiveService, hasStaffService] = await Promise.all([
-    prisma.staffWorkingHours.findFirst({ where: { organizationId } }),
-    prisma.service.findFirst({ where: { organizationId, isActive: true } }),
-    prisma.staffService.findFirst({ where: { organizationId } }),
-  ]);
-  return !!hasWorkingHours && !!hasActiveService && !!hasStaffService;
+  return runWithTenant(organizationId, async () => {
+    const [hasWorkingHours, hasActiveService, hasStaffService] = await Promise.all([
+      db.staffWorkingHours.findFirst(),
+      db.service.findFirst({ where: { isActive: true } }),
+      db.staffService.findFirst(),
+    ]);
+    return !!hasWorkingHours && !!hasActiveService && !!hasStaffService;
+  });
 }
 
 const FREE_GRACE_PERIOD_DAYS = 7;
@@ -47,10 +61,10 @@ export function isFreeTrialExpired(organization: {
 }
 
 /** Toggle do diretório público (app/(marketing)/find) — opt-in do dono/manager. */
-export function setDirectoryListing(organizationId: string, isListed: boolean) {
+export function setDirectoryListing(organizationId: string, isListed: boolean, category?: BusinessCategory) {
   return prisma.organization.update({
     where: { id: organizationId },
-    data: { isListed, listedAt: isListed ? new Date() : null },
+    data: { isListed, listedAt: isListed ? new Date() : null, ...(category ? { category } : {}) },
   });
 }
 

@@ -18,8 +18,14 @@ import { ensureMfaGracePeriod } from "@/lib/services/member-service";
 import { upsertImpressum } from "@/lib/services/impressum-service";
 import { RESERVED_SUBDOMAINS } from "@/lib/tenant-host";
 
+const BUSINESS_CATEGORIES = [
+  "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
+  "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER",
+] as const;
+
 const inputSchema = z.object({
   name: z.string().min(2).max(80),
+  category: z.enum(BUSINESS_CATEGORIES),
   slug: z
     .string()
     .min(3)
@@ -69,7 +75,7 @@ export const createOrganization = authActionClient
   .inputSchema(inputSchema)
   .action(
     async ({ parsedInput: {
-      name, slug, addressLine1, postalCode, city, sessionId, intendedPlan,
+      name, category, slug, addressLine1, postalCode, city, sessionId, intendedPlan,
       phone, description, legalName, representedBy, contactEmail, country,
       registerCourt, registerNumber, vatId,
     }, ctx }) => {
@@ -105,6 +111,11 @@ export const createOrganization = authActionClient
       }
       if (!organization) {
         throw new ActionError("Não foi possível criar a organização.");
+      }
+
+      {
+        const { prisma } = await import("@/lib/prisma");
+        await prisma.organization.update({ where: { id: organization.id }, data: { category } });
       }
 
       if (claim) {

@@ -610,6 +610,18 @@
       "viewBusiness": "View & book"
     }
   },
+  "businessCategories": {
+    "label": "Business type",
+    "BARBERSHOP": "Barbershop",
+    "HAIR_SALON": "Hair salon",
+    "NAIL_SALON": "Nail salon",
+    "BEAUTY_SALON": "Beauty salon",
+    "MEDICAL": "Medical clinic",
+    "DENTAL": "Dental clinic",
+    "ELECTRICIAN": "Electrician",
+    "CONSTRUCTION": "Construction",
+    "OTHER": "Other"
+  },
   "emails": {
     "footer": "Sent by {organization} via Bladiq — online booking for modern barbershops.",
     "genericFooter": "Bladiq — online booking for modern barbershops.",

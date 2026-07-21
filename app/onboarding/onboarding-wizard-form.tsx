@@ -13,7 +13,13 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 import { Input } from "@/app/_components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 import { getRootDomain, getTenantUrl } from "@/lib/tenant-host";
+
+const BUSINESS_CATEGORIES = [
+  "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
+  "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER",
+] as const;
 
 const slugify = (value: string) =>
   value
@@ -30,12 +36,20 @@ const slugify = (value: string) =>
  * filiais alemãs (ver app/t/[slug]/page.tsx) — sem isso o dono não tinha
  * como saber que precisava preencher algo antes do primeiro cliente.
  */
-export function OnboardingWizardForm({ sessionId }: { sessionId?: string }) {
+export function OnboardingWizardForm({
+  sessionId,
+  intendedPlan,
+}: {
+  sessionId?: string;
+  intendedPlan?: "STARTER" | "GROWTH" | "PRO";
+}) {
   const t = useTranslations("onboarding");
   const tCommon = useTranslations("common");
   const [step, setStep] = useState<1 | 2>(1);
 
+  const tCategories = useTranslations("businessCategories");
   const [name, setName] = useState("");
+  const [category, setCategory] = useState<(typeof BUSINESS_CATEGORIES)[number] | "">("");
   const [slug, setSlug] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -99,6 +113,7 @@ export function OnboardingWizardForm({ sessionId }: { sessionId?: string }) {
             className="flex flex-col gap-3"
             onSubmit={(event) => {
               event.preventDefault();
+              if (!category) return;
               if (!legalName) setLegalName(name);
               setStep(2);
             }}
@@ -112,6 +127,18 @@ export function OnboardingWizardForm({ sessionId }: { sessionId?: string }) {
               }}
               required
             />
+            <Select value={category} onValueChange={(value) => setCategory(value as (typeof BUSINESS_CATEGORIES)[number])}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={tCategories("label")} />
+              </SelectTrigger>
+              <SelectContent>
+                {BUSINESS_CATEGORIES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {tCategories(value)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <div className="flex items-center gap-2">
               <Input
                 placeholder={t("slugPlaceholder")}
@@ -160,9 +187,9 @@ export function OnboardingWizardForm({ sessionId }: { sessionId?: string }) {
           className="flex flex-col gap-3"
           onSubmit={(event) => {
             event.preventDefault();
-            if (!dpaAccepted) return;
+            if (!dpaAccepted || !category) return;
             execute({
-              name, slug, addressLine1, postalCode, city, sessionId, dpaAccepted: true,
+              name, category, slug, addressLine1, postalCode, city, sessionId, intendedPlan, dpaAccepted: true,
               phone: phone || undefined,
               description: description || undefined,
               legalName: legalName || name,

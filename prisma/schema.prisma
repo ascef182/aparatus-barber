@@ -396,6 +396,22 @@ enum OrgStatus {
   CHURNED
 }
 
+// Vertical do negócio — a plataforma não é mais exclusiva pra barbearia
+// (ver app/(marketing)/find e app/app), então o diretório público e os
+// chips de categoria em app/app precisam de algo além do nome do negócio
+// pra filtrar por.
+enum BusinessCategory {
+  BARBERSHOP
+  HAIR_SALON
+  NAIL_SALON
+  BEAUTY_SALON
+  MEDICAL
+  DENTAL
+  ELECTRICIAN
+  CONSTRUCTION
+  OTHER
+}
+
 model Organization {
   id        String   @id
   name      String
@@ -426,6 +442,7 @@ model Organization {
   // opt-in do dono, nunca automático.
   isListed  Boolean   @default(false)
   listedAt  DateTime? @db.Timestamptz
+  category  BusinessCategory @default(OTHER)
 
   members     Member[]
   invitations Invitation[]
