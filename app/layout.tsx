@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -23,6 +23,18 @@ export const metadata: Metadata = {
   title: "Bladiq — The complete booking platform for barbershops",
   description:
     "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern barbershop needs, in one multi-tenant SaaS.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bladiq",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#57AF78",
 };
 
 export default async function RootLayout({
