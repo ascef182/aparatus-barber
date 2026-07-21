@@ -1,0 +1,259 @@
+"use client";
+
+import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { de, enUS, ptBR } from "date-fns/locale";
+import { format } from "date-fns";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
+import { Input } from "@/app/_components/ui/input";
+import { Label } from "@/app/_components/ui/label";
+import { Separator } from "@/app/_components/ui/separator";
+import { Calendar } from "@/app/_components/ui/calendar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { getPublicAvailability } from "@/app/_actions/get-public-availability";
+import { createPublicBooking } from "@/app/_actions/create-public-booking";
+import { createBookingPaymentCheckout } from "@/app/_actions/create-booking-payment-checkout";
+import type { AvailableSlot } from "@/lib/scheduling/availability";
+
+type Service = { id: string; name: string; durationMinutes: number; priceInCents: number; currency: string; imageUrl: string | null };
+type Staff = { id: string; displayName: string; serviceIds: string[] };
+type Locale = "de" | "en" | "pt";
+
+const DATE_FNS_LOCALES: Record<Locale, typeof ptBR> = { de, en: enUS, pt: ptBR };
+
+/**
+ * Card de serviço + Sheet de reserva — recriação do fluxo do Aparatus
+ * original (git show <checkpoint>^:app/_components/service-item.tsx),
+ * adaptado pro booking de convidado (sem login) da nova arquitetura
+ * multi-tenant: coleta nome/e-mail/telefone no lugar do gate de login,
+ * e usa as actions públicas com contexto de tenant resolvido pelo host.
+ */
+export function ServiceItem({
+  service,
+  eligibleStaff,
+  organizationName,
+  locale,
+}: {
+  service: Service;
+  eligibleStaff: Staff[];
+  organizationName: string;
+  locale: Locale;
+}) {
+  const t = useTranslations("booking");
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"datetime" | "details">("datetime");
+  const [confirmed, setConfirmed] = useState(false);
+  const [date, setDate] = useState<Date | undefined>();
+  const [slot, setSlot] = useState<AvailableSlot | undefined>();
+  const [staffId, setStaffId] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const availability = useAction(getPublicAvailability);
+  const booking = useAction(createPublicBooking);
+  const checkout = useAction(createBookingPaymentCheckout);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  async function handleDateSelect(value: Date | undefined) {
+    setDate(value);
+    setSlot(undefined);
+    setStaffId("");
+    if (value) await availability.executeAsync({ serviceId: service.id, dateISO: format(value, "yyyy-MM-dd") });
+  }
+
+  function handleSlotSelect(item: AvailableSlot) {
+    setSlot(item);
+    setStaffId(item.staffIds[0] ?? "");
+  }
+
+  async function handleConfirm() {
+    if (!slot || !staffId || !name || !email) return;
+    const result = await booking.executeAsync({
+      serviceId: service.id,
+      staffId,
+      startAt: slot.startAt,
+      customer: { name, email, phone: phone || undefined, locale },
+    });
+    if (result.serverError || result.validationErrors) {
+      toast.error(result.serverError ?? t("bookingError"));
+      return;
+    }
+    if (!result.data) return;
+
+    if (result.data.status === "PENDING_PAYMENT") {
+      const payment = await checkout.executeAsync({ bookingId: result.data.id });
+      if (payment.serverError || !payment.data?.url) {
+        toast.error(payment.serverError ?? t("paymentError"));
+        return;
+      }
+      window.location.assign(payment.data.url);
+      return;
+    }
+
+    setConfirmed(true);
+    toast.success(t("bookingConfirmedTitle"));
+  }
+
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (next) {
+      setStep("datetime");
+      setConfirmed(false);
+      setDate(undefined);
+      setSlot(undefined);
+      setStaffId("");
+      setName("");
+      setEmail("");
+      setPhone("");
+    }
+  }
+
+  const priceLabel = new Intl.NumberFormat(locale, { style: "currency", currency: service.currency }).format(service.priceInCents / 100);
+  const formattedDate = date ? format(date, "d MMM", { locale: DATE_FNS_LOCALES[locale] }) : "";
+
+  return (
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      <div className="flex items-center gap-3 rounded-2xl border p-3">
+        {service.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image
+          <img src={service.imageUrl} alt="" className="size-[72px] shrink-0 rounded-lg object-cover" />
+        )}
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="truncate font-semibold">{service.name}</p>
+          <p className="text-sm text-muted-foreground">
+            {priceLabel} · {service.durationMinutes} min
+          </p>
+        </div>
+        <SheetTrigger asChild>
+          <Button className="shrink-0 rounded-full" disabled={eligibleStaff.length === 0}>
+            {t("reserve")}
+          </Button>
+        </SheetTrigger>
+      </div>
+
+      <SheetContent className="w-full overflow-y-auto p-0 sm:max-w-sm">
+        {confirmed ? (
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+            <p className="text-lg font-semibold">{t("bookingConfirmedTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t("bookingConfirmedBody")}</p>
+            <Button onClick={() => setOpen(false)}>{t("close")}</Button>
+          </div>
+        ) : step === "datetime" ? (
+          <div className="flex flex-col gap-6">
+            <SheetHeader className="px-5 pt-6">
+              <SheetTitle className="text-lg font-bold">{t("makeReservation")}</SheetTitle>
+            </SheetHeader>
+
+            <div className="px-5">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={handleDateSelect}
+                disabled={{ before: today }}
+                locale={DATE_FNS_LOCALES[locale]}
+                className="w-full p-0"
+              />
+            </div>
+
+            {date && (
+              <>
+                <Separator />
+                {availability.isPending ? (
+                  <p className="px-5 text-center text-sm text-muted-foreground">{t("loadingSlots")}</p>
+                ) : availability.result.serverError ? (
+                  <p className="px-5 text-center text-sm text-muted-foreground">{t("slotsError")}</p>
+                ) : availability.result.data?.length === 0 ? (
+                  <p className="px-5 text-center text-sm text-muted-foreground">{t("noSlots")}</p>
+                ) : (
+                  <div className="flex gap-2 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
+                    {availability.result.data?.map((item) => (
+                      <Button
+                        key={item.startAt.toString()}
+                        type="button"
+                        variant={slot?.startAt.getTime() === item.startAt.getTime() ? "default" : "outline"}
+                        className="shrink-0 rounded-full px-4"
+                        onClick={() => handleSlotSelect(item)}
+                      >
+                        {item.time}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="px-5 pb-6">
+              <Button className="w-full rounded-full" disabled={!slot} onClick={() => setStep("details")}>
+                {t("continue")}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            <SheetHeader className="flex-row items-center gap-2 space-y-0 px-5 pt-6">
+              <Button size="icon" variant="ghost" className="-ml-2 rounded-full" onClick={() => setStep("datetime")}>
+                <ChevronLeft className="size-5" />
+                <span className="sr-only">{t("back")}</span>
+              </Button>
+              <SheetTitle className="text-lg font-bold">{t("makeReservation")}</SheetTitle>
+            </SheetHeader>
+
+            <div className="grid gap-3 px-5">
+              <div className="grid gap-1.5">
+                <Label htmlFor={`${service.id}-name`}>{t("namePlaceholder")}</Label>
+                <Input id={`${service.id}-name`} value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor={`${service.id}-email`}>{t("emailPlaceholder")}</Label>
+                <Input id={`${service.id}-email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor={`${service.id}-phone`}>{t("phonePlaceholder")}</Label>
+                <Input id={`${service.id}-phone`} value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="px-5">
+              <div className="flex flex-col gap-3 rounded-lg border p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-bold">{service.name}</p>
+                  <p className="text-sm font-bold">{priceLabel}</p>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <p>{t("summaryDate")}</p>
+                  <p>{formattedDate}</p>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <p>{t("summaryTime")}</p>
+                  <p>{slot?.time}</p>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <p>{t("summaryBusiness")}</p>
+                  <p>{organizationName}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-5 pb-6">
+              <Button
+                className="w-full rounded-full"
+                disabled={!name || !email || booking.isPending || checkout.isPending}
+                onClick={handleConfirm}
+              >
+                {booking.isPending || checkout.isPending ? t("booking") : t("confirmBooking")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}

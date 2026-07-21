@@ -96,6 +96,8 @@
     "suspended": "Buchung vorübergehend nicht verfügbar.",
     "trialExpired": "Buchung vorübergehend nicht verfügbar. Der Betreiber muss ein Abonnement abschließen, um fortzufahren.",
     "impressumRequired": "Online-Buchung vorübergehend nicht verfügbar. Der Betreiber muss zunächst die rechtlichen Angaben (Impressum) vervollständigen.",
+    "bookingSuccessBanner": "Zahlung bestätigt! Ihr Termin ist gesichert.",
+    "bookingCanceledBanner": "Zahlung abgebrochen. Sie können die Buchung erneut versuchen.",
     "impressum": {
       "representedBy": "Vertreten durch:",
       "phone": "Telefon:",
@@ -449,7 +451,22 @@
     "booking": "Wird gebucht…",
     "confirmBooking": "Buchung bestätigen",
     "cookieNoticePrefix": "Diese Website verwendet essenzielle Cookies für den Betrieb. Mit Ihrer Buchung werden Ihre Daten gemäß unserer",
-    "privacyPolicyLink": "Datenschutzerklärung"
+    "privacyPolicyLink": "Datenschutzerklärung",
+    "reserve": "Buchen",
+    "makeReservation": "Termin buchen",
+    "continue": "Weiter",
+    "back": "Zurück",
+    "loadingSlots": "Verfügbare Zeiten werden geladen…",
+    "noSlots": "Keine Zeiten für dieses Datum verfügbar.",
+    "slotsError": "Die verfügbaren Zeiten konnten nicht geladen werden. Versuchen Sie es erneut.",
+    "summaryDate": "Datum",
+    "summaryTime": "Uhrzeit",
+    "summaryBusiness": "Friseursalon",
+    "bookingConfirmedTitle": "Termin bestätigt!",
+    "bookingConfirmedBody": "Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+    "close": "Schließen",
+    "bookingError": "Ihre Buchung konnte nicht bestätigt werden. Versuchen Sie es erneut.",
+    "paymentError": "Die Zahlung konnte nicht gestartet werden. Versuchen Sie es erneut."
   },
   "landing": {
     "nav": {

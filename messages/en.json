@@ -96,6 +96,8 @@
     "suspended": "Booking temporarily unavailable.",
     "trialExpired": "Booking temporarily unavailable. The business owner needs to subscribe to a plan to continue.",
     "impressumRequired": "Online booking is temporarily unavailable. The business owner needs to finish the legal setup (Impressum) first.",
+    "bookingSuccessBanner": "Payment confirmed! Your booking is secured.",
+    "bookingCanceledBanner": "Payment canceled. You can try booking again.",
     "impressum": {
       "representedBy": "Represented by:",
       "phone": "Phone:",
@@ -449,7 +451,22 @@
     "booking": "Booking…",
     "confirmBooking": "Confirm booking",
     "cookieNoticePrefix": "This site uses essential cookies to operate. By booking, your data is processed according to our",
-    "privacyPolicyLink": "privacy policy"
+    "privacyPolicyLink": "privacy policy",
+    "reserve": "Book",
+    "makeReservation": "Book appointment",
+    "continue": "Continue",
+    "back": "Back",
+    "loadingSlots": "Loading available times…",
+    "noSlots": "No times available for this date.",
+    "slotsError": "Couldn't load the available times. Try again.",
+    "summaryDate": "Date",
+    "summaryTime": "Time",
+    "summaryBusiness": "Barbershop",
+    "bookingConfirmedTitle": "Booking confirmed!",
+    "bookingConfirmedBody": "You'll receive a confirmation email shortly.",
+    "close": "Close",
+    "bookingError": "We couldn't confirm your booking. Try again.",
+    "paymentError": "We couldn't start the payment. Try again."
   },
   "landing": {
     "nav": {

@@ -96,6 +96,8 @@
     "suspended": "Agendamento temporariamente indisponível.",
     "trialExpired": "Agendamento temporariamente indisponível. O responsável pelo negócio precisa assinar um plano para continuar.",
     "impressumRequired": "Agendamento online temporariamente indisponível. O responsável pelo negócio precisa concluir a configuração legal (Impressum).",
+    "bookingSuccessBanner": "Pagamento confirmado! Sua reserva está garantida.",
+    "bookingCanceledBanner": "Pagamento cancelado. Você pode tentar reservar novamente.",
     "impressum": {
       "representedBy": "Representado por:",
       "phone": "Telefone:",
@@ -449,7 +451,22 @@
     "booking": "Reservando…",
     "confirmBooking": "Confirmar reserva",
     "cookieNoticePrefix": "Este site usa cookies essenciais para funcionar. Ao reservar, seus dados são processados conforme nossa",
-    "privacyPolicyLink": "política de privacidade"
+    "privacyPolicyLink": "política de privacidade",
+    "reserve": "Reservar",
+    "makeReservation": "Fazer Reserva",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "loadingSlots": "Carregando horários…",
+    "noSlots": "Nenhum horário disponível para esta data.",
+    "slotsError": "Não foi possível carregar os horários. Tente novamente.",
+    "summaryDate": "Data",
+    "summaryTime": "Horário",
+    "summaryBusiness": "Barbearia",
+    "bookingConfirmedTitle": "Reserva confirmada!",
+    "bookingConfirmedBody": "Você vai receber um e-mail de confirmação em instantes.",
+    "close": "Fechar",
+    "bookingError": "Não foi possível confirmar sua reserva. Tente novamente.",
+    "paymentError": "Não foi possível iniciar o pagamento. Tente novamente."
   },
   "landing": {
     "nav": {

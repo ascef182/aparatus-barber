@@ -1,21 +1,34 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { ChevronLeft } from "lucide-react";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { getImpressum } from "@/lib/services/impressum-service";
-import { BookingWizard } from "./booking-wizard";
+import { getRootUrl } from "@/lib/tenant-host";
+import { Button } from "@/app/_components/ui/button";
+import { ServiceItem } from "./service-item";
+import { BookingStatusToast } from "./booking-status-toast";
 
 /**
  * Landing white-label do tenant (placeholder da Fase 1).
- * O wizard de booking substitui esta página na Fase 2; branding na Fase 3.
- * Acessível apenas via rewrite do proxy ({slug}.aparatus.app), nunca por /t/.
+ * Branding na Fase 3. Acessível apenas via rewrite do proxy
+ * ({slug}.aparatus.app), nunca por /t/.
  */
-const TenantHomePage = async (props: PageProps<"/t/[slug]">) => {
-  const { slug } = await props.params;
-  const [organization, t] = await Promise.all([
+const TenantHomePage = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ booking?: string }>;
+}) => {
+  const { slug } = await params;
+  const { booking: bookingStatus } = await searchParams;
+  const [organization, t, tBooking] = await Promise.all([
     getOrganizationBySlug(slug),
     getTranslations("tenant"),
+    getTranslations("booking"),
   ]);
 
   if (!organization || organization.status === "CHURNED") {
@@ -59,20 +72,50 @@ const TenantHomePage = async (props: PageProps<"/t/[slug]">) => {
     );
   }
 
-  return <main className="min-h-screen">{organization.coverImageUrl ? (
-    <header className="relative flex min-h-48 items-end p-6 text-white">
-      {/* eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image */}
-      <img src={organization.coverImageUrl} alt="" className="absolute inset-0 -z-10 size-full object-cover" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div>
-        <h1 className="text-2xl font-bold">{organization.name}</h1>
-        {defaultLocation?.description && <p className="mt-2 text-sm text-white/80">{defaultLocation.description}</p>}
-        {defaultLocation?.phone && <p className="mt-1 text-sm text-white/80">{defaultLocation.phone}</p>}
-      </div>
-    </header>
-  ) : (
-    <header className="border-b p-6"><h1 className="text-2xl font-bold">{organization.name}</h1>{defaultLocation?.description && <p className="mt-2 text-sm text-muted-foreground">{defaultLocation.description}</p>}{defaultLocation?.phone && <p className="mt-1 text-sm text-muted-foreground">{defaultLocation.phone}</p>}</header>
-  )}<BookingWizard locale={organization.defaultLocale as "de" | "en" | "pt"} services={services} staff={staff.map((member) => ({ id: member.id, displayName: member.displayName, serviceIds: member.services.map((link) => link.serviceId) }))} /></main>;
+  const locale = organization.defaultLocale as "de" | "en" | "pt";
+  const staffList = staff.map((member) => ({ id: member.id, displayName: member.displayName, serviceIds: member.services.map((link) => link.serviceId) }));
+  const status = bookingStatus === "success" || bookingStatus === "canceled" ? bookingStatus : null;
+
+  return (
+    <main className="relative min-h-screen">
+      <BookingStatusToast status={status} successMessage={t("bookingSuccessBanner")} canceledMessage={t("bookingCanceledBanner")} />
+      <Button size="icon" variant="secondary" className="absolute top-4 left-4 z-10 rounded-full" asChild>
+        <Link href={getRootUrl("/find")}>
+          <ChevronLeft className="size-5" />
+        </Link>
+      </Button>
+      {organization.coverImageUrl ? (
+        <header className="relative flex min-h-48 items-end p-6 text-white">
+          {/* eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image */}
+          <img src={organization.coverImageUrl} alt="" className="absolute inset-0 -z-10 size-full object-cover" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div>
+            <h1 className="text-2xl font-bold">{organization.name}</h1>
+            {defaultLocation?.description && <p className="mt-2 text-sm text-white/80">{defaultLocation.description}</p>}
+            {defaultLocation?.phone && <p className="mt-1 text-sm text-white/80">{defaultLocation.phone}</p>}
+          </div>
+        </header>
+      ) : (
+        <header className="border-b p-6">
+          <h1 className="text-2xl font-bold">{organization.name}</h1>
+          {defaultLocation?.description && <p className="mt-2 text-sm text-muted-foreground">{defaultLocation.description}</p>}
+          {defaultLocation?.phone && <p className="mt-1 text-sm text-muted-foreground">{defaultLocation.phone}</p>}
+        </header>
+      )}
+      <section className="mx-auto flex max-w-2xl flex-col gap-3 p-6">
+        <h2 className="text-lg font-bold">{tBooking("chooseService")}</h2>
+        {services.map((service) => (
+          <ServiceItem
+            key={service.id}
+            service={service}
+            eligibleStaff={staffList.filter((member) => member.serviceIds.includes(service.id))}
+            organizationName={organization.name}
+            locale={locale}
+          />
+        ))}
+      </section>
+    </main>
+  );
 };
 
 export default TenantHomePage;
