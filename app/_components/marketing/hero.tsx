@@ -4,6 +4,13 @@ import { ScrollPreviewHero } from "./scroll-preview-hero";
 
 const TAB_IDS = ["booking", "availability", "payments", "team"] as const;
 
+// Só "booking" tem print real do app por enquanto (public/calendar.png) —
+// as outras 3 ainda não têm tela correspondente pronta, então caem no
+// mockup ilustrado (ver PhonePanel em scroll-preview-hero.tsx).
+const TAB_SCREENSHOTS: Partial<Record<(typeof TAB_IDS)[number], string>> = {
+  booking: "/calendar.png",
+};
+
 export async function Hero() {
   const t = await getTranslations("landing.hero");
 
@@ -12,6 +19,7 @@ export async function Hero() {
     label: t(`tabs.${id}.label`),
     title: t(`tabs.${id}.title`),
     subtitle: t(`tabs.${id}.subtitle`),
+    screenshot: TAB_SCREENSHOTS[id],
   }));
 
   return (

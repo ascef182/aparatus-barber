@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { Battery, Calendar, Check, Clock, CreditCard, Signal, Users, Wifi } from "lucide-react";
 import { useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,8 @@ export interface PreviewTab {
   label: string;
   title: string;
   subtitle: string;
+  /** Screenshot real do app (public/...) — quando ausente, cai no mockup ilustrado. */
+  screenshot?: string;
 }
 
 export interface TrustItem {
@@ -134,17 +137,37 @@ function TabScreen({ id }: { id: string }) {
   );
 }
 
-function PhonePanel({ id, title, subtitle }: { id: string; title: string; subtitle: string }) {
+function PhonePanel({
+  id,
+  title,
+  subtitle,
+  screenshot,
+}: {
+  id: string;
+  title: string;
+  subtitle: string;
+  screenshot?: string;
+}) {
   const Icon = TAB_ICONS[id] ?? Clock;
   return (
-    <div className="relative mx-auto w-full max-w-[300px] px-2">
+    <div className="relative mx-auto w-full max-w-[280px] px-2">
       <div
         className="absolute inset-x-6 top-6 -z-10 h-40 rounded-full bg-primary/25 blur-3xl"
         aria-hidden
       />
       <div className="overflow-hidden rounded-[2.5rem] bg-neutral-900 p-2 shadow-2xl shadow-black/50 ring-1 ring-white/10">
-        <div className="flex h-[clamp(380px,42vh,460px)] flex-col overflow-hidden rounded-[2rem] bg-black px-5 ring-1 ring-white/10">
-          <div className="flex items-center justify-between pt-3 pb-1 text-xs text-white">
+        <div
+          className={cn(
+            "flex aspect-[9/19.5] max-h-[540px] flex-col overflow-hidden rounded-[2rem] bg-black ring-1 ring-white/10",
+            !screenshot && "px-5",
+          )}
+        >
+          <div
+            className={cn(
+              "flex items-center justify-between pt-3 pb-1 text-xs text-white",
+              screenshot && "px-5",
+            )}
+          >
             <span className="font-semibold">9:41</span>
             <div className="flex items-end gap-1">
               <Signal aria-hidden className="size-4" />
@@ -154,59 +177,26 @@ function PhonePanel({ id, title, subtitle }: { id: string; title: string; subtit
           </div>
           <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-white/15" />
 
-          <div className="mt-6 flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
-              <Icon aria-hidden className="size-4" />
+          {screenshot ? (
+            <div className="relative mt-3 flex-1 overflow-hidden">
+              <Image src={screenshot} alt={title} fill sizes="300px" className="object-cover object-top" />
             </div>
-            <p className="min-w-0 flex-1 text-[15px] leading-snug font-semibold tracking-tight break-words text-white">{title}</p>
-          </div>
+          ) : (
+            <div className="flex flex-1 flex-col justify-center gap-5">
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+                  <Icon aria-hidden className="size-4" />
+                </div>
+                <p className="min-w-0 flex-1 text-[15px] leading-snug font-semibold tracking-tight break-words text-white">{title}</p>
+              </div>
 
-          <div className="mt-5">
-            <TabScreen id={id} />
-          </div>
+              <TabScreen id={id} />
 
-          <p className="mt-auto mb-5 text-xs leading-relaxed text-neutral-500">{subtitle}</p>
+              <p className="text-xs leading-relaxed text-neutral-500">{subtitle}</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function TabRail({
-  tabs,
-  active,
-  onSelect,
-}: {
-  tabs: PreviewTab[];
-  active: number;
-  onSelect: (i: number) => void;
-}) {
-  return (
-    <div
-      role="tablist"
-      aria-label="Preview do produto"
-      className="flex w-full shrink-0 flex-wrap justify-center gap-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {tabs.map((t, i) => {
-        const isActive = i === active;
-        return (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            onClick={() => onSelect(i)}
-            className={cn(
-              "whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
-              isActive
-                ? "bg-white/10 font-semibold text-white ring-1 ring-white/15"
-                : "text-neutral-400 hover:bg-white/5 hover:text-white",
-            )}
-          >
-            {t.label}
-          </button>
-        );
-      })}
     </div>
   );
 }
@@ -226,7 +216,7 @@ function PreviewStack({ tabs, active }: { tabs: PreviewTab[]; active: number }) 
               isActive ? "relative opacity-100" : "pointer-events-none absolute inset-0 opacity-0",
             )}
           >
-            <PhonePanel id={t.id} title={t.title} subtitle={t.subtitle} />
+            <PhonePanel id={t.id} title={t.title} subtitle={t.subtitle} screenshot={t.screenshot} />
           </div>
         );
       })}
@@ -276,18 +266,6 @@ export function ScrollPreviewHero({
     setActive((prev) => (prev === i ? prev : i));
   });
 
-  const handleSelect = (i: number) => {
-    const el = sectionRef.current;
-    if (scrollDriven && el) {
-      const top = window.scrollY + el.getBoundingClientRect().top;
-      const range = el.offsetHeight - window.innerHeight;
-      const target = top + ((i + 0.5) / tabs.length) * range;
-      window.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
-    } else {
-      setActive(i);
-    }
-  };
-
   return (
     <section
       ref={sectionRef}
@@ -310,14 +288,11 @@ export function ScrollPreviewHero({
         <div className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(87,175,120,0.24),transparent_65%)]" aria-hidden />
         <div className="mx-auto flex w-full max-w-7xl flex-col justify-center px-6 py-10 lg:py-14">
           <div className="flex flex-col-reverse justify-center gap-8 md:flex-row md:items-start md:gap-10 xl:gap-[72px]">
-            {/* abas + preview do celular — pílulas horizontais em cima do
-                celular (não mais uma coluna ao lado dele disputando
-                largura), pra dar a largura toda pro mockup em vez de
-                espremê-lo contra a régua de abas verticais.
+            {/* preview do celular — sem abas clicáveis, só o efeito de
+                scroll troca o conteúdo (useMotionValueEvent acima).
                 md:mt-11 alinha o topo com o <h1>, compensando a badge acima
                 dele na coluna de texto */}
-            <div className="flex min-w-0 flex-col items-center gap-5 md:mt-11 md:w-[320px] md:shrink-0">
-              <TabRail tabs={tabs} active={active} onSelect={handleSelect} />
+            <div className="flex min-w-0 flex-col items-center md:mt-11 md:w-[320px] md:shrink-0">
               <PreviewStack tabs={tabs} active={active} />
             </div>
 
