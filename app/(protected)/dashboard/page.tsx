@@ -14,5 +14,9 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   if (membership.role !== "owner" && membership.role !== "manager") redirect("/dashboard/agenda");
   const rawRange = (await searchParams).range; const range = rawRange === "7" || rawRange === "30" || rawRange === "90" ? Number(rawRange) as DashboardRange : 1;
   const metrics = await runWithTenant(organization.id, () => getDashboardMetrics(organization.timezone, range));
-  return <DashboardOverview metrics={metrics} role={membership.role} locale={organization.defaultLocale} currency={organization.currency} />;
+  // key=range força remontar o componente (e o useQuery interno) ao trocar
+  // de período — sem isso, o cache do React Query da rota anterior
+  // sobreviveria à navegação client-side e mostraria dados do range errado
+  // até o próximo poll.
+  return <DashboardOverview key={range} metrics={metrics} role={membership.role} locale={organization.defaultLocale} currency={organization.currency} />;
 }

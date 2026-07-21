@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, CalendarDays, CircleAlert, CircleCheck, Users } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { getDashboardMetricsAction } from "@/app/_actions/get-dashboard-metrics";
+import { POLL_INTERVAL_MS } from "@/lib/realtime";
 import type { DashboardRange } from "@/lib/services/dashboard-metrics-service";
 
 type Metrics = Awaited<ReturnType<typeof import("@/lib/services/dashboard-metrics-service").getDashboardMetrics>>;
@@ -13,9 +18,19 @@ function RevenueChart({ series, locale, currency }: { series: Metrics["series"];
   return <div className="mt-6" aria-label="Evolução de receita"><svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-52 w-full overflow-visible"><path d="M0 92H100" className="stroke-border" strokeWidth=".7" /><polyline points={points("planned")} fill="none" className="stroke-muted-foreground/50" strokeWidth="1.3" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" /><polyline points={points("received")} fill="none" className="stroke-primary" strokeWidth="2" vectorEffect="non-scaling-stroke" /></svg><div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>{new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(`${series[0]?.date}T12:00:00`))}</span><span>{money(max, locale, currency)}</span><span>{new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(`${series.at(-1)?.date}T12:00:00`))}</span></div></div>;
 }
 
-export async function DashboardOverview({ metrics, role, locale, currency }: { metrics: Metrics; role: string; locale: string; currency: string }) {
-  const t = await getTranslations("dashboard.overview"); const financial = role === "owner";
+export function DashboardOverview({ metrics: initialMetrics, role, locale, currency }: { metrics: Metrics; role: string; locale: string; currency: string }) {
+  const t = useTranslations("dashboard.overview"); const financial = role === "owner";
   const rangeOptions: DashboardRange[] = [1, 7, 30, 90];
+  const { data: metrics } = useQuery({
+    queryKey: ["dashboard-metrics", initialMetrics.range],
+    queryFn: async () => {
+      const result = await getDashboardMetricsAction({ range: initialMetrics.range });
+      if (!result?.data) throw new Error("failed to load dashboard metrics");
+      return result.data;
+    },
+    initialData: initialMetrics,
+    refetchInterval: POLL_INTERVAL_MS.overview,
+  });
   const stats = financial ? [
     { label: t("received"), value: money(metrics.receivedRevenue, locale, currency), hint: t("netOfRefunds") },
     { label: t("planned"), value: money(metrics.plannedRevenue, locale, currency), hint: t("validBookings") },
