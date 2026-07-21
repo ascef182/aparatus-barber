@@ -1,15 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ChevronLeft } from "lucide-react";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { getImpressum } from "@/lib/services/impressum-service";
-import { getRootUrl } from "@/lib/tenant-host";
-import { Button } from "@/app/_components/ui/button";
 import { ServiceItem } from "./service-item";
 import { BookingStatusToast } from "./booking-status-toast";
+import { BackButton } from "./back-button";
 
 /**
  * Landing white-label do tenant (placeholder da Fase 1).
@@ -79,11 +76,7 @@ const TenantHomePage = async ({
   return (
     <main className="relative min-h-screen">
       <BookingStatusToast status={status} successMessage={t("bookingSuccessBanner")} canceledMessage={t("bookingCanceledBanner")} />
-      <Button size="icon" variant="secondary" className="absolute top-4 left-4 z-10 rounded-full" asChild>
-        <Link href={getRootUrl("/find")}>
-          <ChevronLeft className="size-5" />
-        </Link>
-      </Button>
+      <BackButton />
       {organization.coverImageUrl ? (
         <header className="relative flex min-h-48 items-end p-6 text-white">
           {/* eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image */}
