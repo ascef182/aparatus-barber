@@ -22,7 +22,9 @@ export type AuditAction =
   | "BOOKING_NO_SHOW"
   | "PAYMENT_RECORDED_ON_SITE"
   | "IMPRESSUM_UPDATED"
-  | "ONBOARDING_FAILED";
+  | "ONBOARDING_FAILED"
+  | "QUOTE_REQUEST_CREATED"
+  | "QUOTE_REQUEST_STATUS_UPDATED";
 
 /**
  * Trilha de auditoria — append-only, sem update/delete pela aplicação.

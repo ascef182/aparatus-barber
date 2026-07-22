@@ -449,11 +449,17 @@
       "impressumSaveError": "Erro ao salvar Impressum.",
       "directoryTitle": "Diretório público",
       "directoryToggleLabel": "Listar meu negócio no diretório público",
-      "directoryToggleHelp": "Permite que clientes encontrem seu negócio pela cidade em aparatus.app/find.",
+      "directoryToggleHelp": "Permite que clientes encontrem seu negócio pela cidade em bladiq.com/find.",
       "directoryCitiesPreview": "Será exibido em: {cities}",
       "directoryNoCities": "Adicione um local ativo para aparecer no diretório.",
       "directorySaved": "Listagem no diretório atualizada.",
       "directorySaveError": "Erro ao atualizar a listagem no diretório.",
+      "quoteRequestsTitle": "Pedidos de orçamento",
+      "quoteRequestsEmpty": "Nenhum pedido de orçamento ainda.",
+      "quoteStatusNew": "Novo",
+      "quoteStatusContacted": "Contatado",
+      "quoteStatusClosed": "Encerrado",
+      "quoteStatusError": "Não foi possível atualizar o status.",
       "coverImageTitle": "Foto de capa",
       "coverImageHint": "Exibida como banner principal na sua página pública de reservas.",
       "coverImageLabel": "Enviar foto de capa",
@@ -530,12 +536,23 @@
     "slotsError": "Não foi possível carregar os horários. Tente novamente.",
     "summaryDate": "Data",
     "summaryTime": "Horário",
-    "summaryBusiness": "Barbearia",
+    "summaryBusiness": "Negócio",
     "bookingConfirmedTitle": "Reserva confirmada!",
     "bookingConfirmedBody": "Você vai receber um e-mail de confirmação em instantes.",
     "close": "Fechar",
     "bookingError": "Não foi possível confirmar sua reserva. Tente novamente.",
-    "paymentError": "Não foi possível iniciar o pagamento. Tente novamente."
+    "paymentError": "Não foi possível iniciar o pagamento. Tente novamente.",
+    "quoteRequest": {
+      "title": "Pedir orçamento",
+      "description": "Conte o que você precisa e entraremos em contato.",
+      "messagePlaceholder": "O que você precisa?",
+      "submit": "Enviar pedido",
+      "submitting": "Enviando…",
+      "successTitle": "Pedido enviado!",
+      "successBody": "Vamos entrar em contato em breve.",
+      "error": "Não foi possível enviar seu pedido. Tente novamente.",
+      "contactRequired": "Informe seu e-mail ou telefone."
+    }
   },
   "landing": {
     "nav": {
@@ -701,8 +718,13 @@
     "empty": "Nenhum negócio encontrado."
   },
   "emails": {
-    "footer": "Enviado por {organization} via Bladiq — agendamento online para barbearias modernas.",
-    "genericFooter": "Bladiq — agendamento online para barbearias modernas.",
+    "footer": "Enviado por {organization} via Bladiq — agendamento online para negócios locais.",
+    "genericFooter": "Bladiq — agendamento online para negócios locais.",
+    "quoteRequest": {
+      "subject": "Novo pedido de orçamento de {name} — {organization}",
+      "heading": "Novo pedido de orçamento",
+      "body": "{name} enviou um pedido de orçamento pela página de {organization} no Bladiq. Mensagem: \"{message}\". Contato: {contact}."
+    },
     "booking": {
       "confirmation": {
         "subject": "Reserva confirmada! ✂️ {service} na {organization}",

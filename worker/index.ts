@@ -2,8 +2,10 @@ import * as Sentry from "@sentry/node";
 import { Worker } from "bullmq";
 import { Resend } from "resend";
 import { getBookingForNotification, expireStaleHolds } from "@/lib/services/booking-service";
+import { getQuoteRequestForNotification } from "@/lib/services/quote-request-service";
+import { getOwnerEmail } from "@/lib/services/member-service";
 import { buildNotificationEmail, enqueueBookingNotification, scheduleStaleHoldSweep } from "@/lib/notifications";
-import type { BookingNotificationJob, InvitationNotificationJob } from "@/lib/notifications";
+import type { BookingNotificationJob, InvitationNotificationJob, QuoteRequestNotificationJob } from "@/lib/notifications";
 import { getEmailTranslator } from "@/lib/email-translations";
 import { renderBrandedEmail } from "@/lib/email-template";
 import { logger } from "@/lib/logger";
@@ -70,6 +72,29 @@ const invitationsWorker = new Worker<InvitationNotificationJob>("invitation-noti
 
 invitationsWorker.on("failed", (job, err) => {
   logger({ jobId: job?.id, queue: "invitation-notifications", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
+  Sentry.captureException(err);
+});
+
+const quoteRequestsWorker = new Worker<QuoteRequestNotificationJob>("quote-request-notifications", async (job) => {
+  const quoteRequest = await getQuoteRequestForNotification(job.data.quoteRequestId);
+  if (!quoteRequest) return;
+  const ownerEmail = await getOwnerEmail(quoteRequest.organizationId);
+  if (!ownerEmail) return;
+
+  const t = getEmailTranslator(quoteRequest.organization.defaultLocale);
+  const contact = [quoteRequest.customerEmail, quoteRequest.customerPhone].filter(Boolean).join(" · ");
+  const vars = { name: quoteRequest.customerName, organization: quoteRequest.organization.name, message: quoteRequest.message, contact };
+  const { html, text } = renderBrandedEmail({
+    preheader: t("quoteRequest.heading"),
+    heading: t("quoteRequest.heading"),
+    paragraphs: [t("quoteRequest.body", vars)],
+    footerNote: t("footer", { organization: quoteRequest.organization.name }),
+  });
+  await getResend().emails.send({ from, to: ownerEmail, subject: t("quoteRequest.subject", vars), html, text });
+}, { connection, concurrency: 10 });
+
+quoteRequestsWorker.on("failed", (job, err) => {
+  logger({ jobId: job?.id, queue: "quote-request-notifications", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
   Sentry.captureException(err);
 });
 

@@ -327,6 +327,39 @@ describe("Suite 2 — extension fail-closed", () => {
     const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
     expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
   });
+
+  test("QuoteRequest: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.quoteRequest.create({
+        data: { organizationId: orgA.id, customerName: "x", message: "preciso de um orçamento" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.quoteRequest.create({
+        data: { organizationId: orgA.id, customerName: "Cliente A", customerEmail: "a@example.com", message: "orçamento A" },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.quoteRequest.create({
+        data: { organizationId: orgB.id, customerName: "Cliente B", customerEmail: "b@example.com", message: "orçamento B" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.quoteRequest.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.customerName === "Cliente B")).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.quoteRequest.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+
+    await runWithPlatformScope(() =>
+      db.quoteRequest.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+  });
 });
 
 describe("Suite 1 — camada de serviço com contexto A vs recursos de B", () => {

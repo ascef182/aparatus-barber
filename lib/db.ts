@@ -32,6 +32,7 @@ const TENANT_MODELS = new Set([
   "TenantSettings",
   "AuditLog",
   "TenantImpressum",
+  "QuoteRequest",
 ]);
 
 // Operações cujo `where` aceita filtro composto (lista não-única).

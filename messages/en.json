@@ -449,11 +449,17 @@
       "impressumSaveError": "Failed to save Impressum.",
       "directoryTitle": "Public directory",
       "directoryToggleLabel": "List my business in the public directory",
-      "directoryToggleHelp": "Lets customers find your business by city at aparatus.app/find.",
+      "directoryToggleHelp": "Lets customers find your business by city at bladiq.com/find.",
       "directoryCitiesPreview": "Will be shown under: {cities}",
       "directoryNoCities": "Add an active location to appear in the directory.",
       "directorySaved": "Directory listing updated.",
       "directorySaveError": "Failed to update directory listing.",
+      "quoteRequestsTitle": "Quote requests",
+      "quoteRequestsEmpty": "No quote requests yet.",
+      "quoteStatusNew": "New",
+      "quoteStatusContacted": "Contacted",
+      "quoteStatusClosed": "Closed",
+      "quoteStatusError": "Could not update the status.",
       "coverImageTitle": "Cover photo",
       "coverImageHint": "Shown as the hero banner on your public booking page.",
       "coverImageLabel": "Upload cover photo",
@@ -530,12 +536,23 @@
     "slotsError": "Couldn't load the available times. Try again.",
     "summaryDate": "Date",
     "summaryTime": "Time",
-    "summaryBusiness": "Barbershop",
+    "summaryBusiness": "Business",
     "bookingConfirmedTitle": "Booking confirmed!",
     "bookingConfirmedBody": "You'll receive a confirmation email shortly.",
     "close": "Close",
     "bookingError": "We couldn't confirm your booking. Try again.",
-    "paymentError": "We couldn't start the payment. Try again."
+    "paymentError": "We couldn't start the payment. Try again.",
+    "quoteRequest": {
+      "title": "Request a quote",
+      "description": "Tell us what you need and we'll get back to you.",
+      "messagePlaceholder": "What do you need done?",
+      "submit": "Send request",
+      "submitting": "Sending…",
+      "successTitle": "Request sent!",
+      "successBody": "We'll get back to you soon.",
+      "error": "We couldn't send your request. Try again.",
+      "contactRequired": "Enter your email or phone."
+    }
   },
   "landing": {
     "nav": {
@@ -701,8 +718,13 @@
     "empty": "No businesses found."
   },
   "emails": {
-    "footer": "Sent by {organization} via Bladiq — online booking for modern barbershops.",
-    "genericFooter": "Bladiq — online booking for modern barbershops.",
+    "footer": "Sent by {organization} via Bladiq — online booking for local businesses.",
+    "genericFooter": "Bladiq — online booking for local businesses.",
+    "quoteRequest": {
+      "subject": "New quote request from {name} — {organization}",
+      "heading": "New quote request",
+      "body": "{name} sent a quote request via {organization}'s Bladiq page. Message: \"{message}\". Contact: {contact}."
+    },
     "booking": {
       "confirmation": {
         "subject": "You're booked! ✂️ {service} at {organization}",

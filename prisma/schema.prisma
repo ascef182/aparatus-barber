@@ -451,6 +451,7 @@ model Organization {
   services    Service[]
   customers   Customer[]
   bookings    Booking[]
+  quoteRequests QuoteRequest[]
 
   @@map("organization")
 }
@@ -566,10 +567,43 @@ model Location {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt
   staff          Staff[]
+  quoteRequests  QuoteRequest[]
 
   @@index([organizationId])
   @@index([city])
   @@map("location")
+}
+
+enum QuoteRequestStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+/**
+ * Pedido de orçamento — categorias que não funcionam por horário fixo
+ * (ELECTRICIAN, CONSTRUCTION; ver lib/business-category.ts) não usam o
+ * motor de disponibilidade/Booking, só captura de contato + notificação
+ * pro staff. Sem negociação/threading e sem conversão automática pra
+ * Booking — o tenant retoma contato manualmente (escopo deliberadamente
+ * pequeno, ver docs/ROADMAP-2026-07-21.md Fase A2).
+ */
+model QuoteRequest {
+  id             String             @id @default(uuid())
+  organizationId String
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  locationId     String?
+  location       Location?          @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  customerName   String
+  customerEmail  String?
+  customerPhone  String?
+  message        String
+  status         QuoteRequestStatus @default(NEW)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @default(now()) @updatedAt
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@map("quoteRequest")
 }
 
 model TenantImpressum {

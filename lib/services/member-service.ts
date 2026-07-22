@@ -22,6 +22,18 @@ export function listOrganizationsForUser(userId: string) {
   });
 }
 
+/** E-mail de destino pra notificações operacionais (ex.: pedido de
+ * orçamento) sem contexto de tenant ativo (worker) — dono é sempre único
+ * por organização, então "primeiro membro owner" já resolve sem ambiguidade. */
+export async function getOwnerEmail(organizationId: string): Promise<string | null> {
+  const owner = await prisma.member.findFirst({
+    where: { organizationId, role: "owner" },
+    include: { user: { select: { email: true } } },
+    orderBy: { createdAt: "asc" },
+  });
+  return owner?.user.email ?? null;
+}
+
 export function listMembers(organizationId: string) {
   return prisma.member.findMany({
     where: { organizationId },

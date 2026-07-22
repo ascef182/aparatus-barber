@@ -68,6 +68,24 @@ export async function enqueueInvitationEmail(job: InvitationNotificationJob) {
   });
 }
 
+export type QuoteRequestNotificationJob = { quoteRequestId: string };
+
+/** E-mail pro staff avisando de um novo pedido de orçamento (categorias
+ * sem horário fixo, ver lib/business-category.ts) — sem retry agressivo
+ * como booking (não é crítico pro fluxo de pagamento), mas ainda merece
+ * tentar de novo se o Resend falhar. */
+export const quoteRequestNotifications = new Queue<QuoteRequestNotificationJob>("quote-request-notifications", { connection });
+
+export async function enqueueQuoteRequestNotification(job: QuoteRequestNotificationJob) {
+  await quoteRequestNotifications.add("notify", job, {
+    jobId: `quote-request-${job.quoteRequestId}`,
+    attempts: 5,
+    backoff: { type: "exponential", delay: 1000 },
+    removeOnComplete: 500,
+    removeOnFail: 1000,
+  });
+}
+
 /**
  * Decide se e o que enviar para um job de notificação — extraído do worker
  * para ser testável sem subir um Worker/Redis real. Retorna null quando a

@@ -6,10 +6,12 @@ import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { getImpressum } from "@/lib/services/impressum-service";
 import { getTenantUrl } from "@/lib/tenant-host";
+import { isQuoteBasedCategory } from "@/lib/business-category";
 import { ServiceItem } from "./service-item";
 import { BookingStatusToast } from "./booking-status-toast";
 import { BackButton } from "./back-button";
 import { StructuredData } from "./structured-data";
+import { QuoteRequestForm } from "./quote-request-form";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -90,7 +92,7 @@ const TenantHomePage = async ({
     db.staff.findMany({ where: { isActive: true }, select: { id: true, displayName: true, services: { select: { serviceId: true } } } }),
     db.location.count({ where: { countryCode: "DE" } }).then((count) => count > 0),
     getImpressum(),
-    db.location.findFirst({ orderBy: { createdAt: "asc" }, select: { phone: true, description: true, addressLine1: true, postalCode: true, city: true, countryCode: true } }),
+    db.location.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true, phone: true, description: true, addressLine1: true, postalCode: true, city: true, countryCode: true } }),
   ]));
 
   // Impressumspflicht (§5 TMG): filial alemã sem Impressum preenchido não
@@ -141,16 +143,29 @@ const TenantHomePage = async ({
         </header>
       )}
       <section className="mx-auto flex max-w-2xl flex-col gap-3 p-6">
-        <h2 className="text-lg font-bold">{tBooking("chooseService")}</h2>
-        {services.map((service) => (
-          <ServiceItem
-            key={service.id}
-            service={service}
-            eligibleStaff={staffList.filter((member) => member.serviceIds.includes(service.id))}
-            organizationName={organization.name}
-            locale={locale}
-          />
-        ))}
+        {isQuoteBasedCategory(organization.category) ? (
+          <>
+            {services.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {services.map((service) => service.name).join(" · ")}
+              </p>
+            )}
+            <QuoteRequestForm locationId={defaultLocation?.id} />
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-bold">{tBooking("chooseService")}</h2>
+            {services.map((service) => (
+              <ServiceItem
+                key={service.id}
+                service={service}
+                eligibleStaff={staffList.filter((member) => member.serviceIds.includes(service.id))}
+                organizationName={organization.name}
+                locale={locale}
+              />
+            ))}
+          </>
+        )}
       </section>
     </main>
   );

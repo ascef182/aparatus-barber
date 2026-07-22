@@ -449,11 +449,17 @@
       "impressumSaveError": "Fehler beim Speichern des Impressums.",
       "directoryTitle": "Öffentliches Verzeichnis",
       "directoryToggleLabel": "Mein Unternehmen im öffentlichen Verzeichnis listen",
-      "directoryToggleHelp": "Kunden können Ihr Unternehmen dann über die Stadt auf aparatus.app/find finden.",
+      "directoryToggleHelp": "Kunden können Ihr Unternehmen dann über die Stadt auf bladiq.com/find finden.",
       "directoryCitiesPreview": "Wird angezeigt unter: {cities}",
       "directoryNoCities": "Fügen Sie einen aktiven Standort hinzu, um im Verzeichnis zu erscheinen.",
       "directorySaved": "Verzeichniseintrag aktualisiert.",
       "directorySaveError": "Verzeichniseintrag konnte nicht aktualisiert werden.",
+      "quoteRequestsTitle": "Angebotsanfragen",
+      "quoteRequestsEmpty": "Noch keine Angebotsanfragen.",
+      "quoteStatusNew": "Neu",
+      "quoteStatusContacted": "Kontaktiert",
+      "quoteStatusClosed": "Abgeschlossen",
+      "quoteStatusError": "Status konnte nicht aktualisiert werden.",
       "coverImageTitle": "Titelbild",
       "coverImageHint": "Wird als Hero-Banner auf Ihrer öffentlichen Buchungsseite angezeigt.",
       "coverImageLabel": "Titelbild hochladen",
@@ -530,12 +536,23 @@
     "slotsError": "Die verfügbaren Zeiten konnten nicht geladen werden. Versuchen Sie es erneut.",
     "summaryDate": "Datum",
     "summaryTime": "Uhrzeit",
-    "summaryBusiness": "Friseursalon",
+    "summaryBusiness": "Unternehmen",
     "bookingConfirmedTitle": "Termin bestätigt!",
     "bookingConfirmedBody": "Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
     "close": "Schließen",
     "bookingError": "Ihre Buchung konnte nicht bestätigt werden. Versuchen Sie es erneut.",
-    "paymentError": "Die Zahlung konnte nicht gestartet werden. Versuchen Sie es erneut."
+    "paymentError": "Die Zahlung konnte nicht gestartet werden. Versuchen Sie es erneut.",
+    "quoteRequest": {
+      "title": "Angebot anfragen",
+      "description": "Beschreiben Sie, was Sie brauchen — wir melden uns bei Ihnen.",
+      "messagePlaceholder": "Was möchten Sie erledigt haben?",
+      "submit": "Anfrage senden",
+      "submitting": "Wird gesendet…",
+      "successTitle": "Anfrage gesendet!",
+      "successBody": "Wir melden uns in Kürze bei Ihnen.",
+      "error": "Ihre Anfrage konnte nicht gesendet werden. Versuchen Sie es erneut.",
+      "contactRequired": "Geben Sie Ihre E-Mail oder Telefonnummer an."
+    }
   },
   "landing": {
     "nav": {
@@ -701,8 +718,13 @@
     "empty": "Keine Unternehmen gefunden."
   },
   "emails": {
-    "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für moderne Barbershops.",
-    "genericFooter": "Bladiq — Online-Buchung für moderne Barbershops.",
+    "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für lokale Unternehmen.",
+    "genericFooter": "Bladiq — Online-Buchung für lokale Unternehmen.",
+    "quoteRequest": {
+      "subject": "Neue Anfrage von {name} — {organization}",
+      "heading": "Neue Angebotsanfrage",
+      "body": "{name} hat über die Bladiq-Seite von {organization} eine Angebotsanfrage gesendet. Nachricht: \"{message}\". Kontakt: {contact}."
+    },
     "booking": {
       "confirmation": {
         "subject": "Gebucht! ✂️ {service} bei {organization}",
