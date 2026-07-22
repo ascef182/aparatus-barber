@@ -21,6 +21,21 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      # Só para o step de drift de migration abaixo — os testes em si usam
+      # seu próprio Postgres efêmero via Testcontainers (não este).
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: migration_shadow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       # DATABASE_URL só precisa existir pra prisma.config.ts (validado no
       # postinstall via `prisma generate`, que não conecta de fato no banco)
@@ -62,6 +77,13 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      # Pega dev esquecendo de rodar `prisma migrate dev` depois de mudar o
+      # schema — schema.prisma e o histórico de migrations saindo de
+      # sincronia não quebra os testes (Testcontainers só aplica as
+      # migrations existentes, nunca compara contra o schema declarativo).
+      - name: Migration drift check
+        run: pnpm prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url postgresql://postgres:postgres@localhost:5432/migration_shadow --exit-code
 
       # Testcontainers usa o Docker nativo do runner ubuntu-latest.
       # As suítes de isolamento de tenant (plano §8.3) entram aqui como gate.
