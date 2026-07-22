@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Redis from "ioredis";
+import { logger } from "@/lib/logger";
 
 // maxRetriesPerRequest baixo: sem Redis disponível, um comando falha depois
 // de 1 tentativa de reconexão (rejeita a Promise) em vez de enfileirar e
@@ -60,6 +61,14 @@ export async function getClientIp(): Promise<string> {
  * Janela fixa por chave (ex.: `booking-hold:{ip}:{organizationId}`).
  * INCR+EXPIRE atômicos o suficiente para rate limiting (não precisa de
  * exatidão perfeita sob corrida — é defesa contra abuso, não contabilidade).
+ *
+ * Nota sobre o rate limit de login do Better Auth (lib/auth.ts): ele usa
+ * `authSecondaryStorage` acima diretamente (get/set/delete genéricos,
+ * compartilhados com storage de sessão), não passa por esta função — não
+ * há um ponto de interceptação limpo pra logar só as negações de login
+ * sem depender do naming interno de chave do Better Auth, que não é
+ * contrato público. Visibilidade de força bruta em login fica pendente
+ * até o Better Auth expor um hook próprio pra isso.
  */
 export async function checkRateLimit(
   key: string,
@@ -67,5 +76,9 @@ export async function checkRateLimit(
 ): Promise<{ allowed: boolean; remaining: number }> {
   const count = await redis.incr(key);
   if (count === 1) await redis.expire(key, windowSeconds);
-  return { allowed: count <= max, remaining: Math.max(0, max - count) };
+  const allowed = count <= max;
+  if (!allowed) {
+    logger({ rateLimitKey: key, count, max }).warn({}, "rate_limit.denied");
+  }
+  return { allowed, remaining: Math.max(0, max - count) };
 }
