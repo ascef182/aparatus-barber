@@ -176,6 +176,7 @@ export function ServiceItem({
                       <Button
                         key={item.startAt.toString()}
                         type="button"
+                        data-testid="availability-slot"
                         variant={slot?.startAt.getTime() === item.startAt.getTime() ? "default" : "outline"}
                         className="shrink-0 rounded-full px-4"
                         onClick={() => handleSlotSelect(item)}
