@@ -1,17 +1,54 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { getImpressum } from "@/lib/services/impressum-service";
+import { getTenantUrl } from "@/lib/tenant-host";
 import { ServiceItem } from "./service-item";
 import { BookingStatusToast } from "./booking-status-toast";
 import { BackButton } from "./back-button";
+import { StructuredData } from "./structured-data";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const organization = await getOrganizationBySlug(slug);
+  if (!organization || organization.status === "CHURNED") return {};
+
+  const location = await runWithTenant(organization.id, () =>
+    db.location.findFirst({ orderBy: { createdAt: "asc" }, select: { description: true, city: true } }),
+  );
+  const url = getTenantUrl(slug);
+  const title = `${organization.name} — Agendamento online`;
+  const description =
+    location?.description ?? `Agende seu horário em ${organization.name}${location?.city ? ` — ${location.city}` : ""}.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: organization.name,
+      locale: organization.defaultLocale,
+      images: organization.coverImageUrl ? [{ url: organization.coverImageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: organization.coverImageUrl ? [organization.coverImageUrl] : undefined,
+    },
+  };
+}
 
 /**
  * Landing white-label do tenant (placeholder da Fase 1).
  * Branding na Fase 3. Acessível apenas via rewrite do proxy
- * ({slug}.aparatus.app), nunca por /t/.
+ * ({slug}.bladiq.com), nunca por /t/.
  */
 const TenantHomePage = async ({
   params,
@@ -53,7 +90,7 @@ const TenantHomePage = async ({
     db.staff.findMany({ where: { isActive: true }, select: { id: true, displayName: true, services: { select: { serviceId: true } } } }),
     db.location.count({ where: { countryCode: "DE" } }).then((count) => count > 0),
     getImpressum(),
-    db.location.findFirst({ orderBy: { createdAt: "asc" }, select: { phone: true, description: true } }),
+    db.location.findFirst({ orderBy: { createdAt: "asc" }, select: { phone: true, description: true, addressLine1: true, postalCode: true, city: true, countryCode: true } }),
   ]));
 
   // Impressumspflicht (§5 TMG): filial alemã sem Impressum preenchido não
@@ -75,6 +112,14 @@ const TenantHomePage = async ({
 
   return (
     <main className="relative min-h-screen">
+      <StructuredData
+        organizationName={organization.name}
+        category={organization.category}
+        url={getTenantUrl(slug)}
+        location={defaultLocation}
+        services={services}
+        image={organization.coverImageUrl}
+      />
       <BookingStatusToast status={status} successMessage={t("bookingSuccessBanner")} canceledMessage={t("bookingCanceledBanner")} />
       <BackButton />
       {organization.coverImageUrl ? (
