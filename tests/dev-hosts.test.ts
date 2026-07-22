@@ -10,7 +10,7 @@ const BASE = "# Copyright (c) 1993-2009 Microsoft Corp.\r\n#\t127.0.0.1       lo
 describe("rootHostname", () => {
   it("remove a porta do NEXT_PUBLIC_ROOT_DOMAIN", () => {
     expect(rootHostname("lvh.me:3000")).toBe("lvh.me");
-    expect(rootHostname("aparatus.app")).toBe("aparatus.app");
+    expect(rootHostname("bladiq.com")).toBe("bladiq.com");
     expect(rootHostname("LVH.ME:3000")).toBe("lvh.me");
   });
 });

@@ -94,6 +94,12 @@ export function OnboardingWizardForm({
               {createdSlug}.{getRootDomain()}
             </span>
           </p>
+          <p className="text-sm text-muted-foreground">
+            {t("directoryHint")}{" "}
+            <a href={getTenantUrl(createdSlug, "/dashboard/settings")} className="underline">
+              {t("directoryHintLink")}
+            </a>
+          </p>
           <Button asChild>
             <a href={getTenantUrl(createdSlug, "/dashboard")}>{t("goToDashboard")}</a>
           </Button>

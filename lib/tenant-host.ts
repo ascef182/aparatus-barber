@@ -7,12 +7,20 @@
 /**
  * Subdomínios que nunca podem virar slug de tenant — nem por resolução de
  * host (resolveTenantSlug) nem por criação de Organization
- * (create-organization.ts). "app" é reservado pro futuro app de descoberta
- * do cliente final em app.bladiq.com (hoje prototipado em /app neste
- * mesmo domínio, ver app/app/page.tsx) — um repositório separado, não este
- * app multi-tenant.
+ * (create-organization.ts). "app" é o diretório de descoberta do cliente
+ * final: app.bladiq.com é servido por este mesmo app (proxy.ts reescreve
+ * pra /app, ver app/app/page.tsx), decisão de 2026-07-22 — extrair pra um
+ * deploy/repo separado fica pra quando a operação conjunta virar gargalo
+ * real de escala, não antes.
  */
 export const RESERVED_SUBDOMAINS = ["www", "app", "api", "admin"] as const;
+
+/** true quando o host é exatamente o subdomínio reservado "app" (diretório
+ * de descoberta) — usado pelo proxy pra decidir o rewrite pra /app. */
+export function isDiscoveryAppHost(host: string | null): boolean {
+  if (!host) return false;
+  return host.toLowerCase() === `app.${getRootDomain()}`;
+}
 
 export function getRootDomain(): string {
   return process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost:3000";
@@ -43,7 +51,7 @@ export function getRootUrl(path = ""): string {
 }
 
 /**
- * Extrai o slug do tenant de um host como "barbearia-x.aparatus.app".
+ * Extrai o slug do tenant de um host como "barbearia-x.bladiq.com".
  * Retorna null para o domínio raiz (marketing/admin), www, hosts de outra
  * zona ou subdomínios aninhados.
  */

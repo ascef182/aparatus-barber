@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { resolveTenantSlug } from "@/lib/tenant-host";
+import { isDiscoveryAppHost, resolveTenantSlug } from "@/lib/tenant-host";
 
 /**
  * Roteamento por host (plano, seção 7):
- * - {slug}.aparatus.app  -> rewrite interno para /t/{slug}/...
+ * - {slug}.bladiq.com  -> rewrite interno para /t/{slug}/...
+ * - app.bladiq.com     -> rewrite interno para /app/... (diretório de
+ *   descoberta do cliente final, ver lib/tenant-host.ts#isDiscoveryAppHost)
  * - domínio raiz         -> marketing/admin, sem rewrite; /t/* é bloqueado
  *   (as rotas de tenant só existem via rewrite, nunca por path público).
  */
@@ -23,7 +25,8 @@ const RESERVED_PREFIXES = [
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const slug = resolveTenantSlug(request.headers.get("host"));
+  const host = request.headers.get("host");
+  const slug = resolveTenantSlug(host);
 
   // Repassado para permitir que Server Components (ex.: dashboard/layout.tsx,
   // enforcement de MFA) leiam o pathname atual via headers() — Next.js não
@@ -34,6 +37,11 @@ export default function proxy(request: NextRequest) {
   if (!slug) {
     if (pathname === "/t" || pathname.startsWith("/t/")) {
       return NextResponse.redirect(new URL("/", request.url));
+    }
+    if (isDiscoveryAppHost(host)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/app${pathname === "/" ? "" : pathname}`;
+      return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
     }
     return NextResponse.next({ request: { headers: requestHeaders } });
   }

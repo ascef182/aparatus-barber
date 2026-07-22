@@ -415,7 +415,7 @@ enum BusinessCategory {
 model Organization {
   id        String   @id
   name      String
-  slug      String   @unique // subdomínio: {slug}.aparatus.app
+  slug      String   @unique // subdomínio: {slug}.bladiq.com
   logo      String?
   coverImageUrl String? // hero da página pública (app/t/[slug])
   createdAt DateTime @default(now())
