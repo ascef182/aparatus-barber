@@ -8,6 +8,7 @@ import { Toaster } from "./_components/ui/sonner";
 import { TooltipProvider } from "./_components/ui/tooltip";
 import QueryProvider from "./_providers/query-provider";
 import { ThemeProvider } from "./_providers/theme-provider";
+import { CookieConsentBanner } from "./_components/cookie-consent-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,9 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bladiq — The complete booking platform for barbershops",
+  title: "Bladiq — The complete booking platform for local businesses",
   description:
-    "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern barbershop needs, in one multi-tenant SaaS.",
+    "White-label online booking, Stripe payments, team management, and German legal compliance — everything a modern local business needs, in one multi-tenant SaaS.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -54,6 +55,7 @@ export default async function RootLayout({
               <TooltipProvider>
                 {children}
                 <Toaster />
+                <CookieConsentBanner />
                 <Analytics />
               </TooltipProvider>
             </QueryProvider>

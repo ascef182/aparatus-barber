@@ -24,6 +24,11 @@
     "featureStripePayments": "Zahlungen über Stripe",
     "featureEmailSupport": "E-Mail-Support"
   },
+  "cookieConsent": {
+    "message": "Wir verwenden nur essenzielle Cookies für den Betrieb dieser Seite (Sitzung, Tenant-Routing, Theme). Keine Marketing- oder Tracking-Cookies.",
+    "privacyLink": "Datenschutzerklärung",
+    "accept": "Verstanden"
+  },
   "onboarding": {
     "title": "Unternehmen erstellen",
     "namePlaceholder": "Name des Unternehmens",

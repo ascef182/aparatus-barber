@@ -24,6 +24,11 @@
     "featureStripePayments": "Stripe payments",
     "featureEmailSupport": "Email support"
   },
+  "cookieConsent": {
+    "message": "We use essential cookies to run this site (sessions, tenant routing, theme). No marketing or tracking cookies.",
+    "privacyLink": "Privacy policy",
+    "accept": "Got it"
+  },
   "onboarding": {
     "title": "Create your business",
     "namePlaceholder": "Business name",
