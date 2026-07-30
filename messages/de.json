@@ -620,7 +620,11 @@
     "slotUnavailable": "Zeitslot nicht verfügbar",
     "slotUnavailableMessage": "Entschuldigung, dieser Zeitpunkt wurde gerade von einem anderen Kunden reserviert. Bitte wählen Sie einen anderen Zeitpunkt unten aus oder gehen Sie zurück, um ein anderes Datum zu wählen.",
     "suggestedSlots": "Verfügbare Zeitslots",
-    "chooseDifferentDate": "Anderes Datum wählen"
+    "chooseDifferentDate": "Anderes Datum wählen",
+    "nameTooShort": "Der Name muss mindestens 2 Zeichen lang sein.",
+    "nameInvalidChars": "Der Name enthält ungültige Zeichen.",
+    "emailInvalid": "Ungültige E-Mail-Adresse.",
+    "phoneInvalidChars": "Die Telefonnummer enthält ungültige Zeichen."
   },
   "landing": {
     "nav": {

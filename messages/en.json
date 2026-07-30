@@ -620,7 +620,11 @@
     "slotUnavailable": "Slot unavailable",
     "slotUnavailableMessage": "Sorry, this time slot was just booked by another customer. Please choose a different time below or go back to select another date.",
     "suggestedSlots": "Available slots",
-    "chooseDifferentDate": "Choose different date"
+    "chooseDifferentDate": "Choose different date",
+    "nameTooShort": "Name must be at least 2 characters.",
+    "nameInvalidChars": "Name contains invalid characters.",
+    "emailInvalid": "Invalid email.",
+    "phoneInvalidChars": "Phone contains invalid characters."
   },
   "landing": {
     "nav": {

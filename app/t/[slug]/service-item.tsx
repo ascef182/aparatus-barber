@@ -15,6 +15,7 @@ import { Calendar } from "@/app/_components/ui/calendar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { getPublicAvailability } from "@/app/_actions/get-public-availability";
 import { createPublicBooking } from "@/app/_actions/create-public-booking";
+import { publicBookingCustomerSchema } from "@/app/_actions/create-public-booking.schemas";
 import { createBookingPaymentCheckout } from "@/app/_actions/create-booking-payment-checkout";
 import type { AvailableSlot } from "@/lib/scheduling/availability";
 
@@ -52,12 +53,29 @@ export function ServiceItem({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [touched, setTouched] = useState({ name: false, email: false, phone: false });
   const [slotConflictError, setSlotConflictError] = useState(false);
   const [alternativeSlots, setAlternativeSlots] = useState<AvailableSlot[]>([]);
 
   const availability = useAction(getPublicAvailability);
   const booking = useAction(createPublicBooking);
   const checkout = useAction(createBookingPaymentCheckout);
+
+  // Mesma validação da action (create-public-booking.schemas.ts) rodada no
+  // cliente pra dar feedback inline antes do submit — sem duplicar as regras
+  // de negócio, ambos importam o mesmo schema. As mensagens do Zod em si são
+  // fixas em português (não passam por next-intl), então aqui só usamos o
+  // schema pra decidir SE cada campo é válido; a mensagem exibida vem de
+  // t(), escolhida por uma checagem equivalente à regra que falhou.
+  const validation = publicBookingCustomerSchema.safeParse({ name, email, phone: phone || undefined });
+  function fieldError(field: "name" | "email" | "phone"): string | undefined {
+    if (!touched[field] || validation.success) return undefined;
+    if (!validation.error.issues.some((issue) => issue.path[0] === field)) return undefined;
+    if (field === "name") return name.trim().length < 2 ? t("nameTooShort") : t("nameInvalidChars");
+    if (field === "email") return t("emailInvalid");
+    return t("phoneInvalidChars");
+  }
+  const markTouched = (field: "name" | "email" | "phone") => setTouched((prev) => ({ ...prev, [field]: true }));
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -133,6 +151,7 @@ export function ServiceItem({
       setName("");
       setEmail("");
       setPhone("");
+      setTouched({ name: false, email: false, phone: false });
     }
   }
 
@@ -278,15 +297,37 @@ export function ServiceItem({
             <div className="grid gap-3 px-5">
               <div className="grid gap-1.5">
                 <Label htmlFor={`${service.id}-name`}>{t("namePlaceholder")}</Label>
-                <Input id={`${service.id}-name`} value={name} onChange={(e) => setName(e.target.value)} />
+                <Input
+                  id={`${service.id}-name`}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  onBlur={() => markTouched("name")}
+                  aria-invalid={!!fieldError("name")}
+                />
+                {fieldError("name") && <p className="text-xs text-destructive">{fieldError("name")}</p>}
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor={`${service.id}-email`}>{t("emailPlaceholder")}</Label>
-                <Input id={`${service.id}-email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Input
+                  id={`${service.id}-email`}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => markTouched("email")}
+                  aria-invalid={!!fieldError("email")}
+                />
+                {fieldError("email") && <p className="text-xs text-destructive">{fieldError("email")}</p>}
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor={`${service.id}-phone`}>{t("phonePlaceholder")}</Label>
-                <Input id={`${service.id}-phone`} value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <Input
+                  id={`${service.id}-phone`}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  onBlur={() => markTouched("phone")}
+                  aria-invalid={!!fieldError("phone")}
+                />
+                {fieldError("phone") && <p className="text-xs text-destructive">{fieldError("phone")}</p>}
               </div>
             </div>
 
@@ -316,7 +357,7 @@ export function ServiceItem({
             <div className="px-5 pb-6">
               <Button
                 className="w-full rounded-full"
-                disabled={!name || !email || booking.isPending || checkout.isPending}
+                disabled={!validation.success || booking.isPending || checkout.isPending}
                 onClick={handleConfirm}
               >
                 {booking.isPending || checkout.isPending ? t("booking") : t("confirmBooking")}

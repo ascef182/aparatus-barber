@@ -620,7 +620,11 @@
     "slotUnavailable": "Horário indisponível",
     "slotUnavailableMessage": "Desculpe, este horário foi reservado por outro cliente. Escolha um horário diferente abaixo ou volte para escolher outra data.",
     "suggestedSlots": "Horários disponíveis",
-    "chooseDifferentDate": "Escolher outra data"
+    "chooseDifferentDate": "Escolher outra data",
+    "nameTooShort": "Nome deve ter pelo menos 2 caracteres.",
+    "nameInvalidChars": "Nome contém caracteres inválidos.",
+    "emailInvalid": "E-mail inválido.",
+    "phoneInvalidChars": "Telefone contém caracteres inválidos."
   },
   "landing": {
     "nav": {
