@@ -624,7 +624,18 @@
     "nameTooShort": "Nome deve ter pelo menos 2 caracteres.",
     "nameInvalidChars": "Nome contém caracteres inválidos.",
     "emailInvalid": "E-mail inválido.",
-    "phoneInvalidChars": "Telefone contém caracteres inválidos."
+    "phoneInvalidChars": "Telefone contém caracteres inválidos.",
+    "couponLabel": "Cupom de desconto (opcional)",
+    "couponPlaceholder": "Código do cupom",
+    "couponApply": "Aplicar",
+    "couponApplying": "Aplicando...",
+    "couponApplied": "Cupom aplicado!",
+    "couponGenericError": "Não foi possível validar o cupom. Tente novamente.",
+    "couponReasonInvalid": "Cupom inválido.",
+    "couponReasonNotYetValid": "Cupom ainda não é válido.",
+    "couponReasonExpired": "Cupom expirado.",
+    "couponReasonExhausted": "Cupom esgotado.",
+    "couponReasonWrongService": "Cupom não válido para este serviço."
   },
   "landing": {
     "nav": {

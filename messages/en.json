@@ -624,7 +624,18 @@
     "nameTooShort": "Name must be at least 2 characters.",
     "nameInvalidChars": "Name contains invalid characters.",
     "emailInvalid": "Invalid email.",
-    "phoneInvalidChars": "Phone contains invalid characters."
+    "phoneInvalidChars": "Phone contains invalid characters.",
+    "couponLabel": "Discount coupon (optional)",
+    "couponPlaceholder": "Coupon code",
+    "couponApply": "Apply",
+    "couponApplying": "Applying...",
+    "couponApplied": "Coupon applied!",
+    "couponGenericError": "Couldn't validate the coupon. Please try again.",
+    "couponReasonInvalid": "Invalid coupon.",
+    "couponReasonNotYetValid": "Coupon isn't valid yet.",
+    "couponReasonExpired": "Coupon expired.",
+    "couponReasonExhausted": "Coupon fully redeemed.",
+    "couponReasonWrongService": "Coupon not valid for this service."
   },
   "landing": {
     "nav": {

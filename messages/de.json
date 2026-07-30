@@ -624,7 +624,18 @@
     "nameTooShort": "Der Name muss mindestens 2 Zeichen lang sein.",
     "nameInvalidChars": "Der Name enthält ungültige Zeichen.",
     "emailInvalid": "Ungültige E-Mail-Adresse.",
-    "phoneInvalidChars": "Die Telefonnummer enthält ungültige Zeichen."
+    "phoneInvalidChars": "Die Telefonnummer enthält ungültige Zeichen.",
+    "couponLabel": "Rabattgutschein (optional)",
+    "couponPlaceholder": "Gutscheincode",
+    "couponApply": "Anwenden",
+    "couponApplying": "Wird angewendet...",
+    "couponApplied": "Gutschein angewendet!",
+    "couponGenericError": "Der Gutschein konnte nicht überprüft werden. Bitte versuchen Sie es erneut.",
+    "couponReasonInvalid": "Ungültiger Gutschein.",
+    "couponReasonNotYetValid": "Gutschein ist noch nicht gültig.",
+    "couponReasonExpired": "Gutschein abgelaufen.",
+    "couponReasonExhausted": "Gutschein vollständig eingelöst.",
+    "couponReasonWrongService": "Gutschein für diesen Service nicht gültig."
   },
   "landing": {
     "nav": {

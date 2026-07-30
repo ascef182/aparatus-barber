@@ -37,4 +37,5 @@ export const createPublicBookingSchema = z.object({
   staffId: z.uuid(),
   startAt: z.coerce.date(),
   customer: publicBookingCustomerSchema,
+  couponCode: z.string().trim().min(1).max(32).optional(),
 });

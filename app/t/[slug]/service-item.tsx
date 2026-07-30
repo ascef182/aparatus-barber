@@ -17,6 +17,7 @@ import { getPublicAvailability } from "@/app/_actions/get-public-availability";
 import { createPublicBooking } from "@/app/_actions/create-public-booking";
 import { publicBookingCustomerSchema } from "@/app/_actions/create-public-booking.schemas";
 import { createBookingPaymentCheckout } from "@/app/_actions/create-booking-payment-checkout";
+import { validateCouponAction } from "@/app/_actions/validate-coupon";
 import type { AvailableSlot } from "@/lib/scheduling/availability";
 
 type Service = { id: string; name: string; durationMinutes: number; priceInCents: number; currency: string; imageUrl: string | null };
@@ -56,10 +57,14 @@ export function ServiceItem({
   const [touched, setTouched] = useState({ name: false, email: false, phone: false });
   const [slotConflictError, setSlotConflictError] = useState(false);
   const [alternativeSlots, setAlternativeSlots] = useState<AvailableSlot[]>([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountInCents: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const availability = useAction(getPublicAvailability);
   const booking = useAction(createPublicBooking);
   const checkout = useAction(createBookingPaymentCheckout);
+  const couponValidation = useAction(validateCouponAction);
 
   // Mesma validação da action (create-public-booking.schemas.ts) rodada no
   // cliente pra dar feedback inline antes do submit — sem duplicar as regras
@@ -92,6 +97,30 @@ export function ServiceItem({
     setStaffId(item.staffIds[0] ?? "");
   }
 
+  const COUPON_REASON_KEYS = {
+    invalid: "couponReasonInvalid",
+    not_yet_valid: "couponReasonNotYetValid",
+    expired: "couponReasonExpired",
+    exhausted: "couponReasonExhausted",
+    wrong_service: "couponReasonWrongService",
+  } as const;
+
+  async function handleApplyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponError(null);
+    const result = await couponValidation.executeAsync({ code: couponCode.trim(), serviceId: service.id });
+    if (result.serverError || !result.data) {
+      setCouponError(t("couponGenericError"));
+      return;
+    }
+    if (!result.data.valid) {
+      setCouponError(t(COUPON_REASON_KEYS[result.data.reasonCode]));
+      setAppliedCoupon(null);
+      return;
+    }
+    setAppliedCoupon({ code: couponCode.trim(), discountInCents: result.data.discountInCents });
+  }
+
   async function handleConfirm() {
     if (!slot || !staffId || !name || !email) return;
     const result = await booking.executeAsync({
@@ -99,6 +128,7 @@ export function ServiceItem({
       staffId,
       startAt: slot.startAt,
       customer: { name, email, phone: phone || undefined, locale },
+      couponCode: appliedCoupon?.code,
     });
     if (result.serverError || result.validationErrors) {
       // Se foi erro de slot indisponível, carrega alternativas
@@ -152,10 +182,17 @@ export function ServiceItem({
       setEmail("");
       setPhone("");
       setTouched({ name: false, email: false, phone: false });
+      setCouponCode("");
+      setAppliedCoupon(null);
+      setCouponError(null);
     }
   }
 
-  const priceLabel = new Intl.NumberFormat(locale, { style: "currency", currency: service.currency }).format(service.priceInCents / 100);
+  const currencyFormatter = new Intl.NumberFormat(locale, { style: "currency", currency: service.currency });
+  const priceLabel = currencyFormatter.format(service.priceInCents / 100);
+  const discountedPriceLabel = appliedCoupon
+    ? currencyFormatter.format(Math.max(0, service.priceInCents - appliedCoupon.discountInCents) / 100)
+    : null;
   const formattedDate = date ? format(date, "d MMM", { locale: DATE_FNS_LOCALES[locale] }) : "";
 
   return (
@@ -334,10 +371,44 @@ export function ServiceItem({
             <Separator />
 
             <div className="px-5">
+              <Label htmlFor={`${service.id}-coupon`}>{t("couponLabel")}</Label>
+              <div className="mt-1.5 flex gap-2">
+                <Input
+                  id={`${service.id}-coupon`}
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    setAppliedCoupon(null);
+                    setCouponError(null);
+                  }}
+                  placeholder={t("couponPlaceholder")}
+                  className="uppercase"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!couponCode.trim() || couponValidation.isPending || !!appliedCoupon}
+                  onClick={handleApplyCoupon}
+                >
+                  {couponValidation.isPending ? t("couponApplying") : t("couponApply")}
+                </Button>
+              </div>
+              {couponError && <p className="mt-1.5 text-xs text-destructive">{couponError}</p>}
+              {appliedCoupon && <p className="mt-1.5 text-xs text-primary">{t("couponApplied")}</p>}
+            </div>
+
+            <div className="px-5">
               <div className="flex flex-col gap-3 rounded-lg border p-3">
                 <div className="flex items-center justify-between">
                   <p className="text-base font-bold">{service.name}</p>
-                  <p className="text-sm font-bold">{priceLabel}</p>
+                  {discountedPriceLabel ? (
+                    <span className="flex items-baseline gap-2">
+                      <span className="text-xs text-muted-foreground line-through">{priceLabel}</span>
+                      <span className="text-sm font-bold text-primary">{discountedPriceLabel}</span>
+                    </span>
+                  ) : (
+                    <p className="text-sm font-bold">{priceLabel}</p>
+                  )}
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <p>{t("summaryDate")}</p>

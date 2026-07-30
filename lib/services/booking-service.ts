@@ -5,6 +5,7 @@ import { getAvailableSlots } from "@/lib/scheduling/availability";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
 import { findOrCreateCustomerForUser, findOrCreateGuestCustomer } from "@/lib/services/customer-service";
 import { getResolvedRules } from "@/lib/services/settings-service";
+import { validateCoupon } from "@/lib/services/coupon-service";
 import { enqueueBookingNotification } from "@/lib/notifications";
 import { checkCancellation } from "@/lib/rules/policies/cancellation";
 import { logger } from "@/lib/logger";
@@ -15,6 +16,7 @@ export type CreateBookingInput = {
   staffId: string;
   startAt: Date;
   source?: "WEB" | "DASHBOARD";
+  couponCode?: string;
 } & (
   | { customer: { name: string; email?: string; phone?: string; locale?: string }; customerUser?: undefined }
   // Cliente logado na área de conta (app/t/[slug]/account) — identidade vem
@@ -75,9 +77,24 @@ export async function createBooking(input: CreateBookingInput) {
     : await findOrCreateGuestCustomer(input.customer);
   const totalMinutes = service.bufferBeforeMinutes + service.durationMinutes + service.bufferAfterMinutes;
   const priceInCents = service.priceInCents;
+
+  // couponId/discountInCents validados aqui (não no wizard): o preview do
+  // cliente (validate-coupon action) é só UX, a autoridade sobre o desconto
+  // aplicado de fato é sempre esta revalidação no momento da criação —
+  // mesmo padrão de defesa em profundidade da checagem de slot em
+  // getAvailableSlots (preview) + exclusion constraint (autoridade).
+  let couponId: string | undefined;
+  let discountInCents = 0;
+  if (input.couponCode) {
+    const result = await validateCoupon(input.couponCode, service.id, priceInCents);
+    if (!result.valid) throw new Error(result.reason);
+    couponId = result.couponId;
+    discountInCents = result.discountInCents;
+  }
+  const finalPriceInCents = priceInCents - discountInCents;
   const chargeAmount = paymentMode === "DEPOSIT"
-    ? Math.round(priceInCents * (service.depositPercent ?? 0) / 100)
-    : priceInCents;
+    ? Math.round(finalPriceInCents * (service.depositPercent ?? 0) / 100)
+    : finalPriceInCents;
 
   let booking;
   try {
@@ -95,6 +112,8 @@ export async function createBooking(input: CreateBookingInput) {
         priceInCents,
         currency: service.currency,
         paymentMode,
+        couponId,
+        discountInCents,
         paymentStatus: requiresOnlinePayment ? "PENDING" : "NONE",
         paymentReceivedInCents: 0,
         onlinePaymentAmountInCents: requiresOnlinePayment ? chargeAmount : 0,
@@ -253,7 +272,12 @@ export async function applyRefundToBooking(paymentIntentId: string, amountRefund
   return runWithPlatformScope(async () => {
     const booking = await db.booking.findFirst({ where: { stripePaymentIntentId: paymentIntentId } });
     if (!booking) return null;
-    const chargeAmount = booking.priceInCents;
+    // Compara contra o que foi de fato cobrado (onlinePaymentAmountInCents),
+    // não booking.priceInCents (preço cheio do serviço) — com deposit mode
+    // ou cupom aplicado, o valor cobrado é menor que o preço, e comparar
+    // contra o preço cheio classificava um reembolso 100% do cobrado como
+    // PARTIALLY_REFUNDED por engano.
+    const chargeAmount = booking.onlinePaymentAmountInCents;
     const paymentStatus = amountRefundedInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
     const updated = await db.booking.update({ where: { id: booking.id }, data: { paymentStatus, refundedAmountInCents: amountRefundedInCents } });
     await logAuditEvent({
