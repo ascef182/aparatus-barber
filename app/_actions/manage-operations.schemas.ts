@@ -9,25 +9,50 @@ import { z } from "zod";
  * async functions, found object.").
  */
 
-const promotionSchema = z.object({
-  code: z.string().trim().min(3).max(32), type: z.enum(["PERCENT", "FIXED"]), value: z.coerce.number().int().positive(),
-  validUntil: z.coerce.date().optional(), maxRedemptions: z.coerce.number().int().positive().optional(),
-  scope: z.enum(["ALL_SERVICES", "SELECTED_SERVICES"]), serviceIds: z.array(z.uuid()).default([]),
-});
-
 const serviceImagesSchema = z.array(z.object({ url: z.url(), publicId: z.string().max(255).optional() })).max(5);
 
 export const serviceSchema = z.object({
   name: z.string().trim().min(2).max(120), description: z.string().trim().max(1000).optional(),
   durationMinutes: z.coerce.number().int().min(5), priceInCents: z.coerce.number().int().min(0), locationId: z.uuid().optional(),
   paymentMode: z.enum(["ON_SITE", "DEPOSIT", "FULL_PREPAYMENT"]).optional(), depositPercent: z.coerce.number().int().min(1).max(100).optional(),
-  images: serviceImagesSchema.default([]), promotion: promotionSchema.optional(),
+  images: serviceImagesSchema.default([]),
 });
 // images fica opcional (não `.default([])`): ausente no input significa "não
 // mexer nas fotos existentes"; array vazio significa "remover todas" — um
 // default apagaria as fotos em qualquer update que não mande `images` (ex.:
 // o toggle de isActive), igual ao caso de serviceIds em updateStaffSchema.
-export const updateServiceSchema = serviceSchema.omit({ images: true, promotion: true }).partial().extend({ id: z.uuid(), isActive: z.boolean().optional(), images: serviceImagesSchema.optional() });
+export const updateServiceSchema = serviceSchema.omit({ images: true }).partial().extend({ id: z.uuid(), isActive: z.boolean().optional(), images: serviceImagesSchema.optional() });
+
+// value é percentual (1–100) para PERCENT ou centavos para FIXED — só o
+// primeiro caso tem teto. Checagem null-safe: no update parcial, type/value
+// podem estar ausentes (campo não sendo alterado nesta submissão).
+function validateCouponValue(value: { type?: "PERCENT" | "FIXED"; value?: number }, ctx: z.RefinementCtx) {
+  if (value.type === "PERCENT" && value.value !== undefined && value.value > 100) {
+    ctx.addIssue({ code: "custom", message: "Desconto percentual deve ser no máximo 100.", path: ["value"] });
+  }
+}
+const couponBaseSchema = z.object({
+  code: z.string().trim().min(3).max(32),
+  type: z.enum(["PERCENT", "FIXED"]),
+  value: z.coerce.number().int().positive(),
+  // nullable: o form de edição sempre reenvia esses três campos (não é um
+  // patch parcial), então precisa poder expressar "sem restrição" (null),
+  // não só "não estou tocando nisso" (undefined, via .partial() no update).
+  validFrom: z.coerce.date().nullable().optional(),
+  validUntil: z.coerce.date().nullable().optional(),
+  maxRedemptions: z.coerce.number().int().positive().nullable().optional(),
+  scope: z.enum(["ALL_SERVICES", "SELECTED_SERVICES"]),
+  serviceIds: z.array(z.uuid()).default([]),
+});
+export const couponSchema = couponBaseSchema.superRefine(validateCouponValue);
+// serviceIds sem `.default([])` no update pela mesma razão de serviceIds em
+// updateStaffSchema: omitido = "não mexer no escopo", array vazio = "trocar
+// pra nenhum serviço vinculado" (ambos válidos, mas semanticamente diferentes).
+export const updateCouponSchema = couponBaseSchema
+  .omit({ serviceIds: true })
+  .partial()
+  .extend({ id: z.uuid(), isActive: z.boolean().optional(), serviceIds: z.array(z.uuid()).optional() })
+  .superRefine(validateCouponValue);
 
 const staffBaseSchema = z.object({
   displayName: z.string().trim().min(2).max(120), jobTitle: z.string().trim().max(120).optional(), imageUrl: z.url().optional(), locationId: z.uuid(), color: z.string().max(24).optional(), serviceIds: z.array(z.uuid()).default([]),

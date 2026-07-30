@@ -11,6 +11,7 @@ import {
   Scissors,
   Settings,
   ShieldAlert,
+  Ticket,
   TriangleAlert,
   Users,
 } from "lucide-react";
@@ -64,6 +65,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: "/dashboard", label: t("nav.overview"), icon: <LayoutDashboard className={navIconClass} /> },
     { href: "/dashboard/agenda", label: t("nav.agenda"), icon: <CalendarDays className={navIconClass} /> },
     { href: "/dashboard/services", label: t("nav.services"), icon: <Scissors className={navIconClass} /> },
+    { href: "/dashboard/coupons", label: t("nav.coupons"), icon: <Ticket className={navIconClass} /> },
     { href: "/dashboard/staff", label: t("nav.staff"), icon: <Users className={navIconClass} /> },
     { href: "/dashboard/customers", label: t("nav.customers"), icon: <Contact className={navIconClass} /> },
     { href: "/dashboard/settings", label: t("nav.settings"), icon: <Settings className={navIconClass} /> },

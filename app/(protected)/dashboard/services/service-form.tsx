@@ -22,9 +22,6 @@ export function ServiceForm({ service, onDone }: { service?: ServiceInput; onDon
   const [depositPercent, setDepositPercent] = useState(service?.depositPercent ?? 20);
   const [images, setImages] = useState<UploadedImage[]>(service?.images ?? []);
   const [uploading, setUploading] = useState(false);
-  const [promo, setPromo] = useState(false);
-  const [code, setCode] = useState("");
-  const [discount, setDiscount] = useState(10);
 
   const create = useAction(createService, {
     onSuccess: () => { toast.success(t("created")); onDone?.(); },
@@ -66,7 +63,7 @@ export function ServiceForm({ service, onDone }: { service?: ServiceInput; onDon
       depositPercent: paymentMode === "DEPOSIT" ? depositPercent : undefined,
     };
     if (service?.id) update.execute({ id: service.id, ...shared, images });
-    else create.execute({ ...shared, images, promotion: promo ? { code, type: "PERCENT" as const, value: discount, scope: "ALL_SERVICES" as const, serviceIds: [] } : undefined });
+    else create.execute({ ...shared, images });
   }
 
   return (
@@ -125,26 +122,6 @@ export function ServiceForm({ service, onDone }: { service?: ServiceInput; onDon
         <Input id="service-images" type="file" accept="image/*" multiple disabled={uploading || images.length >= 5} onChange={(e) => upload(e.target.files)} />
         {images.length > 0 && <p className="text-xs text-muted-foreground">{t("imagesUploaded", { count: images.length })}</p>}
       </div>
-      {!service && (
-        <>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={promo} onChange={(e) => setPromo(e.target.checked)} />
-            {t("createCouponLabel")}
-          </label>
-          {promo && (
-            <div className="grid grid-cols-2 gap-2">
-              <div className="grid gap-1.5">
-                <Label htmlFor="service-coupon-code">{t("couponCodePlaceholder")}</Label>
-                <Input id="service-coupon-code" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} required />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="service-coupon-discount">{t("couponDiscountPlaceholder")}</Label>
-                <Input id="service-coupon-discount" type="number" min={1} max={100} value={discount} onChange={(e) => setDiscount(+e.target.value)} required />
-              </div>
-            </div>
-          )}
-        </>
-      )}
       <Button type="submit" disabled={uploading || create.isPending || update.isPending}>
         {create.isPending || update.isPending ? "..." : service ? t("saveChanges") : t("createService")}
       </Button>

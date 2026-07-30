@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { db } from "@/lib/db";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { createBooking } from "@/lib/services/booking-service";
-import { validateCoupon } from "@/lib/services/coupon-service";
+import { createCoupon, updateCoupon, validateCoupon } from "@/lib/services/coupon-service";
 
 /**
  * Fecha o gap descoberto durante a varredura de Phase B: cupons podiam ser
@@ -181,5 +181,54 @@ describe("createBooking com couponCode", () => {
     );
     expect(booking.discountInCents).toBe(0);
     expect(booking.couponId).toBeNull();
+  });
+});
+
+/**
+ * Fecha o gap de gestão: createCoupon/updateCoupon eram dead code (dashboard
+ * bypassava com um db.coupon.create inline) até este round — aqui exercitamos
+ * o vínculo com CouponService (scope SELECTED_SERVICES) que só existe nesta
+ * extensão das funções.
+ */
+describe("createCoupon / updateCoupon — vínculo com CouponService", () => {
+  test("createCoupon com scope SELECTED_SERVICES cria os vínculos", async () => {
+    const coupon = await runWithTenant(org.id, () =>
+      createCoupon({
+        code: "MGMT-CREATE",
+        type: "PERCENT",
+        value: 15,
+        scope: "SELECTED_SERVICES",
+        serviceIds: [serviceAId, serviceBId],
+      }),
+    );
+    const links = await runWithTenant(org.id, () => db.couponService.findMany({ where: { couponId: coupon.id } }));
+    expect(links.map((l) => l.serviceId).sort()).toEqual([serviceAId, serviceBId].sort());
+  });
+
+  test("createCoupon com scope ALL_SERVICES (default) não cria vínculo algum", async () => {
+    const coupon = await runWithTenant(org.id, () =>
+      createCoupon({ code: "MGMT-ALL", type: "FIXED", value: 500, serviceIds: [serviceAId] }),
+    );
+    expect(coupon.scope).toBe("ALL_SERVICES");
+    const links = await runWithTenant(org.id, () => db.couponService.findMany({ where: { couponId: coupon.id } }));
+    expect(links).toHaveLength(0);
+  });
+
+  test("updateCoupon substitui os vínculos quando serviceIds é enviado", async () => {
+    const coupon = await runWithTenant(org.id, () =>
+      createCoupon({ code: "MGMT-UPDATE", type: "PERCENT", value: 10, scope: "SELECTED_SERVICES", serviceIds: [serviceAId] }),
+    );
+    await runWithTenant(org.id, () => updateCoupon(coupon.id, { serviceIds: [serviceBId] }));
+    const links = await runWithTenant(org.id, () => db.couponService.findMany({ where: { couponId: coupon.id } }));
+    expect(links.map((l) => l.serviceId)).toEqual([serviceBId]);
+  });
+
+  test("updateCoupon sem serviceIds não mexe nos vínculos existentes", async () => {
+    const coupon = await runWithTenant(org.id, () =>
+      createCoupon({ code: "MGMT-KEEP", type: "PERCENT", value: 10, scope: "SELECTED_SERVICES", serviceIds: [serviceAId] }),
+    );
+    await runWithTenant(org.id, () => updateCoupon(coupon.id, { isActive: false }));
+    const links = await runWithTenant(org.id, () => db.couponService.findMany({ where: { couponId: coupon.id } }));
+    expect(links.map((l) => l.serviceId)).toEqual([serviceAId]);
   });
 });

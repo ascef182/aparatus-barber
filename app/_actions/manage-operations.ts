@@ -9,6 +9,7 @@ import { enqueueInvitationEmail } from "@/lib/notifications";
 import { bookingRulesV1Schema } from "@/lib/rules/schemas/v1";
 import { ActionError, staffWriteActionClient } from "@/lib/safe-action";
 import { logAuditEvent } from "@/lib/services/audit-service";
+import { createCoupon as createCouponService, updateCoupon as updateCouponService } from "@/lib/services/coupon-service";
 import { upsertImpressum } from "@/lib/services/impressum-service";
 import { createLocation as createLocationService } from "@/lib/services/location-service";
 import { setCoverImage, setDirectoryListing } from "@/lib/services/organization-service";
@@ -18,12 +19,14 @@ import { requireTenantId } from "@/lib/tenant-context";
 import {
   absenceSchema,
   closedPeriodSchema,
+  couponSchema,
   impressumSchema,
   locationSchema,
   serviceSchema,
   staffSchema,
   staffWorkingHoursSchema,
   toggleDirectoryListingSchema,
+  updateCouponSchema,
   updateCoverImageSchema,
   updateCustomerSchema,
   updateServiceSchema,
@@ -31,16 +34,23 @@ import {
 } from "./manage-operations.schemas";
 
 export const createService = staffWriteActionClient({ service: ["manage"] }).inputSchema(serviceSchema).action(async ({ parsedInput }) => {
-  const { images, promotion, ...data } = parsedInput;
+  const { images, ...data } = parsedInput;
   if (data.paymentMode === "DEPOSIT" && !data.depositPercent) throw new ActionError("Informe o percentual do depósito.");
-  if (promotion?.type === "PERCENT" && promotion.value > 100) throw new ActionError("O desconto percentual deve ser de no máximo 100%.");
   const organizationId = requireTenantId();
   const service = await db.service.create({ data: { ...data, organizationId, imageUrl: images[0]?.url, images: { create: images.map((image, sortOrder) => ({ ...image, organizationId, sortOrder })) } } });
-  if (promotion) {
-    const serviceIds = promotion.scope === "ALL_SERVICES" ? [] : [...new Set([service.id, ...promotion.serviceIds])];
-    await db.coupon.create({ data: { organizationId, code: promotion.code.toUpperCase(), type: promotion.type, value: promotion.value, validUntil: promotion.validUntil, maxRedemptions: promotion.maxRedemptions, scope: promotion.scope, services: { create: serviceIds.map((serviceId) => ({ organizationId, serviceId })) } } });
-  }
   revalidatePath("/dashboard/services"); return service;
+});
+
+export const createCoupon = staffWriteActionClient({ service: ["manage"] }).inputSchema(couponSchema).action(async ({ parsedInput }) => {
+  if (parsedInput.validFrom && parsedInput.validUntil && parsedInput.validUntil <= parsedInput.validFrom) throw new ActionError("O fim da validade deve ser posterior ao início.");
+  const coupon = await createCouponService(parsedInput);
+  revalidatePath("/dashboard/coupons"); return coupon;
+});
+
+export const updateCoupon = staffWriteActionClient({ service: ["manage"] }).inputSchema(updateCouponSchema).action(async ({ parsedInput: { id, ...data } }) => {
+  if (data.validFrom && data.validUntil && data.validUntil <= data.validFrom) throw new ActionError("O fim da validade deve ser posterior ao início.");
+  const coupon = await updateCouponService(id, data);
+  revalidatePath("/dashboard/coupons"); return coupon;
 });
 
 export const createStaff = staffWriteActionClient({ staff: ["manage"] }).inputSchema(staffSchema).action(async ({ parsedInput, ctx }) => {

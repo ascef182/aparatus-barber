@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { requireTenantId } from "@/lib/tenant-context";
-import type { CouponType } from "@/generated/prisma/client";
+import type { CouponScope, CouponType } from "@/generated/prisma/client";
 
 export function listCoupons() {
   return db.coupon.findMany({ orderBy: { createdAt: "desc" } });
@@ -87,20 +87,37 @@ export function createCoupon(data: {
   code: string;
   type: CouponType;
   value: number;
-  validFrom?: Date;
-  validUntil?: Date;
-  maxRedemptions?: number;
+  validFrom?: Date | null;
+  validUntil?: Date | null;
+  maxRedemptions?: number | null;
+  scope?: CouponScope;
+  serviceIds?: string[];
 }) {
+  const organizationId = requireTenantId();
+  const { serviceIds, scope, ...rest } = data;
+  const resolvedScope = scope ?? "ALL_SERVICES";
+  // Vínculos com CouponService só fazem sentido em SELECTED_SERVICES —
+  // scope ALL_SERVICES ignora serviceIds mesmo que venha preenchido.
+  const links = resolvedScope === "SELECTED_SERVICES" ? [...new Set(serviceIds ?? [])] : [];
   return db.coupon.create({
     data: {
-      ...data,
+      ...rest,
+      scope: resolvedScope,
       code: data.code.trim().toUpperCase(),
-      organizationId: requireTenantId(),
+      organizationId,
+      services: { create: links.map((serviceId) => ({ organizationId, serviceId })) },
     },
   });
 }
 
-export function updateCoupon(
+/**
+ * scope/serviceIds tratados fora do update principal (CouponService não
+ * aceita "substituir todos os vínculos" como um nested update único) —
+ * mesmo padrão non-transacional de updateStaff pra serviceIds de Staff
+ * (deleteMany + createMany sequenciais, risco de não-atomicidade já aceito
+ * ali pro caso análogo).
+ */
+export async function updateCoupon(
   id: string,
   data: Partial<{
     code: string;
@@ -110,12 +127,25 @@ export function updateCoupon(
     validUntil: Date | null;
     maxRedemptions: number | null;
     isActive: boolean;
+    scope: CouponScope;
+    serviceIds: string[];
   }>,
 ) {
-  return db.coupon.update({
+  const organizationId = requireTenantId();
+  const { serviceIds, ...rest } = data;
+  const coupon = await db.coupon.update({
     where: { id },
-    data: { ...data, code: data.code?.trim().toUpperCase() },
+    data: { ...rest, code: rest.code?.trim().toUpperCase() },
   });
+  if (serviceIds) {
+    await db.couponService.deleteMany({ where: { couponId: id } });
+    if (serviceIds.length) {
+      await db.couponService.createMany({
+        data: [...new Set(serviceIds)].map((serviceId) => ({ organizationId, couponId: id, serviceId })),
+      });
+    }
+  }
+  return coupon;
 }
 
 export function deleteCoupon(id: string) {
