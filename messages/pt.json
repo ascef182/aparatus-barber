@@ -824,6 +824,12 @@
       "heading": "Confirme seu e-mail",
       "body": "Clique abaixo para confirmar seu endereço de e-mail e ativar sua conta. Se você não criou uma conta na Bladiq, pode ignorar este e-mail com segurança.",
       "cta": "Confirmar e-mail"
+    },
+    "mfaGracePeriodReminder": {
+      "subject": "Ative a autenticação em duas etapas — prazo termina amanhã",
+      "heading": "Seu prazo de segurança está acabando",
+      "body": "Como dono(a) da {organization}, você precisa ativar a autenticação em duas etapas (2FA) até {date}. Depois desse prazo, seu acesso ao painel ficará bloqueado até que você a ative. Leva menos de 2 minutos.",
+      "cta": "Ativar 2FA agora"
     }
   }
 }

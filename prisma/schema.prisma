@@ -521,6 +521,9 @@ model Member {
   // Guardado (não computado de createdAt) para não mover retroativamente o
   // prazo de quem já tem conta se a política mudar depois.
   mfaGracePeriodEndsAt DateTime?
+  // Timestamp do envio do e-mail de lembrete (1 dia antes do prazo expirar).
+  // Evita reenviar o lembrete a cada execução do job de varredura.
+  mfaGracePeriodReminderSentAt DateTime?
 
   @@unique([organizationId, userId])
   @@index([userId])

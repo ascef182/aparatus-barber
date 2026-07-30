@@ -824,6 +824,12 @@
       "heading": "Confirm your email",
       "body": "Click below to confirm your email address and activate your account. If you didn't create a Bladiq account, you can safely ignore this email.",
       "cta": "Confirm email"
+    },
+    "mfaGracePeriodReminder": {
+      "subject": "Enable two-factor authentication — deadline tomorrow",
+      "heading": "Your security deadline is almost here",
+      "body": "As the owner of {organization}, you need to enable two-factor authentication (2FA) by {date}. After this deadline, your dashboard access will be blocked until you enable it. It takes less than 2 minutes.",
+      "cta": "Enable 2FA now"
     }
   }
 }

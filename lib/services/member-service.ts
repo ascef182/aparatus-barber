@@ -69,6 +69,7 @@ export function deleteUserAccount(userId: string) {
 }
 
 const MFA_GRACE_PERIOD_DAYS = 7;
+const MFA_REMINDER_WINDOW_HOURS = 24;
 
 /**
  * Prazo guardado (não computado) — chamado na criação da organização (owner)
@@ -84,4 +85,34 @@ export async function ensureMfaGracePeriod(organizationId: string, userId: strin
   const deadline = new Date(Date.now() + MFA_GRACE_PERIOD_DAYS * 24 * 60 * 60 * 1000);
   await prisma.member.update({ where: { id: membership.id }, data: { mfaGracePeriodEndsAt: deadline } });
   return deadline;
+}
+
+/**
+ * Owners (ou superadmins) cujo prazo de graça de 2FA expira nas próximas
+ * MFA_REMINDER_WINDOW_HOURS e que ainda não ativaram 2FA nem receberam o
+ * lembrete — usado pelo job de varredura do worker (booking-maintenance).
+ * mfaGracePeriodReminderSentAt evita reenvio a cada execução do sweep.
+ */
+export async function listMembersNeedingMfaReminder() {
+  const windowEnd = new Date(Date.now() + MFA_REMINDER_WINDOW_HOURS * 60 * 60 * 1000);
+  return prisma.member.findMany({
+    where: {
+      role: "owner",
+      mfaGracePeriodEndsAt: { not: null, lte: windowEnd, gt: new Date() },
+      mfaGracePeriodReminderSentAt: null,
+      // twoFactorEnabled é nullable (Better Auth) — trata null como "não ativado".
+      user: { twoFactorEnabled: { not: true } },
+    },
+    include: {
+      user: { select: { email: true, locale: true, twoFactorEnabled: true } },
+      organization: { select: { name: true } },
+    },
+  });
+}
+
+export async function markMfaReminderSent(memberId: string) {
+  await prisma.member.update({
+    where: { id: memberId },
+    data: { mfaGracePeriodReminderSentAt: new Date() },
+  });
 }

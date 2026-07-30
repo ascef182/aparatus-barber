@@ -824,6 +824,12 @@
       "heading": "E-Mail bestätigen",
       "body": "Klicken Sie unten, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren. Wenn Sie kein Bladiq-Konto erstellt haben, können Sie diese E-Mail ignorieren.",
       "cta": "E-Mail bestätigen"
+    },
+    "mfaGracePeriodReminder": {
+      "subject": "Zwei-Faktor-Authentifizierung aktivieren — Frist morgen",
+      "heading": "Ihre Sicherheitsfrist läuft bald ab",
+      "body": "Als Inhaber(in) von {organization} müssen Sie die Zwei-Faktor-Authentifizierung (2FA) bis {date} aktivieren. Nach dieser Frist wird Ihr Dashboard-Zugriff gesperrt, bis Sie sie aktivieren. Es dauert weniger als 2 Minuten.",
+      "cta": "2FA jetzt aktivieren"
     }
   }
 }

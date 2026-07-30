@@ -105,6 +105,24 @@ export async function enqueueQuoteRequestNotification(job: QuoteRequestNotificat
 }
 
 /**
+ * Varredura periódica (mesmo padrão de scheduleStaleHoldSweep) que avisa
+ * owners cujo prazo de graça de 2FA expira em ~24h e ainda não ativaram —
+ * job idempotente (jobId fixo), registrado uma vez no boot do worker.
+ * A decisão de quem precisa do lembrete (e o registro de "já enviado")
+ * fica em lib/services/member-service.ts, não aqui.
+ */
+export const mfaReminderMaintenance = new Queue("mfa-reminder-maintenance", { connection });
+mfaReminderMaintenance.on("error", logQueueError("mfa-reminder-maintenance"));
+
+export async function scheduleMfaReminderSweep() {
+  await mfaReminderMaintenance.add(
+    "sweep-mfa-reminders",
+    {},
+    { jobId: "sweep-mfa-reminders", repeat: { every: 60 * 60_000 }, removeOnComplete: 10, removeOnFail: 10 },
+  );
+}
+
+/**
  * Decide se e o que enviar para um job de notificação — extraído do worker
  * para ser testável sem subir um Worker/Redis real. Retorna null quando a
  * notificação deve ser suprimida (sem e-mail, sem status compatível).

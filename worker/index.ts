@@ -3,8 +3,8 @@ import { Worker } from "bullmq";
 import { Resend } from "resend";
 import { getBookingForNotification, expireStaleHolds } from "@/lib/services/booking-service";
 import { getQuoteRequestForNotification } from "@/lib/services/quote-request-service";
-import { getOwnerEmail } from "@/lib/services/member-service";
-import { buildNotificationEmail, enqueueBookingNotification, scheduleStaleHoldSweep } from "@/lib/notifications";
+import { getOwnerEmail, listMembersNeedingMfaReminder, markMfaReminderSent } from "@/lib/services/member-service";
+import { buildNotificationEmail, enqueueBookingNotification, scheduleStaleHoldSweep, scheduleMfaReminderSweep } from "@/lib/notifications";
 import type { BookingNotificationJob, InvitationNotificationJob, QuoteRequestNotificationJob } from "@/lib/notifications";
 import { getEmailTranslator } from "@/lib/email-translations";
 import { renderBrandedEmail } from "@/lib/email-template";
@@ -113,4 +113,39 @@ quoteRequestsWorker.on("failed", (job, err) => {
 });
 quoteRequestsWorker.on("error", logWorkerError("quote-request-notifications"));
 
+// Lembrete de 2FA: 1x por hora, checa quem entrou na janela de 24h antes do
+// prazo de graça expirar (ver lib/services/member-service.ts) e nunca
+// recebeu o lembrete. Envio inline (não via fila própria de e-mail) — baixo
+// volume esperado (só owners sem 2FA perto do prazo), e markMfaReminderSent
+// já garante idempotência mesmo se o job repetir num crash a meio caminho.
+const mfaReminderWorker = new Worker("mfa-reminder-maintenance", async () => {
+  const members = await listMembersNeedingMfaReminder();
+  for (const member of members) {
+    const t = getEmailTranslator(member.user.locale);
+    const deadline = member.mfaGracePeriodEndsAt!;
+    const date = new Intl.DateTimeFormat(member.user.locale ?? "pt", { dateStyle: "full", timeStyle: "short" }).format(deadline);
+    const vars = { organization: member.organization.name, date };
+    const { html, text } = renderBrandedEmail({
+      preheader: t("mfaGracePeriodReminder.heading"),
+      heading: t("mfaGracePeriodReminder.heading"),
+      paragraphs: [t("mfaGracePeriodReminder.body", vars)],
+      footerNote: t("footer", vars),
+    });
+    try {
+      await getResend().emails.send({ from, to: member.user.email, subject: t("mfaGracePeriodReminder.subject", vars), html, text });
+      await markMfaReminderSent(member.id);
+    } catch (err) {
+      logger({ memberId: member.id }).error({ err }, "mfa_reminder.send_failed");
+      Sentry.captureException(err, { extra: { memberId: member.id } });
+    }
+  }
+}, { connection, concurrency: 1 });
+
+mfaReminderWorker.on("failed", (job, err) => {
+  logger({ jobId: job?.id, queue: "mfa-reminder-maintenance", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
+  Sentry.captureException(err);
+});
+mfaReminderWorker.on("error", logWorkerError("mfa-reminder-maintenance"));
+
 scheduleStaleHoldSweep();
+scheduleMfaReminderSweep();
