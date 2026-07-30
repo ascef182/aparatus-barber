@@ -103,10 +103,16 @@ export const auth = betterAuth({
     // Sessão expira em 30 dias de inatividade (não infinita).
     expiresIn: 60 * 60 * 24 * 30,
     updateAge: 60 * 60 * 24,
-    // Cookie security: SameSite=Strict previne CSRF e roubo de sessão cross-site.
-    // Nota: Better Auth automático trata do SameSite em produção; este é um
-    // reminder de que está ativo (ver https://github.com/better-auth/better-auth/issues/XXX).
   },
+  // Cookie de sessão: Better Auth usa SameSite=Lax por padrão (verificado em
+  // node_modules/better-auth/dist/cookies/index.mjs) — deliberadamente NÃO
+  // Strict. O callback do Google OAuth é uma navegação top-level cross-site
+  // (accounts.google.com -> /api/auth/callback/google); com Strict o cookie
+  // de state/correlação não seria enviado nesse retorno e o login OAuth
+  // quebraria. Lax ainda bloqueia o cookie em requests cross-site que não
+  // são navegação top-level (POST/fetch de outra origem), que é o vetor
+  // relevante de CSRF — subdomínios de tenant (crossSubDomainCookies) são
+  // "same-site" entre si, então não são afetados por essa restrição.
   // Redis como secondary storage: o rate limit (e o cache de sessão) do
   // Better Auth funcionam corretamente com web escalado horizontalmente
   // (memória local não seria compartilhada entre instâncias).
