@@ -330,7 +330,11 @@
       "notesPlaceholder": "Internal notes",
       "blockCustomer": "Block customer",
       "updated": "Customer updated.",
-      "updateError": "Failed to update."
+      "updateError": "Failed to update.",
+      "noCustomers": "No customers yet",
+      "noCustomersDescription": "Customers will appear here automatically once they make their first booking.",
+      "noSearchResults": "No customers found",
+      "noSearchResultsDescription": "Try searching a different name, email, or phone number."
     },
     "services": {
       "catalog": "Catalog",
@@ -369,7 +373,8 @@
       "removeImage": "Remove image",
       "createCouponLabel": "Create a coupon to share",
       "couponCodePlaceholder": "Code",
-      "couponDiscountPlaceholder": "Discount (%)"
+      "couponDiscountPlaceholder": "Discount (%)",
+      "noServicesDescription": "Add your first service to start receiving bookings."
     },
     "staff": {
       "operation": "Operations",
@@ -438,7 +443,8 @@
       "reactivateConfirmTitle": "Reactivate this professional?",
       "reactivateConfirmBody": "They will show up for new bookings again.",
       "inactive": "Inactive",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "noStaffDescription": "Add staff members so customers can book appointments with them."
     },
     "settings": {
       "operation": "Operations",

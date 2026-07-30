@@ -330,7 +330,11 @@
       "notesPlaceholder": "Interne Notizen",
       "blockCustomer": "Kunde sperren",
       "updated": "Kunde aktualisiert.",
-      "updateError": "Fehler beim Aktualisieren."
+      "updateError": "Fehler beim Aktualisieren.",
+      "noCustomers": "Noch keine Kunden",
+      "noCustomersDescription": "Kunden erscheinen hier automatisch, sobald sie ihre erste Buchung vornehmen.",
+      "noSearchResults": "Keine Kunden gefunden",
+      "noSearchResultsDescription": "Versuchen Sie es mit einem anderen Namen, einer anderen E-Mail-Adresse oder Telefonnummer."
     },
     "services": {
       "catalog": "Katalog",
@@ -369,7 +373,8 @@
       "removeImage": "Bild entfernen",
       "createCouponLabel": "Gutschein zum Teilen erstellen",
       "couponCodePlaceholder": "Code",
-      "couponDiscountPlaceholder": "Rabatt (%)"
+      "couponDiscountPlaceholder": "Rabatt (%)",
+      "noServicesDescription": "Fügen Sie Ihren ersten Service hinzu, um Buchungen zu erhalten."
     },
     "staff": {
       "operation": "Betrieb",
@@ -438,7 +443,8 @@
       "reactivateConfirmTitle": "Fachkraft reaktivieren?",
       "reactivateConfirmBody": "Sie erscheint wieder für neue Buchungen.",
       "inactive": "Inaktiv",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "noStaffDescription": "Fügen Sie Mitarbeiter hinzu, damit Kunden Termine bei ihnen buchen können."
     },
     "settings": {
       "operation": "Betrieb",

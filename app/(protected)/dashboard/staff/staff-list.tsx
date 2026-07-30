@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { CalendarOff, Clock, Pencil, Power } from "lucide-react";
+import { CalendarOff, Clock, Pencil, Power, Users } from "lucide-react";
 import { updateStaff } from "@/app/_actions/manage-operations";
 import { Avatar, AvatarFallback } from "@/app/_components/ui/avatar";
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
+import { EmptyState } from "@/app/_components/ui/empty-state";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,6 +131,15 @@ export function StaffList({
         </SheetContent>
       </Sheet>
 
+      {staff.length === 0 && (
+        <EmptyState
+          icon={Users}
+          title={t("noStaff")}
+          description={t("noStaffDescription")}
+          action={<Button onClick={() => setCreating(true)}>{t("newProfessional")}</Button>}
+        />
+      )}
+
       <div className="grid gap-3 md:grid-cols-2">
         {staff.map((member) => (
           <article key={member.id} className={cn("rounded-xl border bg-card p-5 shadow-sm", !member.isActive && "opacity-60")}>
@@ -229,7 +239,6 @@ export function StaffList({
             </Sheet>
           </article>
         ))}
-        {staff.length === 0 && <p className="text-muted-foreground">{t("noStaff")}</p>}
       </div>
     </div>
   );

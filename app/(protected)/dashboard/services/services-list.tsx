@@ -9,6 +9,7 @@ import { updateService } from "@/app/_actions/manage-operations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/_components/ui/avatar";
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
+import { EmptyState } from "@/app/_components/ui/empty-state";
 import { Switch } from "@/app/_components/ui/switch";
 import { ServiceForm } from "./service-form";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/app/_components/ui/sheet";
@@ -68,6 +69,15 @@ export function ServicesList({ services, locale }: { services: ServiceItem[]; lo
           </div>
         </SheetContent>
       </Sheet>
+
+      {services.length === 0 && (
+        <EmptyState
+          icon={Scissors}
+          title={t("noServices")}
+          description={t("noServicesDescription")}
+          action={<Button onClick={() => setCreating(true)}>{t("newService")}</Button>}
+        />
+      )}
 
       <div className="grid gap-3 md:grid-cols-2">
         {services.map((service) => (
@@ -133,7 +143,6 @@ export function ServicesList({ services, locale }: { services: ServiceItem[]; lo
             </Sheet>
           </article>
         ))}
-        {services.length === 0 && <p className="text-muted-foreground">{t("noServices")}</p>}
       </div>
     </div>
   );

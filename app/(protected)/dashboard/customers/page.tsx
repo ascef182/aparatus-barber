@@ -1,12 +1,14 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Contact, SearchX } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { getMembership } from "@/lib/services/member-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { listCustomers } from "@/lib/services/customer-service";
+import { EmptyState } from "@/app/_components/ui/empty-state";
 import { CustomerRow } from "./customer-row";
 
 export default async function CustomersPage({ searchParams }: PageProps<"/dashboard/customers">) {
@@ -29,32 +31,38 @@ export default async function CustomersPage({ searchParams }: PageProps<"/dashbo
         <input className="rounded-md border p-2" name="q" defaultValue={typeof query === "string" ? query : ""} placeholder={t("searchPlaceholder")} />
         <button className="ml-2 rounded-md border px-3 py-2">{t("search")}</button>
       </form>
-      {/*
-        Tabela de verdade em md+; em telas estreitas, tr/td viram bloco
-        empilhado (cartão), com rótulo inline por campo — sem duplicar
-        markup/lógica entre duas versões do componente.
-      */}
-      <div className="overflow-hidden rounded-lg border bg-background">
-        <table className="w-full text-sm">
-          <thead className="hidden bg-muted/50 text-left md:table-header-group">
-            <tr>
-              <th className="p-3">{t("colCustomer")}</th>
-              <th className="p-3">{t("colContact")}</th>
-              <th className="p-3">{t("colStatus")}</th>
-              <th className="p-3"></th>
-            </tr>
-          </thead>
-          <tbody className="block md:table-row-group">
-            {customers.map((customer) => (
-              <CustomerRow
-                key={customer.id}
-                customer={customer}
-                labels={{ contact: t("colContact"), status: t("colStatus") }}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {customers.length === 0 ? (
+        typeof query === "string" && query.length > 0 ? (
+          <EmptyState icon={SearchX} title={t("noSearchResults")} description={t("noSearchResultsDescription")} />
+        ) : (
+          <EmptyState icon={Contact} title={t("noCustomers")} description={t("noCustomersDescription")} />
+        )
+      ) : (
+        // Tabela de verdade em md+; em telas estreitas, tr/td viram bloco
+        // empilhado (cartão), com rótulo inline por campo — sem duplicar
+        // markup/lógica entre duas versões do componente.
+        <div className="overflow-hidden rounded-lg border bg-background">
+          <table className="w-full text-sm">
+            <thead className="hidden bg-muted/50 text-left md:table-header-group">
+              <tr>
+                <th className="p-3">{t("colCustomer")}</th>
+                <th className="p-3">{t("colContact")}</th>
+                <th className="p-3">{t("colStatus")}</th>
+                <th className="p-3"></th>
+              </tr>
+            </thead>
+            <tbody className="block md:table-row-group">
+              {customers.map((customer) => (
+                <CustomerRow
+                  key={customer.id}
+                  customer={customer}
+                  labels={{ contact: t("colContact"), status: t("colStatus") }}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }

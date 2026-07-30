@@ -330,7 +330,11 @@
       "notesPlaceholder": "Notas internas",
       "blockCustomer": "Bloquear cliente",
       "updated": "Cliente atualizado.",
-      "updateError": "Erro ao atualizar."
+      "updateError": "Erro ao atualizar.",
+      "noCustomers": "Nenhum cliente ainda",
+      "noCustomersDescription": "Os clientes aparecem aqui automaticamente assim que fizerem a primeira reserva.",
+      "noSearchResults": "Nenhum cliente encontrado",
+      "noSearchResultsDescription": "Tente buscar por outro nome, e-mail ou telefone."
     },
     "services": {
       "catalog": "Catálogo",
@@ -369,7 +373,8 @@
       "removeImage": "Remover imagem",
       "createCouponLabel": "Criar cupom para compartilhar",
       "couponCodePlaceholder": "Código",
-      "couponDiscountPlaceholder": "Desconto (%)"
+      "couponDiscountPlaceholder": "Desconto (%)",
+      "noServicesDescription": "Adicione seu primeiro serviço para começar a receber reservas."
     },
     "staff": {
       "operation": "Operação",
@@ -438,7 +443,8 @@
       "reactivateConfirmTitle": "Reativar profissional?",
       "reactivateConfirmBody": "O profissional volta a aparecer para novos agendamentos.",
       "inactive": "Inativo",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "noStaffDescription": "Adicione profissionais para que os clientes possam agendar horários com eles."
     },
     "settings": {
       "operation": "Operação",
