@@ -1,27 +1,43 @@
+import { getTranslations } from "next-intl/server";
 import { ChooseBusinessLink } from "@/app/(marketing)/find/[city]/choose-business-link";
 import { getTenantUrl } from "@/lib/tenant-host";
 import type { searchBusinesses } from "@/lib/services/directory-service";
+import { CATEGORY_ICONS } from "./category-pills";
 
 type Business = Awaited<ReturnType<typeof searchBusinesses>>[number];
 
-export function BusinessCard({ business }: { business: Business }) {
+export async function BusinessCard({ business }: { business: Business }) {
+  const t = await getTranslations("businessCategories");
   const image = business.organization.coverImageUrl ?? business.organization.logo;
+  const Icon = CATEGORY_ICONS[business.organization.category];
 
   return (
     <ChooseBusinessLink
       slug={business.organization.slug}
       name={business.organization.name}
       href={getTenantUrl(business.organization.slug)}
-      className="relative block h-48 w-64 shrink-0 overflow-hidden rounded-xl bg-muted"
+      className="group relative block h-52 w-64 shrink-0 overflow-hidden rounded-2xl bg-muted"
     >
-      {image && (
+      {image ? (
         // eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image
-        <img src={image} alt="" className="absolute inset-0 size-full object-cover" />
+        <img
+          src={image}
+          alt=""
+          className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-secondary">
+          <Icon className="size-10 text-muted-foreground" />
+        </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-4">
-        <p className="font-semibold text-white">{business.organization.name}</p>
-        <p className="text-xs text-white/80">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-4">
+        <span className="inline-flex w-fit items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
+          <Icon className="size-3" />
+          {t(business.organization.category)}
+        </span>
+        <p className="text-base font-bold text-white">{business.organization.name}</p>
+        <p className="text-xs text-white/70">
           {business.addressLine1}, {business.city}
         </p>
       </div>

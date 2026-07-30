@@ -121,6 +121,38 @@
   --shadow-2xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 1);
 }
 
+/* Tema exclusivo do app de descoberta pro cliente final (app.bladiq.com,
+   app/app/layout.tsx) — canvas escuro tipo "shelf browsing" (Spotify) com um
+   único acento vívido reservado pra ação/estado ativo, mantendo hierarquia
+   de informação clara nos cards (Amazon). Nunca aplicado no dashboard, no
+   site do tenant ou no marketing — só dentro de .theme-discover. */
+.theme-discover {
+  /* @theme inline compiles utilities (bg-primary, bg-background, ...) to
+     reference the BARE tokens directly (e.g. `var(--primary)`), not the
+     --color-* namespaced ones — confirmed by reading the compiled CSS
+     output. So overriding the bare tokens here is what actually re-scopes
+     the compiled utilities for this subtree. */
+  --background: #111310;
+  --foreground: #f4f3ec;
+  --card: #1b1e19;
+  --card-foreground: #f4f3ec;
+  --popover: #1b1e19;
+  --popover-foreground: #f4f3ec;
+  --primary: #c6ff4a;
+  --primary-foreground: #12130f;
+  --secondary: #242822;
+  --secondary-foreground: #f4f3ec;
+  --muted: #1f221d;
+  --muted-foreground: #9b9c90;
+  --accent: #242822;
+  --accent-foreground: #c6ff4a;
+  --destructive: #ff6b57;
+  --destructive-foreground: #12130f;
+  --border: #2a2d25;
+  --input: #1f221d;
+  --ring: #c6ff4a;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

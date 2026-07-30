@@ -35,8 +35,8 @@ export default async function CustomerAppHomePage({
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b p-5">
-        <Link href="/" className="text-lg font-bold">
+      <header className="border-b border-border p-5">
+        <Link href="/" className="text-lg font-bold tracking-tight">
           Bladiq
         </Link>
       </header>
@@ -47,9 +47,10 @@ export default async function CustomerAppHomePage({
         <CategoryPills active={category} />
 
         {!hasFilter && (
-          <div className="rounded-2xl bg-gradient-to-br from-primary to-emerald-700 p-6 text-primary-foreground">
-            <p className="text-xl font-bold">{t("bannerTitle")}</p>
-            <p className="mt-1 text-sm text-primary-foreground/85">{t("bannerSubtitle")}</p>
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
+            <div className="absolute top-0 right-0 h-full w-1.5 bg-primary" />
+            <p className="text-xl font-bold text-foreground">{t("bannerTitle")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("bannerSubtitle")}</p>
           </div>
         )}
 

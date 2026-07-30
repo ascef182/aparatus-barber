@@ -15,6 +15,10 @@ const CATEGORIES = [
   { value: "OTHER", Icon: Store },
 ] as const;
 
+export const CATEGORY_ICONS: Record<string, (typeof CATEGORIES)[number]["Icon"]> = Object.fromEntries(
+  CATEGORIES.map(({ value, Icon }) => [value, Icon]),
+);
+
 export async function CategoryPills({ active }: { active?: string }) {
   const t = await getTranslations("businessCategories");
 
@@ -29,8 +33,8 @@ export async function CategoryPills({ active }: { active?: string }) {
             className={cn(
               "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
               isActive
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border text-foreground hover:bg-accent",
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border text-foreground hover:bg-accent hover:text-accent-foreground",
             )}
           >
             <Icon className="size-4" />
