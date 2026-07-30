@@ -843,5 +843,25 @@
       "body": "As the owner of {organization}, you need to enable two-factor authentication (2FA) by {date}. After this deadline, your dashboard access will be blocked until you enable it. It takes less than 2 minutes.",
       "cta": "Enable 2FA now"
     }
+  },
+  "forgotPassword": {
+    "title": "Reset password",
+    "body": "We'll send you a link to create a new password.",
+    "emailPlaceholder": "Email",
+    "submit": "Send link",
+    "sending": "Sending...",
+    "sent": "If an account exists with this email, the link has been sent.",
+    "genericError": "Couldn't request the link right now. Please try again.",
+    "backToSignIn": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "New password",
+    "newPasswordPlaceholder": "New password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "validationError": "Use at least 8 characters and confirm the same password.",
+    "invalidOrExpiredLink": "Invalid or expired link.",
+    "submit": "Reset password",
+    "done": "Password reset",
+    "signInLink": "Sign in"
   }
 }

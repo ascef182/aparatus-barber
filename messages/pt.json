@@ -843,5 +843,25 @@
       "body": "Como dono(a) da {organization}, você precisa ativar a autenticação em duas etapas (2FA) até {date}. Depois desse prazo, seu acesso ao painel ficará bloqueado até que você a ative. Leva menos de 2 minutos.",
       "cta": "Ativar 2FA agora"
     }
+  },
+  "forgotPassword": {
+    "title": "Redefinir senha",
+    "body": "Enviaremos um link para você criar uma nova senha.",
+    "emailPlaceholder": "E-mail",
+    "submit": "Enviar link",
+    "sending": "Enviando...",
+    "sent": "Se houver uma conta com este e-mail, o link foi enviado.",
+    "genericError": "Não foi possível solicitar o link agora. Tente novamente.",
+    "backToSignIn": "Voltar para entrar"
+  },
+  "resetPassword": {
+    "title": "Nova senha",
+    "newPasswordPlaceholder": "Nova senha",
+    "confirmPasswordPlaceholder": "Confirmar nova senha",
+    "validationError": "Use ao menos 8 caracteres e confirme a mesma senha.",
+    "invalidOrExpiredLink": "Link inválido ou expirado.",
+    "submit": "Redefinir senha",
+    "done": "Senha redefinida",
+    "signInLink": "Entrar"
   }
 }

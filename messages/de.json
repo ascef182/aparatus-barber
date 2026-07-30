@@ -843,5 +843,25 @@
       "body": "Als Inhaber(in) von {organization} müssen Sie die Zwei-Faktor-Authentifizierung (2FA) bis {date} aktivieren. Nach dieser Frist wird Ihr Dashboard-Zugriff gesperrt, bis Sie sie aktivieren. Es dauert weniger als 2 Minuten.",
       "cta": "2FA jetzt aktivieren"
     }
+  },
+  "forgotPassword": {
+    "title": "Passwort zurücksetzen",
+    "body": "Wir senden Ihnen einen Link, um ein neues Passwort zu erstellen.",
+    "emailPlaceholder": "E-Mail",
+    "submit": "Link senden",
+    "sending": "Wird gesendet...",
+    "sent": "Falls ein Konto mit dieser E-Mail existiert, wurde der Link gesendet.",
+    "genericError": "Der Link konnte gerade nicht angefordert werden. Bitte versuchen Sie es erneut.",
+    "backToSignIn": "Zurück zur Anmeldung"
+  },
+  "resetPassword": {
+    "title": "Neues Passwort",
+    "newPasswordPlaceholder": "Neues Passwort",
+    "confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+    "validationError": "Verwenden Sie mindestens 8 Zeichen und bestätigen Sie das gleiche Passwort.",
+    "invalidOrExpiredLink": "Ungültiger oder abgelaufener Link.",
+    "submit": "Passwort zurücksetzen",
+    "done": "Passwort zurückgesetzt",
+    "signInLink": "Anmelden"
   }
 }
