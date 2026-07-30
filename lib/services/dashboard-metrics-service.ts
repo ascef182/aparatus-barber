@@ -9,6 +9,8 @@ function shiftCivilDate(dateISO: string, days: number) {
   return shifted.toISOString().slice(0, 10);
 }
 
+/** Uma query (bookings do período, com relations) agregada em memória em
+ * série diária + ranking de staff — evita N+1 de uma query por dia/staff. */
 export async function getDashboardMetrics(timezone: string, range: DashboardRange) {
   const today = formatDateInTenantTz(new Date(), timezone);
   const fromDate = shiftCivilDate(today, -(range - 1));

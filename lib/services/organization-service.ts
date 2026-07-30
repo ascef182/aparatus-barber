@@ -83,6 +83,8 @@ export function setStripeConnectAccountId(organizationId: string, accountId: str
   });
 }
 
+/** Chamado pelo webhook do Stripe Connect (account.updated), que só traz o
+ * accountId — updateMany por stripeConnectAccountId em vez de id primário. */
 export function setConnectAccountCapabilities(
   accountId: string,
   data: { chargesEnabled: boolean; payoutsEnabled: boolean },

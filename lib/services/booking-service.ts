@@ -122,6 +122,9 @@ export async function createBooking(input: CreateBookingInput) {
   return booking;
 }
 
+/** Aplica a política de cancelamento (lib/rules/policies/cancellation.ts):
+ * rejeita se fora da janela permitida, senão calcula a taxa (se houver) e
+ * grava junto com o cancelamento — não é um simples update de status. */
 export async function cancelBooking(id: string, cancelledBy?: string) {
   const [existing, rules] = await Promise.all([
     db.booking.findUniqueOrThrow({ where: { id } }),

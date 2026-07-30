@@ -9,6 +9,8 @@ export function getMembership(organizationId: string, userId: string) {
   });
 }
 
+/** Usado pela erasure GDPR: só deleta o User global quando essa contagem é
+ * zero (owner não pode se autoerasar e deletar o próprio negócio). */
 export function countMembershipsForUser(userId: string) {
   return prisma.member.count({ where: { userId } });
 }

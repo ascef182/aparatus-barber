@@ -21,6 +21,9 @@ export function getImpressum() {
   return db.tenantImpressum.findUnique({ where: { organizationId: requireTenantId() } });
 }
 
+/** `client` aceita um `tx` do Prisma pra rodar dentro de uma transação
+ * maior (ex.: onboarding, que grava Impressum + outros registros juntos);
+ * default `db` cobre o caso comum de update isolado. */
 export function upsertImpressum(
   data: ImpressumInput,
   updatedBy: string,
