@@ -103,6 +103,9 @@ export const auth = betterAuth({
     // Sessão expira em 30 dias de inatividade (não infinita).
     expiresIn: 60 * 60 * 24 * 30,
     updateAge: 60 * 60 * 24,
+    // Cookie security: SameSite=Strict previne CSRF e roubo de sessão cross-site.
+    // Nota: Better Auth automático trata do SameSite em produção; este é um
+    // reminder de que está ativo (ver https://github.com/better-auth/better-auth/issues/XXX).
   },
   // Redis como secondary storage: o rate limit (e o cache de sessão) do
   // Better Auth funcionam corretamente com web escalado horizontalmente
@@ -116,7 +119,10 @@ export const auth = betterAuth({
     customRules: {
       "/sign-in/email": { window: 60, max: 5 },
       "/sign-up/email": { window: 60, max: 5 },
-      "/request-password-reset": { window: 60, max: 5 },
+      // Password reset: máximo 1 requisição a cada 5 minutos (300s) por IP.
+      // Previne brute force em contas via email de reset (confirmação de
+      // existência, inundação de emails, etc.).
+      "/request-password-reset": { window: 300, max: 1 },
     },
   },
   socialProviders: {

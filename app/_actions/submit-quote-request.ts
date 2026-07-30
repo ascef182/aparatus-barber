@@ -1,7 +1,8 @@
 "use server";
 
-import { publicTenantActionClient } from "@/lib/safe-action";
+import { publicTenantActionClient, ActionError } from "@/lib/safe-action";
 import { createQuoteRequest } from "@/lib/services/quote-request-service";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const inputSchema = z
@@ -19,4 +20,16 @@ const inputSchema = z
 
 export const submitQuoteRequest = publicTenantActionClient
   .inputSchema(inputSchema)
-  .action(async ({ parsedInput }) => createQuoteRequest(parsedInput));
+  .action(async ({ parsedInput, ctx }) => {
+    // Rate limiting mais rigoroso para requisições de orçamento (5 por hora por IP+org)
+    // Protege contra spam e abuso do formulário.
+    const ip = await getClientIp();
+    const { allowed } = await checkRateLimit(
+      `quote-request:${ip}:${ctx.organization.id}`,
+      { windowSeconds: 3600, max: 5 },
+    );
+    if (!allowed) {
+      throw new ActionError("Muitas requisições de orçamento. Aguarde uma hora e tente novamente.");
+    }
+    return createQuoteRequest(parsedInput);
+  });

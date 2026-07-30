@@ -85,6 +85,14 @@ jobs:
       - name: Migration drift check
         run: pnpm prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url postgresql://postgres:postgres@localhost:5432/migration_shadow --exit-code
 
+      # `next build` direto (não `pnpm build`, que roda `prisma migrate
+      # deploy` antes — aqui DATABASE_URL é só um placeholder sem schema
+      # aplicado). Sem isso um erro só detectável em build de produção
+      # (ex.: import quebrado, uso de API só de server em client component)
+      # passava pelo lint/typecheck e só aparecia no deploy real.
+      - name: Build
+        run: pnpm exec next build
+
       # Testcontainers usa o Docker nativo do runner ubuntu-latest.
       # As suítes de isolamento de tenant (plano §8.3) entram aqui como gate.
       - name: Test

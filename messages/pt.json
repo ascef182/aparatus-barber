@@ -3,6 +3,11 @@
     "loading": "Carregando...",
     "error": "Ocorreu um erro. Tente novamente."
   },
+  "notFound": {
+    "title": "Página não encontrada",
+    "body": "A página que você procura não existe ou foi movida.",
+    "cta": "Voltar para o início"
+  },
   "pricing": {
     "title": "Agendamento online para sua barbearia",
     "subtitle": "7 dias grátis, sem cartão de crédito. Cancele quando quiser.",

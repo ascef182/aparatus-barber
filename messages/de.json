@@ -3,6 +3,11 @@
     "loading": "Wird geladen...",
     "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
   },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "body": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "cta": "Zurück zur Startseite"
+  },
   "pricing": {
     "title": "Online-Buchung für Ihren Barbershop",
     "subtitle": "7 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",

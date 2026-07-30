@@ -25,7 +25,7 @@ export async function CategoryPills({ active }: { active?: string }) {
         return (
           <Link
             key={value}
-            href={isActive ? "/app" : `/app?category=${value}`}
+            href={isActive ? "/" : `/?category=${value}`}
             className={cn(
               "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
               isActive

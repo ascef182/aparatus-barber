@@ -3,6 +3,11 @@
     "loading": "Loading...",
     "error": "Something went wrong. Please try again."
   },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or has moved.",
+    "cta": "Back to home"
+  },
   "pricing": {
     "title": "Online booking for your barbershop",
     "subtitle": "7 days free, no credit card required. Cancel anytime.",

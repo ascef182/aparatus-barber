@@ -16,6 +16,17 @@ Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
 
 const connection = { url: process.env.REDIS_URL ?? "redis://localhost:6379" };
 const from = process.env.EMAIL_FROM ?? "Bladiq <bookings@bladiq.com>";
+
+// Sem listener de 'error', um evento 'error' emitido pela conexão Redis
+// subjacente (ex.: blip de rede num Redis gerenciado) derruba o processo
+// inteiro -- EventEmitter relança 'error' sem handler registrado. Um
+// handler aqui vira só log+Sentry, deixando o worker de pé.
+function logWorkerError(queueName: string) {
+  return (err: Error) => {
+    logger({ queue: queueName }).error({ err }, "worker.connection_error");
+    Sentry.captureException(err, { extra: { queue: queueName } });
+  };
+}
 // Construído sob demanda: o Resend SDK lança no construtor se a API key
 // estiver ausente/vazia, o que derrubaria o worker inteiro no boot.
 function getResend() {
@@ -37,6 +48,7 @@ notificationsWorker.on("failed", (job, err) => {
   logger({ jobId: job?.id, queue: "booking-notifications", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
   Sentry.captureException(err);
 });
+notificationsWorker.on("error", logWorkerError("booking-notifications"));
 
 const maintenanceWorker = new Worker("booking-maintenance", async () => {
   const expiredIds = await expireStaleHolds();
@@ -49,6 +61,7 @@ maintenanceWorker.on("failed", (job, err) => {
   logger({ jobId: job?.id, queue: "booking-maintenance", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
   Sentry.captureException(err);
 });
+maintenanceWorker.on("error", logWorkerError("booking-maintenance"));
 
 const invitationsWorker = new Worker<InvitationNotificationJob>("invitation-notifications", async (job) => {
   const t = getEmailTranslator(job.data.locale);
@@ -74,6 +87,7 @@ invitationsWorker.on("failed", (job, err) => {
   logger({ jobId: job?.id, queue: "invitation-notifications", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
   Sentry.captureException(err);
 });
+invitationsWorker.on("error", logWorkerError("invitation-notifications"));
 
 const quoteRequestsWorker = new Worker<QuoteRequestNotificationJob>("quote-request-notifications", async (job) => {
   const quoteRequest = await getQuoteRequestForNotification(job.data.quoteRequestId);
@@ -97,5 +111,6 @@ quoteRequestsWorker.on("failed", (job, err) => {
   logger({ jobId: job?.id, queue: "quote-request-notifications", attemptNumber: job?.attemptsMade }).error({ err }, "job.failed");
   Sentry.captureException(err);
 });
+quoteRequestsWorker.on("error", logWorkerError("quote-request-notifications"));
 
 scheduleStaleHoldSweep();

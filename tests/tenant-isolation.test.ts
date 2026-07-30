@@ -24,6 +24,8 @@ const orgA = { id: randomUUID(), slug: `iso-a-${randomUUID().slice(0, 8)}` };
 const orgB = { id: randomUUID(), slug: `iso-b-${randomUUID().slice(0, 8)}` };
 let locationA: { id: string };
 let locationB: { id: string };
+let staffA: { id: string };
+let staffB: { id: string };
 
 beforeAll(async () => {
   await prisma.organization.createMany({
@@ -51,6 +53,18 @@ beforeAll(async () => {
       city: "München",
     }),
   );
+  // Fixture compartilhada por StaffWorkingHours/StaffAbsence/StaffService/Booking
+  // abaixo — todos exigem um staffId válido.
+  staffA = await runWithTenant(orgA.id, () =>
+    db.staff.create({
+      data: { organizationId: orgA.id, locationId: locationA.id, displayName: "Barbeiro A" },
+    }),
+  );
+  staffB = await runWithTenant(orgB.id, () =>
+    db.staff.create({
+      data: { organizationId: orgB.id, locationId: locationB.id, displayName: "Barbeiro B" },
+    }),
+  );
 });
 
 afterAll(async () => {
@@ -59,6 +73,34 @@ afterAll(async () => {
   // política. Limpeza cross-tenant usa o bypass sancionado (platform
   // scope), igual a qualquer operação administrativa real do app.
   await runWithPlatformScope(async () => {
+    // Ordem por dependência de FK: Booking referencia staff/service/customer/
+    // coupon/location; StaffService/StaffWorkingHours/StaffAbsence referenciam
+    // staff; Staff referencia location — cada um precisa sumir antes do que
+    // referencia.
+    await db.booking.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.staffService.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.staffWorkingHours.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.staffAbsence.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.staff.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.customer.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    await db.closedPeriod.deleteMany({
+      where: { organizationId: { in: [orgA.id, orgB.id] } },
+    });
+    // tenantSettings é append-only por design, igual a auditLog (UPDATE/DELETE
+    // revogados de app_runtime na migração de RLS) -- as linhas seedadas somem
+    // com o container efêmero do Testcontainers ao final da suíte.
     await db.couponService.deleteMany({
       where: { organizationId: { in: [orgA.id, orgB.id] } },
     });
@@ -359,6 +401,375 @@ describe("Suite 2 — extension fail-closed", () => {
     await runWithPlatformScope(() =>
       db.quoteRequest.deleteMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
     );
+  });
+
+  test("Staff: fail-closed sem contexto, escopado sob tenant, bloqueio de create cross-tenant", async () => {
+    await expect(
+      db.staff.create({
+        data: { organizationId: orgA.id, locationId: locationA.id, displayName: "x" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await expect(
+      runWithTenant(orgA.id, () =>
+        db.staff.create({
+          data: { organizationId: orgB.id, locationId: locationA.id, displayName: "intruso" },
+        }),
+      ),
+    ).rejects.toBeInstanceOf(CrossTenantWriteError);
+
+    const seenByA = await runWithTenant(orgA.id, () => db.staff.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === staffA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === staffB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.staff.findUnique({ where: { id: staffB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.staff.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("StaffWorkingHours: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.staffWorkingHours.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, weekday: 1, startTime: "09:00", endTime: "18:00" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.staffWorkingHours.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, weekday: 1, startTime: "09:00", endTime: "18:00" },
+      }),
+    );
+    const whB = await runWithTenant(orgB.id, () =>
+      db.staffWorkingHours.create({
+        data: { organizationId: orgB.id, staffId: staffB.id, weekday: 1, startTime: "09:00", endTime: "18:00" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.staffWorkingHours.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === whB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.staffWorkingHours.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("StaffAbsence: fail-closed sem contexto, escopado sob tenant", async () => {
+    const startAt = new Date();
+    const endAt = new Date(startAt.getTime() + 3600_000);
+
+    await expect(
+      db.staffAbsence.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, startAt, endAt },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.staffAbsence.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, startAt, endAt },
+      }),
+    );
+    const absenceB = await runWithTenant(orgB.id, () =>
+      db.staffAbsence.create({
+        data: { organizationId: orgB.id, staffId: staffB.id, startAt, endAt },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.staffAbsence.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === absenceB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.staffAbsence.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("ClosedPeriod: fail-closed sem contexto, escopado sob tenant", async () => {
+    const startAt = new Date();
+    const endAt = new Date(startAt.getTime() + 3600_000);
+
+    await expect(
+      db.closedPeriod.create({
+        data: { organizationId: orgA.id, name: "x", startAt, endAt },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.closedPeriod.create({
+        data: { organizationId: orgA.id, name: "Feriado A", startAt, endAt },
+      }),
+    );
+    const closedB = await runWithTenant(orgB.id, () =>
+      db.closedPeriod.create({
+        data: { organizationId: orgB.id, name: "Feriado B", startAt, endAt },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.closedPeriod.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === closedB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.closedPeriod.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("Service: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.service.create({
+        data: { organizationId: orgA.id, name: "x", durationMinutes: 30, priceInCents: 1000 },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.create({
+        data: { organizationId: orgA.id, name: "Corte Isolamento A", durationMinutes: 30, priceInCents: 2000 },
+      }),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.create({
+        data: { organizationId: orgB.id, name: "Corte Isolamento B", durationMinutes: 30, priceInCents: 2000 },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.service.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === serviceA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === serviceB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.service.findUnique({ where: { id: serviceB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.service.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("StaffService: fail-closed sem contexto, escopado sob tenant", async () => {
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.create({
+        data: { organizationId: orgA.id, name: "Serviço vínculo A", durationMinutes: 30, priceInCents: 1500 },
+      }),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.create({
+        data: { organizationId: orgB.id, name: "Serviço vínculo B", durationMinutes: 30, priceInCents: 1500 },
+      }),
+    );
+
+    await expect(
+      db.staffService.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, serviceId: serviceA.id },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.staffService.create({
+        data: { organizationId: orgA.id, staffId: staffA.id, serviceId: serviceA.id },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.staffService.create({
+        data: { organizationId: orgB.id, staffId: staffB.id, serviceId: serviceB.id },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.staffService.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.serviceId === serviceB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.staffService.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("Customer: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.customer.create({
+        data: { organizationId: orgA.id, name: "x" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    const customerA = await runWithTenant(orgA.id, () =>
+      db.customer.create({ data: { organizationId: orgA.id, name: "Cliente Isolamento A" } }),
+    );
+    const customerB = await runWithTenant(orgB.id, () =>
+      db.customer.create({ data: { organizationId: orgB.id, name: "Cliente Isolamento B" } }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.customer.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === customerA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === customerB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.customer.findUnique({ where: { id: customerB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.customer.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("Coupon: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.coupon.create({
+        data: { organizationId: orgA.id, code: "ISOX", type: "PERCENT", value: 10 },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    const couponA = await runWithTenant(orgA.id, () =>
+      db.coupon.create({ data: { organizationId: orgA.id, code: "ISOA2", type: "PERCENT", value: 10 } }),
+    );
+    const couponB = await runWithTenant(orgB.id, () =>
+      db.coupon.create({ data: { organizationId: orgB.id, code: "ISOB2", type: "PERCENT", value: 10 } }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.coupon.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === couponA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === couponB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.coupon.findUnique({ where: { id: couponB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.coupon.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("TenantSettings: fail-closed sem contexto, escopado sob tenant", async () => {
+    await expect(
+      db.tenantSettings.create({
+        data: { organizationId: orgA.id, version: 1, data: {}, createdBy: "u" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.tenantSettings.create({
+        data: { organizationId: orgA.id, version: 1, data: {}, createdBy: "u-a" },
+      }),
+    );
+    const settingsB = await runWithTenant(orgB.id, () =>
+      db.tenantSettings.create({
+        data: { organizationId: orgB.id, version: 1, data: {}, createdBy: "u-b" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.tenantSettings.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === settingsB.id)).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.tenantSettings.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("Booking: fail-closed sem contexto, escopado sob tenant, update cross-tenant falha", async () => {
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.create({
+        data: { organizationId: orgA.id, name: "Serviço booking A", durationMinutes: 30, priceInCents: 3000 },
+      }),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.create({
+        data: { organizationId: orgB.id, name: "Serviço booking B", durationMinutes: 30, priceInCents: 3000 },
+      }),
+    );
+    const customerA = await runWithTenant(orgA.id, () =>
+      db.customer.create({ data: { organizationId: orgA.id, name: "Cliente booking A" } }),
+    );
+    const customerB = await runWithTenant(orgB.id, () =>
+      db.customer.create({ data: { organizationId: orgB.id, name: "Cliente booking B" } }),
+    );
+
+    const startAt = new Date(Date.now() + 86400_000);
+    const endAt = new Date(startAt.getTime() + 30 * 60_000);
+    const bookingData = (
+      organizationId: string,
+      locationId: string,
+      staffId: string,
+      serviceId: string,
+      customerId: string,
+    ) => ({
+      organizationId,
+      locationId,
+      staffId,
+      serviceId,
+      customerId,
+      startAt,
+      endAt,
+      status: "CONFIRMED" as const,
+      priceInCents: 3000,
+    });
+
+    await expect(
+      db.booking.create({
+        data: bookingData(orgA.id, locationA.id, staffA.id, serviceA.id, customerA.id),
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    const bookingA = await runWithTenant(orgA.id, () =>
+      db.booking.create({
+        data: bookingData(orgA.id, locationA.id, staffA.id, serviceA.id, customerA.id),
+      }),
+    );
+    const bookingB = await runWithTenant(orgB.id, () =>
+      db.booking.create({
+        data: bookingData(orgB.id, locationB.id, staffB.id, serviceB.id, customerB.id),
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.booking.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === bookingA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === bookingB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.booking.findUnique({ where: { id: bookingB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    await expect(
+      runWithTenant(orgA.id, () =>
+        db.booking.update({ where: { id: bookingB.id }, data: { status: "CANCELLED" } }),
+      ),
+    ).rejects.toThrow();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.booking.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
   });
 });
 

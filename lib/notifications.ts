@@ -1,6 +1,8 @@
 import { Queue } from "bullmq";
+import * as Sentry from "@sentry/nextjs";
 import { getEmailTranslator } from "@/lib/email-translations";
 import { renderBrandedEmail } from "@/lib/email-template";
+import { logger } from "@/lib/logger";
 
 export type BookingNotificationJob = {
   bookingId: string;
@@ -8,7 +10,20 @@ export type BookingNotificationJob = {
 };
 
 const connection = { url: process.env.REDIS_URL ?? "redis://localhost:6379" };
+
+// Sem listener de 'error', um evento 'error' emitido pela conexão Redis
+// subjacente (ex.: blip de rede num Redis gerenciado) derruba o processo
+// inteiro -- EventEmitter relança 'error' sem handler registrado. Um
+// handler aqui vira só log+Sentry, deixando o processo (web) de pé.
+function logQueueError(queueName: string) {
+  return (err: Error) => {
+    logger({ queue: queueName }).error({ err }, "queue.connection_error");
+    Sentry.captureException(err, { extra: { queue: queueName } });
+  };
+}
+
 export const bookingNotifications = new Queue<BookingNotificationJob>("booking-notifications", { connection });
+bookingNotifications.on("error", logQueueError("booking-notifications"));
 
 export async function enqueueBookingNotification(job: BookingNotificationJob, delay = 0) {
   // BullMQ rejeita jobId com ":" (separador interno de chave no Redis).
@@ -21,6 +36,7 @@ export async function enqueueBookingNotification(job: BookingNotificationJob, de
  * única vez no boot do worker (jobId fixo evita duplicar o schedule).
  */
 export const bookingMaintenance = new Queue("booking-maintenance", { connection });
+bookingMaintenance.on("error", logQueueError("booking-maintenance"));
 
 export async function scheduleStaleHoldSweep() {
   await bookingMaintenance.add(
@@ -57,6 +73,7 @@ export type InvitationNotificationJob = {
  * bloqueantes e enviadas inline).
  */
 export const invitationNotifications = new Queue<InvitationNotificationJob>("invitation-notifications", { connection });
+invitationNotifications.on("error", logQueueError("invitation-notifications"));
 
 export async function enqueueInvitationEmail(job: InvitationNotificationJob) {
   await invitationNotifications.add("invite", job, {
@@ -75,6 +92,7 @@ export type QuoteRequestNotificationJob = { quoteRequestId: string };
  * como booking (não é crítico pro fluxo de pagamento), mas ainda merece
  * tentar de novo se o Resend falhar. */
 export const quoteRequestNotifications = new Queue<QuoteRequestNotificationJob>("quote-request-notifications", { connection });
+quoteRequestNotifications.on("error", logQueueError("quote-request-notifications"));
 
 export async function enqueueQuoteRequestNotification(job: QuoteRequestNotificationJob) {
   await quoteRequestNotifications.add("notify", job, {

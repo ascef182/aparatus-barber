@@ -11,6 +11,7 @@ import { resolveTenantSlug } from "@/lib/tenant-host";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { logger, runWithRequestContext } from "@/lib/logger";
+import { sanitizeError } from "@/lib/error-sanitizer";
 
 /** Erro de negócio cuja mensagem pode ser exibida ao usuário. */
 export class ActionError extends Error {}
@@ -21,7 +22,9 @@ const baseActionClient = createSafeActionClient({
       return error.message;
     }
     logger().error({ err: error }, "Unexpected server action error");
-    Sentry.captureException(error);
+    // Sanitiza o erro antes de enviar a Sentry para remover PII
+    const sanitized = sanitizeError(error instanceof Error ? error : new Error(String(error)));
+    Sentry.captureException(sanitized);
     return "Erro interno. Tente novamente.";
   },
 });
@@ -75,8 +78,13 @@ export const publicTenantActionClient = actionClient.use(async ({ next }) => {
  * A organização é resolvida do HOST (subdomínio) — nunca de input do cliente —
  * e o tenant context (AsyncLocalStorage) é ativado para a Prisma extension
  * de escopo. Ver plano de reestruturação, seções 2 e 5.
+ *
+ * **Segurança (Session Fixation Prevention):** O usuário pode ter uma sessão
+ * válida de um tenant diferente. Validamos que a organização resoluta do host
+ * corresponde ao membership — previne roubo de sessão cross-subdomain se um
+ * atacante conseguir a sessão do usuário de org A e a redireciona para org B.
  */
-export const tenantActionClient = authActionClient.use(async ({ next }) => {
+export const tenantActionClient = authActionClient.use(async ({ next, ctx }) => {
   const slug = resolveTenantSlug((await headers()).get("host"));
   if (!slug) {
     throw new ActionError("Tenant não identificado.");
@@ -89,7 +97,15 @@ export const tenantActionClient = authActionClient.use(async ({ next }) => {
   ) {
     throw new ActionError("Organização indisponível.");
   }
-  return runWithTenant(organization.id, () => next({ ctx: { organization } }));
+
+  // Validação de segurança: user deve ter membership nesta organização.
+  // Isso previne que uma sessão válida de outro tenant seja usada em cross-subdomain.
+  const membership = await getMembership(organization.id, ctx.user.id);
+  if (!membership) {
+    throw new ActionError("Sem acesso a esta organização.");
+  }
+
+  return runWithTenant(organization.id, () => next({ ctx: { organization, membership } }));
 });
 
 /**

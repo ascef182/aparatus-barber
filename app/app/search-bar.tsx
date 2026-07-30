@@ -13,7 +13,7 @@ export function AppSearchBar({ placeholder, initialQuery }: { placeholder: strin
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const trimmed = value.trim();
-    router.push(trimmed ? `/app?q=${encodeURIComponent(trimmed)}` : "/app");
+    router.push(trimmed ? `/?q=${encodeURIComponent(trimmed)}` : "/");
   }
 
   return (
