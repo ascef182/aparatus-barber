@@ -33,12 +33,13 @@ export function InviteMemberForm() {
       }}
     >
       <div className="flex-1 min-w-[200px]">
-        <label className="text-xs text-muted-foreground">{t("inviteEmailLabel")}</label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <label htmlFor="invite-member-email" className="text-xs text-muted-foreground">{t("inviteEmailLabel")}</label>
+        <Input id="invite-member-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </div>
       <div>
-        <label className="text-xs text-muted-foreground">{t("inviteRoleLabel")}</label>
+        <label htmlFor="invite-member-role" className="text-xs text-muted-foreground">{t("inviteRoleLabel")}</label>
         <select
+          id="invite-member-role"
           className="block rounded-md border p-2 text-sm"
           value={role}
           onChange={(e) => setRole(e.target.value as typeof role)}

@@ -61,19 +61,19 @@ export function ImpressumForm({ initial }: { initial: Partial<ImpressumData> | n
         });
       }}
     >
-      <Input placeholder={t("impressumLegalName")} value={form.legalName} onChange={set("legalName")} required />
-      <Input placeholder={t("impressumAddress")} value={form.addressLine1} onChange={set("addressLine1")} required />
+      <Input aria-label={t("impressumLegalName")} placeholder={t("impressumLegalName")} value={form.legalName} onChange={set("legalName")} required />
+      <Input aria-label={t("impressumAddress")} placeholder={t("impressumAddress")} value={form.addressLine1} onChange={set("addressLine1")} required />
       <div className="grid grid-cols-2 gap-2">
-        <Input placeholder={t("impressumPostalCode")} value={form.postalCode} onChange={set("postalCode")} required />
-        <Input placeholder={t("impressumCity")} value={form.city} onChange={set("city")} required />
+        <Input aria-label={t("impressumPostalCode")} placeholder={t("impressumPostalCode")} value={form.postalCode} onChange={set("postalCode")} required />
+        <Input aria-label={t("impressumCity")} placeholder={t("impressumCity")} value={form.city} onChange={set("city")} required />
       </div>
-      <Input placeholder={t("impressumCountry")} value={form.country} onChange={set("country")} maxLength={2} required />
-      <Input placeholder={t("impressumRepresentedBy")} value={form.representedBy} onChange={set("representedBy")} />
-      <Input placeholder={t("impressumPhone")} value={form.phone} onChange={set("phone")} />
-      <Input placeholder={t("impressumEmail")} type="email" value={form.email} onChange={set("email")} />
-      <Input placeholder={t("impressumRegisterCourt")} value={form.registerCourt} onChange={set("registerCourt")} />
-      <Input placeholder={t("impressumRegisterNumber")} value={form.registerNumber} onChange={set("registerNumber")} />
-      <Input placeholder={t("impressumVatId")} value={form.vatId} onChange={set("vatId")} />
+      <Input aria-label={t("impressumCountry")} placeholder={t("impressumCountry")} value={form.country} onChange={set("country")} maxLength={2} required />
+      <Input aria-label={t("impressumRepresentedBy")} placeholder={t("impressumRepresentedBy")} value={form.representedBy} onChange={set("representedBy")} />
+      <Input aria-label={t("impressumPhone")} placeholder={t("impressumPhone")} value={form.phone} onChange={set("phone")} />
+      <Input aria-label={t("impressumEmail")} placeholder={t("impressumEmail")} type="email" value={form.email} onChange={set("email")} />
+      <Input aria-label={t("impressumRegisterCourt")} placeholder={t("impressumRegisterCourt")} value={form.registerCourt} onChange={set("registerCourt")} />
+      <Input aria-label={t("impressumRegisterNumber")} placeholder={t("impressumRegisterNumber")} value={form.registerNumber} onChange={set("registerNumber")} />
+      <Input aria-label={t("impressumVatId")} placeholder={t("impressumVatId")} value={form.vatId} onChange={set("vatId")} />
       <Button type="submit" disabled={action.isPending}>
         {action.isPending ? t("impressumSaving") : t("impressumSave")}
       </Button>

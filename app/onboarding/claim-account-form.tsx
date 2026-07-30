@@ -52,13 +52,14 @@ export function ClaimAccountForm({ email }: { email: string }) {
       <CardContent>
         <form className="flex flex-col gap-3" onSubmit={onSubmit}>
           <div>
-            <label className="text-xs text-muted-foreground">{t("emailLabel")}</label>
-            <Input value={email} disabled readOnly />
+            <label htmlFor="claim-account-email" className="text-xs text-muted-foreground">{t("emailLabel")}</label>
+            <Input id="claim-account-email" value={email} disabled readOnly />
             <p className="mt-1 text-xs text-muted-foreground">{t("lockedEmailHint")}</p>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">{t("passwordLabel")}</label>
+            <label htmlFor="claim-account-password" className="text-xs text-muted-foreground">{t("passwordLabel")}</label>
             <Input
+              id="claim-account-password"
               type="password"
               placeholder={t("passwordPlaceholder")}
               value={password}

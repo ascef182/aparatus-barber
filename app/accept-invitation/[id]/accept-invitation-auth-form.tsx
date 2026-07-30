@@ -57,12 +57,13 @@ export function AcceptInvitationAuthForm({
       <CardContent>
         <form className="flex flex-col gap-3" onSubmit={onSubmit}>
           <div>
-            <label className="text-xs text-muted-foreground">{t("emailLabel")}</label>
-            <Input value={email} disabled readOnly />
+            <label htmlFor="accept-invite-email" className="text-xs text-muted-foreground">{t("emailLabel")}</label>
+            <Input id="accept-invite-email" value={email} disabled readOnly />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">{t("passwordLabel")}</label>
+            <label htmlFor="accept-invite-password" className="text-xs text-muted-foreground">{t("passwordLabel")}</label>
             <Input
+              id="accept-invite-password"
               type="password"
               placeholder={t("passwordPlaceholder")}
               value={password}
