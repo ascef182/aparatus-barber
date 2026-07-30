@@ -4,8 +4,10 @@ import type { NotificationBooking } from "@/lib/notifications";
 
 function booking(overrides: Partial<NotificationBooking> = {}): NotificationBooking {
   return {
+    id: "b1",
     status: "CONFIRMED",
     startAt: new Date("2026-08-10T09:00:00.000Z"),
+    endAt: new Date("2026-08-10T09:30:00.000Z"),
     customer: { email: "cliente@example.com", locale: "pt" },
     service: { name: "Corte" },
     organization: { name: "Barbearia X", defaultLocale: "de", timezone: "Europe/Berlin" },
@@ -43,6 +45,23 @@ describe("worker de notificações — construção/supressão de e-mail", () =>
   test("cancelamento e expiração são enviados independente do status atual", () => {
     expect(buildNotificationEmail({ bookingId: "b1", type: "cancellation" }, booking({ status: "CANCELLED" }))).not.toBeNull();
     expect(buildNotificationEmail({ bookingId: "b1", type: "expired" }, booking({ status: "CANCELLED" }))).not.toBeNull();
+  });
+
+  test("confirmação anexa um .ics pra adicionar ao calendário", () => {
+    const email = buildNotificationEmail({ bookingId: "b1", type: "confirmation" }, booking());
+    expect(email?.attachments).toHaveLength(1);
+    expect(email?.attachments?.[0]?.filename).toBe("reserva.ics");
+    expect(email?.attachments?.[0]?.content).toContain("BEGIN:VEVENT");
+    expect(email?.attachments?.[0]?.content).toContain("UID:booking-b1@bladiq.com");
+    expect(email?.attachments?.[0]?.content).toContain("DTSTART:20260810T090000Z");
+    expect(email?.attachments?.[0]?.content).toContain("DTEND:20260810T093000Z");
+  });
+
+  test("lembrete e cancelamento não anexam .ics", () => {
+    const reminder = buildNotificationEmail({ bookingId: "b1", type: "reminder" }, booking());
+    const cancellation = buildNotificationEmail({ bookingId: "b1", type: "cancellation" }, booking({ status: "CANCELLED" }));
+    expect(reminder?.attachments).toBeUndefined();
+    expect(cancellation?.attachments).toBeUndefined();
   });
 
   test("sem e-mail do cliente, nenhuma notificação é enviada", () => {

@@ -2,6 +2,7 @@ import { Queue } from "bullmq";
 import * as Sentry from "@sentry/nextjs";
 import { getEmailTranslator } from "@/lib/email-translations";
 import { renderBrandedEmail } from "@/lib/email-template";
+import { buildBookingIcs } from "@/lib/ics";
 import { logger } from "@/lib/logger";
 
 export type BookingNotificationJob = {
@@ -47,14 +48,22 @@ export async function scheduleStaleHoldSweep() {
 }
 
 export type NotificationBooking = {
+  id: string;
   status: string;
   startAt: Date;
+  endAt: Date;
   customer: { email: string | null; locale: string | null };
   service: { name: string };
   organization: { name: string; defaultLocale: string; timezone: string };
 };
 
-export type NotificationEmail = { to: string; subject: string; html: string; text: string };
+export type NotificationEmail = {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  attachments?: { filename: string; content: string; contentType: string }[];
+};
 
 export type InvitationNotificationJob = {
   invitationId: string;
@@ -153,5 +162,22 @@ export function buildNotificationEmail(
     footerNote: t("footer", { organization: booking.organization.name }),
   });
 
-  return { to: booking.customer.email, subject: t(`${key}.subject`, vars), html, text };
+  // Anexo .ics só na confirmação — "adicionar ao calendário" é o que faz
+  // sentido nesse momento; lembrete/cancelamento não criam/alteram evento.
+  const attachments = job.type === "confirmation"
+    ? [{
+        filename: "reserva.ics",
+        content: buildBookingIcs({
+          uid: `booking-${booking.id}@bladiq.com`,
+          summary: `${booking.service.name} — ${booking.organization.name}`,
+          description: t(`${key}.body`, vars),
+          location: booking.organization.name,
+          startAt: booking.startAt,
+          endAt: booking.endAt,
+        }),
+        contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+      }]
+    : undefined;
+
+  return { to: booking.customer.email, subject: t(`${key}.subject`, vars), html, text, attachments };
 }
