@@ -52,6 +52,8 @@ export function ServiceItem({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [slotConflictError, setSlotConflictError] = useState(false);
+  const [alternativeSlots, setAlternativeSlots] = useState<AvailableSlot[]>([]);
 
   const availability = useAction(getPublicAvailability);
   const booking = useAction(createPublicBooking);
@@ -81,7 +83,26 @@ export function ServiceItem({
       customer: { name, email, phone: phone || undefined, locale },
     });
     if (result.serverError || result.validationErrors) {
-      toast.error(result.serverError ?? t("bookingError"));
+      // Se foi erro de slot indisponível, carrega alternativas
+      if (result.serverError?.includes("horário")) {
+        setSlotConflictError(true);
+        // Carrega slots para a mesma data para oferecer alternativas
+        if (date) {
+          const alts = await availability.executeAsync({
+            serviceId: service.id,
+            dateISO: format(date, "yyyy-MM-dd"),
+          });
+          if (alts.data) {
+            // Pega os primeiros 3 slots diferentes do que foi selecionado
+            const suggested = alts.data
+              .filter((s) => s.startAt.getTime() !== slot.startAt.getTime())
+              .slice(0, 3);
+            setAlternativeSlots(suggested);
+          }
+        }
+      } else {
+        toast.error(result.serverError ?? t("bookingError"));
+      }
       return;
     }
     if (!result.data) return;
@@ -97,6 +118,7 @@ export function ServiceItem({
     }
 
     setConfirmed(true);
+    setSlotConflictError(false);
     toast.success(t("bookingConfirmedTitle"));
   }
 
@@ -192,6 +214,54 @@ export function ServiceItem({
             <div className="px-5 pb-6">
               <Button className="w-full rounded-full" disabled={!slot} onClick={() => setStep("details")}>
                 {t("continue")}
+              </Button>
+            </div>
+          </div>
+        ) : slotConflictError ? (
+          <div className="flex flex-col gap-6">
+            <SheetHeader className="px-5 pt-6">
+              <SheetTitle className="text-lg font-bold">{t("slotUnavailable")}</SheetTitle>
+            </SheetHeader>
+
+            <div className="px-5">
+              <p className="text-center text-sm text-muted-foreground">{t("slotUnavailableMessage")}</p>
+            </div>
+
+            {alternativeSlots.length > 0 && (
+              <div className="px-5">
+                <p className="mb-2 text-sm font-semibold">{t("suggestedSlots")}</p>
+                <div className="flex flex-col gap-2">
+                  {alternativeSlots.map((item) => (
+                    <Button
+                      key={item.startAt.toString()}
+                      type="button"
+                      variant="outline"
+                      className="justify-start rounded-lg"
+                      onClick={() => {
+                        setSlot(item);
+                        setStaffId(item.staffIds[0] ?? "");
+                        setSlotConflictError(false);
+                        setAlternativeSlots([]);
+                      }}
+                    >
+                      <span className="text-base font-semibold">{item.time}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="px-5 pb-6">
+              <Button
+                className="w-full rounded-full"
+                variant="outline"
+                onClick={() => {
+                  setStep("datetime");
+                  setSlotConflictError(false);
+                  setAlternativeSlots([]);
+                }}
+              >
+                {t("chooseDifferentDate")}
               </Button>
             </div>
           </div>
