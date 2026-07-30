@@ -2,16 +2,28 @@
 
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { SUPPORTED_LOCALES, type AppLocale } from "@/i18n/locales";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/app/_components/ui/dropdown-menu";
 
-const LABELS: Record<AppLocale, string> = { de: "DE", en: "EN", pt: "PT" };
+// Nome nativo (não traduzido) — um seletor de idioma deve mostrar cada
+// opção no próprio idioma, pra ser reconhecível independente do locale
+// atual da UI.
+const FLAG: Record<AppLocale, string> = { de: "🇩🇪", en: "🇬🇧", pt: "🇵🇹" };
+const NATIVE_NAME: Record<AppLocale, string> = { de: "Deutsch", en: "English", pt: "Português" };
 
 function setLocaleCookie(next: AppLocale) {
   document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000`;
 }
 
 export function LocaleSwitcher() {
-  const locale = useLocale();
+  const locale = useLocale() as AppLocale;
   const router = useRouter();
 
   function switchTo(next: AppLocale) {
@@ -20,20 +32,27 @@ export function LocaleSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1 text-xs text-neutral-400">
-      {SUPPORTED_LOCALES.map((l) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <button
-          key={l}
           type="button"
-          onClick={() => switchTo(l)}
-          aria-current={locale === l}
-          className={`rounded-md px-2 py-1 transition-colors ${
-            locale === l ? "bg-white/10 text-white" : "hover:text-white"
-          }`}
+          className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-neutral-400 transition-colors hover:text-white"
+          aria-label={NATIVE_NAME[locale]}
         >
-          {LABELS[l]}
+          <span className="text-base leading-none">{FLAG[locale]}</span>
+          <ChevronDown className="size-3.5" />
         </button>
-      ))}
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup value={locale} onValueChange={(next) => switchTo(next as AppLocale)}>
+          {SUPPORTED_LOCALES.map((l) => (
+            <DropdownMenuRadioItem key={l} value={l} className="gap-2">
+              <span className="text-base leading-none">{FLAG[l]}</span>
+              {NATIVE_NAME[l]}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
