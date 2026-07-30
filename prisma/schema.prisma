@@ -471,6 +471,15 @@ model StripeEvent {
  * pela aplicação. organizationId null = evento de plataforma (ex.: impersonation).
  * Entra em TENANT_MODELS (lib/db.ts) quando organizationId presente.
  */
+/// Append-only audit trail for compliance and operational monitoring.
+///
+/// **Data Retention Policy:**
+/// - Marketing/analytics events: 90 days (not required by regulation)
+/// - Booking/payment/subscription events: 3 years (tax + fraud investigation)
+/// - Customer erasure events: 3 years (GDPR proof of erasure)
+///
+/// Archival strategy: Create automated job to move old records to archive table
+/// (future) after retention period expires. Use partition by date if >10M records.
 model AuditLog {
   id             String   @id @default(uuid())
   organizationId String?
