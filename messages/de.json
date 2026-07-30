@@ -313,7 +313,9 @@
       "customerPayments": "Kundenzahlungen",
       "customerPaymentsDesc": "Verbinden Sie Ihr Stripe-Express-Konto, um Anzahlungen und Vorauszahlungen zu akzeptieren.",
       "connectStripe": "Stripe verbinden",
-      "continueOnboarding": "Stripe-Onboarding fortsetzen"
+      "continueOnboarding": "Stripe-Onboarding fortsetzen",
+      "subscriptionSuccessBanner": "Abonnement bestätigt! Ihr Plan ist jetzt aktiv.",
+      "subscriptionCanceledBanner": "Abonnement abgebrochen. Sie können es jederzeit erneut versuchen."
     },
     "customers": {
       "title": "Kunden",
