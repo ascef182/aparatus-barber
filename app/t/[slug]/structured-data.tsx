@@ -84,5 +84,13 @@ export function StructuredData({
       : {}),
   };
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }} />;
+  // JSON.stringify não escapa "<" — um valor de negócio/serviço/endereço
+  // (texto livre controlado pelo dono no dashboard, ex.: organizationName)
+  // contendo literalmente "</script>" fecharia esta tag prematuramente e
+  // injetaria HTML/script arbitrário na página pública. < é decodificado
+  // de volta a "<" por qualquer parser de JSON válido (incluindo o Google),
+  // mas o parser de HTML nunca vê o caractere "<" real, então não pode
+  // fechar a tag. Mesma mitigação usada pelos exemplos oficiais do Next.js
+  // pra JSON-LD.
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(json).replace(/</g, "\\u003c") }} />;
 }
