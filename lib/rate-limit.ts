@@ -67,8 +67,9 @@ export async function getClientIp(): Promise<string> {
  * compartilhados com storage de sessão), não passa por esta função — não
  * há um ponto de interceptação limpo pra logar só as negações de login
  * sem depender do naming interno de chave do Better Auth, que não é
- * contrato público. Visibilidade de força bruta em login fica pendente
- * até o Better Auth expor um hook próprio pra isso.
+ * contrato público. Visibilidade de força bruta em login é logada em
+ * app/api/auth/[...all]/route.ts (checa o status 429 da Response na borda
+ * HTTP, já que o Better Auth não expõe um hook público pra essas negações).
  */
 export async function checkRateLimit(
   key: string,
