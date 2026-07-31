@@ -100,6 +100,11 @@ enum CompensationType {
   PER_SERVICE_COMMISSION
 }
 
+enum NotificationStatus {
+  SENT
+  FAILED
+}
+
 model Staff {
   id             String       @id @default(uuid())
   organizationId String
@@ -463,6 +468,7 @@ model Organization {
   conversations Conversation[]
   messages    Message[]
   customerCoupons CustomerCoupon[]
+  notificationLogs NotificationLog[]
 
   @@map("organization")
 }
@@ -726,4 +732,28 @@ model CustomerCoupon {
   @@unique([customerId, couponId])
   @@index([organizationId])
   @@map("customerCoupon")
+}
+
+/**
+ * Trilha append-only de tentativas de envio de notificação (Resend) feitas
+ * pelo worker — sem isso, uma falha silenciosa do Resend (ex.: domínio não
+ * verificado) marca o job do BullMQ como `completed` e ninguém percebe que
+ * o e-mail nunca saiu. `type` reaproveita o mesmo rótulo do job/fila (ex.:
+ * "booking.confirmation", "invitation.invite", "quoteRequest.notify",
+ * "mfaReminder"). `channel` fica em EMAIL por enquanto, mas string livre
+ * (não enum) para dar espaço a SMS/push sem migration.
+ */
+model NotificationLog {
+  id             String              @id @default(uuid())
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  type           String
+  channel        String              @default("EMAIL")
+  recipient      String
+  status         NotificationStatus
+  errorMessage   String?
+  createdAt      DateTime            @default(now())
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@map("notificationLog")
 }

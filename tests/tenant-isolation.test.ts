@@ -124,10 +124,10 @@ afterAll(async () => {
     await db.coupon.deleteMany({
       where: { organizationId: { in: [orgA.id, orgB.id] } },
     });
-    // auditLog é append-only por design (UPDATE/DELETE revogados de
-    // app_runtime na migração de RLS) -- nem o app real apaga entradas de
-    // auditoria, então o teste também não. As linhas seedadas somem com o
-    // container efêmero do Testcontainers ao final da suíte.
+    // auditLog/notificationLog são append-only por design (UPDATE/DELETE
+    // revogados de app_runtime na migração de RLS) -- nem o app real apaga
+    // essas entradas, então o teste também não. As linhas seedadas somem com
+    // o container efêmero do Testcontainers ao final da suíte.
     await db.tenantImpressum.deleteMany({
       where: { organizationId: { in: [orgA.id, orgB.id] } },
     });
@@ -959,6 +959,35 @@ describe("Suite 2 — extension fail-closed", () => {
 
     const seenByPlatform = await runWithPlatformScope(() =>
       db.customerCoupon.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
+  test("NotificationLog: fail-closed sem contexto, escopado sob tenant, bypass em platform scope", async () => {
+    await expect(
+      db.notificationLog.create({
+        data: { organizationId: orgA.id, type: "booking.confirmation", recipient: "a@example.com", status: "SENT" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    await runWithTenant(orgA.id, () =>
+      db.notificationLog.create({
+        data: { organizationId: orgA.id, type: "booking.confirmation", recipient: "a@example.com", status: "SENT" },
+      }),
+    );
+    await runWithTenant(orgB.id, () =>
+      db.notificationLog.create({
+        data: { organizationId: orgB.id, type: "booking.confirmation", recipient: "b@example.com", status: "FAILED", errorMessage: "domain not verified" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.notificationLog.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.recipient === "b@example.com")).toBe(false);
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.notificationLog.findMany({ where: { organizationId: { in: [orgA.id, orgB.id] } } }),
     );
     const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
     expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));

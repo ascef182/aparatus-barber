@@ -61,7 +61,7 @@ export const createStaff = staffWriteActionClient({ staff: ["manage"] }).inputSc
     const invitation = await auth.api.createInvitation({ body: { email: invite.email, role: invite.role, organizationId }, headers: await headers() });
     await db.staff.update({ where: { id: staff.id }, data: { invitationId: invitation.id } });
     const appUrl = process.env.NEXT_PUBLIC_APP_URL; const inviteUrl = appUrl ? `${appUrl}/accept-invitation/${invitation.id}` : `https://${getRootDomain()}/accept-invitation/${invitation.id}`;
-    await enqueueInvitationEmail({ invitationId: invitation.id, email: invitation.email, organizationName: ctx.organization.name, inviteUrl, locale: ctx.organization.defaultLocale });
+    await enqueueInvitationEmail({ invitationId: invitation.id, organizationId, email: invitation.email, organizationName: ctx.organization.name, inviteUrl, locale: ctx.organization.defaultLocale });
     await logAuditEvent({ entity: "Invitation", action: "INVITE_SENT", entityId: invitation.id, actorId: ctx.user.id, organizationId });
   }
   revalidatePath("/dashboard/staff"); return staff;

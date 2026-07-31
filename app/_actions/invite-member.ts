@@ -39,6 +39,7 @@ export const inviteMember = staffWriteActionClient({ staff: ["manage"] })
 
     await enqueueInvitationEmail({
       invitationId: invitation.id,
+      organizationId: ctx.organization.id,
       email: invitation.email,
       organizationName: ctx.organization.name,
       inviteUrl,

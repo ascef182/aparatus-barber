@@ -8,6 +8,7 @@ import { buildNotificationEmail, enqueueBookingNotification, scheduleStaleHoldSw
 import type { BookingNotificationJob, InvitationNotificationJob, QuoteRequestNotificationJob } from "@/lib/notifications";
 import { getEmailTranslator } from "@/lib/email-translations";
 import { renderBrandedEmail } from "@/lib/email-template";
+import { recordNotificationLog } from "@/lib/services/notification-log-service";
 import { logger } from "@/lib/logger";
 
 // Processo separado do web — precisa do próprio Sentry.init (não passa
@@ -33,12 +34,40 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
 
+// Resend v3+ retorna `{ data, error }` em vez de lançar em erro de API
+// (domínio não verificado, remetente inválido, etc.) — sem checar `error`
+// aqui, o job do BullMQ é marcado `completed` mesmo quando o e-mail nunca
+// saiu de verdade. `recordNotificationLog` grava o resultado (sucesso ou
+// falha) pra auditoria, e o `errorMessage` fica visível pra debug.
+async function sendAndLog(params: {
+  organizationId: string;
+  type: string;
+  recipient: string;
+  email: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0];
+}) {
+  const { organizationId, type, recipient, email } = params;
+  const { error } = await getResend().emails.send(email);
+  await recordNotificationLog({
+    organizationId,
+    type,
+    recipient,
+    status: error ? "FAILED" : "SENT",
+    errorMessage: error?.message,
+  });
+  return { error };
+}
+
 const notificationsWorker = new Worker<BookingNotificationJob>("booking-notifications", async (job) => {
   const booking = await getBookingForNotification(job.data.bookingId);
   if (!booking) return;
   const email = buildNotificationEmail(job.data, booking);
   if (!email) return;
-  await getResend().emails.send({ from, ...email });
+  await sendAndLog({
+    organizationId: booking.organizationId,
+    type: `booking.${job.data.type}`,
+    recipient: email.to,
+    email: { from, ...email },
+  });
 }, { connection, concurrency: 10 });
 
 notificationsWorker.on("completed", (job) => {
@@ -74,12 +103,11 @@ const invitationsWorker = new Worker<InvitationNotificationJob>("invitation-noti
     ctaUrl: job.data.inviteUrl,
     footerNote: t("footer", vars),
   });
-  await getResend().emails.send({
-    from,
-    to: job.data.email,
-    subject: t("invitation.subject", vars),
-    html,
-    text,
+  await sendAndLog({
+    organizationId: job.data.organizationId,
+    type: "invitation.invite",
+    recipient: job.data.email,
+    email: { from, to: job.data.email, subject: t("invitation.subject", vars), html, text },
   });
 }, { connection, concurrency: 10 });
 
@@ -104,7 +132,12 @@ const quoteRequestsWorker = new Worker<QuoteRequestNotificationJob>("quote-reque
     paragraphs: [t("quoteRequest.body", vars)],
     footerNote: t("footer", { organization: quoteRequest.organization.name }),
   });
-  await getResend().emails.send({ from, to: ownerEmail, subject: t("quoteRequest.subject", vars), html, text });
+  await sendAndLog({
+    organizationId: quoteRequest.organizationId,
+    type: "quoteRequest.notify",
+    recipient: ownerEmail,
+    email: { from, to: ownerEmail, subject: t("quoteRequest.subject", vars), html, text },
+  });
 }, { connection, concurrency: 10 });
 
 quoteRequestsWorker.on("failed", (job, err) => {
@@ -132,8 +165,15 @@ const mfaReminderWorker = new Worker("mfa-reminder-maintenance", async () => {
       footerNote: t("footer", vars),
     });
     try {
-      await getResend().emails.send({ from, to: member.user.email, subject: t("mfaGracePeriodReminder.subject", vars), html, text });
-      await markMfaReminderSent(member.id);
+      const { error } = await sendAndLog({
+        organizationId: member.organizationId,
+        type: "mfaReminder",
+        recipient: member.user.email,
+        email: { from, to: member.user.email, subject: t("mfaGracePeriodReminder.subject", vars), html, text },
+      });
+      // Só marca como enviado se o Resend confirmou — senão a próxima
+      // varredura tenta de novo em vez de suprimir o lembrete pra sempre.
+      if (!error) await markMfaReminderSent(member.id);
     } catch (err) {
       logger({ memberId: member.id }).error({ err }, "mfa_reminder.send_failed");
       Sentry.captureException(err, { extra: { memberId: member.id } });

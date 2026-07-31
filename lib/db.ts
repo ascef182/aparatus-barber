@@ -36,6 +36,7 @@ const TENANT_MODELS = new Set([
   "Conversation",
   "Message",
   "CustomerCoupon",
+  "NotificationLog",
 ]);
 
 // Operações cujo `where` aceita filtro composto (lista não-única).

@@ -67,6 +67,7 @@ export type NotificationEmail = {
 
 export type InvitationNotificationJob = {
   invitationId: string;
+  organizationId: string;
   email: string;
   organizationName: string;
   inviteUrl: string;
