@@ -242,7 +242,11 @@
       "servicesLink": "services",
       "staffServiceLink": "staff-service assignment",
       "mfaBanner": "Enable two-factor authentication to protect your account",
-      "trialExpiredBanner": "Your 7-day free trial has ended — subscribe to a plan to continue"
+      "trialExpiredBanner": "Your 7-day free trial has ended — subscribe to a plan to continue",
+      "greeting": "Hi, {name}",
+      "searchPlaceholder": "Search customers...",
+      "notifications": "Notifications",
+      "noNotifications": "No notifications yet."
     },
     "messages": {
       "title": "Messages",

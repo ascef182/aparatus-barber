@@ -242,7 +242,11 @@
       "servicesLink": "serviços",
       "staffServiceLink": "vínculo profissional-serviço",
       "mfaBanner": "Ative a autenticação de dois fatores para proteger sua conta",
-      "trialExpiredBanner": "Seu período de teste gratuito de 7 dias terminou — assine um plano para continuar"
+      "trialExpiredBanner": "Seu período de teste gratuito de 7 dias terminou — assine um plano para continuar",
+      "greeting": "Olá, {name}",
+      "searchPlaceholder": "Buscar clientes...",
+      "notifications": "Notificações",
+      "noNotifications": "Nenhuma notificação por aqui ainda."
     },
     "messages": {
       "title": "Mensagens",

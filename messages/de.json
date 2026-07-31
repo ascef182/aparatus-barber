@@ -242,7 +242,11 @@
       "servicesLink": "Leistungen",
       "staffServiceLink": "Zuordnung Fachkraft-Leistung",
       "mfaBanner": "Aktivieren Sie die Zwei-Faktor-Authentifizierung, um Ihr Konto zu schützen",
-      "trialExpiredBanner": "Ihre 7-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren"
+      "trialExpiredBanner": "Ihre 7-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren",
+      "greeting": "Hallo, {name}",
+      "searchPlaceholder": "Kunden suchen...",
+      "notifications": "Benachrichtigungen",
+      "noNotifications": "Noch keine Benachrichtigungen."
     },
     "messages": {
       "title": "Nachrichten",

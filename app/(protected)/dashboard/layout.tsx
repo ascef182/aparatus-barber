@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   CalendarDays,
   CircleAlert,
@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Scissors,
+  Search,
   Settings,
   ShieldAlert,
   Ticket,
@@ -22,10 +23,12 @@ import { getOrganizationBySlug, isFreeTrialExpired, isSetupComplete, autoListDir
 import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
 import { hasPermission, isAppRole } from "@/lib/auth/permissions";
 import { Badge } from "@/app/_components/ui/badge";
+import { Input } from "@/app/_components/ui/input";
 import { DashboardTour } from "./dashboard-tour";
 import { SidebarNav, type NavItem } from "./sidebar-nav";
 import { UserMenu } from "./user-menu";
 import { MobileNav } from "./mobile-nav";
+import { NotificationsPopover } from "./notifications-popover";
 
 const MFA_EXEMPT_PREFIX = "/dashboard/settings";
 
@@ -66,6 +69,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const t = await getTranslations("dashboard");
   const tRoles = await getTranslations("roles");
   const roleLabel = isAppRole(membership.role) ? tRoles(membership.role) : membership.role;
+  const locale = await getLocale();
+  const firstName = session.user.name.trim().split(/\s+/)[0] ?? session.user.name;
+  const today = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(new Date());
 
   const navIconClass = "size-4 shrink-0";
   const navItems: NavItem[] = [
@@ -109,11 +115,26 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur md:justify-end md:px-6">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur md:px-6">
           <MobileNav organizationName={organization.name} navItems={navItems} userMenuProps={userMenuProps} />
           <Link href="/dashboard" className="truncate font-semibold tracking-tight md:hidden">
             {organization.name}
           </Link>
+
+          <div className="hidden min-w-0 md:block">
+            <p className="truncate font-semibold tracking-tight">{t("layout.greeting", { name: firstName })} 👋</p>
+            <p className="truncate text-sm capitalize text-muted-foreground">{today}</p>
+          </div>
+
+          <form action="/dashboard/customers" method="GET" className="ml-auto hidden max-w-xs flex-1 md:block">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input name="q" placeholder={t("layout.searchPlaceholder")} className="pl-9" />
+            </div>
+          </form>
+
+          <NotificationsPopover label={t("layout.notifications")} emptyLabel={t("layout.noNotifications")} />
+
           <Badge variant={readOnly ? "destructive" : "secondary"} className="ml-auto md:ml-0">
             {readOnly ? t("layout.readOnly") : organization.subscriptionStatus.toLowerCase()}
           </Badge>
