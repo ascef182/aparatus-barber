@@ -11,6 +11,9 @@ import { getImpressum } from "@/lib/services/impressum-service";
 import { listLocations } from "@/lib/services/location-service";
 import { listQuoteRequests } from "@/lib/services/quote-request-service";
 import { isQuoteBasedCategory } from "@/lib/business-category";
+import { PageContainer, PageHeader } from "@/app/_components/ui/page";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/_components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/_components/ui/tabs";
 import { RulesForm } from "./rules-form";
 import { SecuritySection } from "./security-section";
 import { ClosedPeriodForm } from "./closed-period-form";
@@ -25,8 +28,14 @@ export default async function SettingsPage({
 }: {
   searchParams: Promise<{ mfaRequired?: string }>;
 }) {
-  const requestHeaders = await headers(); const session = await auth.api.getSession({ headers: requestHeaders }); const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) redirect("/"); const organization = await getOrganizationBySlug(slug); if (!organization) redirect("/"); const membership = await getMembership(organization.id, session.user.id); if (!membership || !["owner", "manager"].includes(membership.role)) redirect("/dashboard");
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({ headers: requestHeaders });
+  const slug = resolveTenantSlug(requestHeaders.get("host"));
+  if (!session?.user || !slug) redirect("/");
+  const organization = await getOrganizationBySlug(slug);
+  if (!organization) redirect("/");
+  const membership = await getMembership(organization.id, session.user.id);
+  if (!membership || !["owner", "manager"].includes(membership.role)) redirect("/dashboard");
   const { mfaRequired } = await searchParams;
   const [rules, impressum, locations, members, pendingInvitations, quoteRequests] = await Promise.all([
     runWithTenant(organization.id, getResolvedRules),
@@ -40,5 +49,138 @@ export default async function SettingsPage({
   ]);
   const cities = [...new Set(locations.filter((l) => l.isActive).map((l) => l.city))];
   const t = await getTranslations("dashboard.settings");
-  return <section className="flex flex-col gap-8 p-6">{mfaRequired === "1" && <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">{t("mfaRequiredBanner")}</div>}<div><p className="text-sm text-muted-foreground">{t("operation")}</p><h1 className="mb-6 text-2xl font-semibold">{t("bookingSettings")}</h1><RulesForm rules={rules} /></div><div><h2 className="mb-3 text-lg font-semibold">{t("closePeriod")}</h2><ClosedPeriodForm /></div><TeamSection members={members.map((m) => ({ id: m.id, role: m.role, userName: m.user.name, userEmail: m.user.email }))} pendingInvitations={pendingInvitations.map((i) => ({ id: i.id, email: i.email, role: i.role }))} /><div><h2 className="mb-3 text-lg font-semibold">{t("impressumTitle")}</h2><p className="mb-3 text-sm text-muted-foreground">{t("impressumHint")}</p><ImpressumForm initial={impressum ? { legalName: impressum.legalName, addressLine1: impressum.addressLine1, postalCode: impressum.postalCode, city: impressum.city, country: impressum.country, representedBy: impressum.representedBy ?? "", phone: impressum.phone ?? "", email: impressum.email ?? "", registerCourt: impressum.registerCourt ?? "", registerNumber: impressum.registerNumber ?? "", vatId: impressum.vatId ?? "" } : null} /></div><div><h2 className="mb-3 text-lg font-semibold">{t("coverImageTitle")}</h2><CoverImageForm initialCoverImageUrl={organization.coverImageUrl} /></div><div><h2 className="mb-3 text-lg font-semibold">{t("directoryTitle")}</h2><DirectoryListingForm initialIsListed={organization.isListed} initialCategory={organization.category} cities={cities} /></div>{isQuoteBasedCategory(organization.category) && <div><h2 className="mb-3 text-lg font-semibold">{t("quoteRequestsTitle")}</h2><QuoteRequestsSection quoteRequests={quoteRequests.map((q) => ({ id: q.id, customerName: q.customerName, customerEmail: q.customerEmail, customerPhone: q.customerPhone, message: q.message, status: q.status, createdAt: q.createdAt.toISOString() }))} /></div>}<SecuritySection twoFactorEnabled={!!session.user.twoFactorEnabled} /></section>;
+  const isQuoteBased = isQuoteBasedCategory(organization.category);
+
+  return (
+    <PageContainer>
+      <PageHeader eyebrow={t("operation")} title={t("pageTitle")} description={t("pageDescription")} />
+
+      {mfaRequired === "1" && (
+        <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
+          {t("mfaRequiredBanner")}
+        </div>
+      )}
+
+      {/* Aba padrão é "security" quando o gate de MFA (dashboard/layout.tsx)
+          redireciona pra cá — sem isso o dono cairia na aba "Geral" e teria
+          que procurar onde ativar o 2FA que acabou de ser exigido. */}
+      <Tabs defaultValue={mfaRequired === "1" ? "security" : "general"}>
+        <div className="overflow-x-auto">
+          <TabsList>
+            <TabsTrigger value="general">{t("tabGeneral")}</TabsTrigger>
+            <TabsTrigger value="team">{t("tabTeam")}</TabsTrigger>
+            <TabsTrigger value="legal">{t("tabLegal")}</TabsTrigger>
+            <TabsTrigger value="directory">{t("tabDirectory")}</TabsTrigger>
+            <TabsTrigger value="security">{t("tabSecurity")}</TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="general" className="mt-6 grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("bookingSettings")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RulesForm rules={rules} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("closePeriod")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ClosedPeriodForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="team" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("teamTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TeamSection
+                members={members.map((m) => ({ id: m.id, role: m.role, userName: m.user.name, userEmail: m.user.email }))}
+                pendingInvitations={pendingInvitations.map((i) => ({ id: i.id, email: i.email, role: i.role }))}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="legal" className="mt-6 grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("impressumTitle")}</CardTitle>
+              <CardDescription>{t("impressumHint")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ImpressumForm
+                initial={
+                  impressum
+                    ? {
+                        legalName: impressum.legalName,
+                        addressLine1: impressum.addressLine1,
+                        postalCode: impressum.postalCode,
+                        city: impressum.city,
+                        country: impressum.country,
+                        representedBy: impressum.representedBy ?? "",
+                        phone: impressum.phone ?? "",
+                        email: impressum.email ?? "",
+                        registerCourt: impressum.registerCourt ?? "",
+                        registerNumber: impressum.registerNumber ?? "",
+                        vatId: impressum.vatId ?? "",
+                      }
+                    : null
+                }
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("coverImageTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CoverImageForm initialCoverImageUrl={organization.coverImageUrl} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="directory" className="mt-6 grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("directoryTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DirectoryListingForm initialIsListed={organization.isListed} initialCategory={organization.category} cities={cities} />
+            </CardContent>
+          </Card>
+          {isQuoteBased && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("quoteRequestsTitle")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <QuoteRequestsSection
+                  quoteRequests={quoteRequests.map((q) => ({
+                    id: q.id,
+                    customerName: q.customerName,
+                    customerEmail: q.customerEmail,
+                    customerPhone: q.customerPhone,
+                    message: q.message,
+                    status: q.status,
+                    createdAt: q.createdAt.toISOString(),
+                  }))}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="security" className="mt-6">
+          <SecuritySection twoFactorEnabled={!!session.user.twoFactorEnabled} />
+        </TabsContent>
+      </Tabs>
+    </PageContainer>
+  );
 }

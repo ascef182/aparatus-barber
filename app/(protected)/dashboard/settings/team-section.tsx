@@ -15,9 +15,8 @@ export async function TeamSection({
   const tRoles = await getTranslations("roles");
   const roleLabel = (role: string) => (KNOWN_ROLES.has(role) ? tRoles(role) : role);
   return (
-    <div>
-      <h2 className="mb-3 text-lg font-semibold">{t("teamTitle")}</h2>
-      <div className="mb-4 rounded-lg border bg-background p-4">
+    <div className="grid gap-6">
+      <div className="rounded-lg border bg-muted/30 p-4">
         <InviteMemberForm />
       </div>
       <div className="grid gap-2">
@@ -26,7 +25,7 @@ export async function TeamSection({
         ))}
       </div>
       {pendingInvitations.length > 0 && (
-        <div className="mt-4">
+        <div>
           <p className="mb-2 text-sm font-medium text-muted-foreground">{t("pendingInvitations")}</p>
           <div className="grid gap-2">
             {pendingInvitations.map((invitation) => (

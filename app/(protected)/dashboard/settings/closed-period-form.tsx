@@ -5,6 +5,9 @@ import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClosedPeriod } from "@/app/_actions/manage-operations";
+import { Button } from "@/app/_components/ui/button";
+import { Input } from "@/app/_components/ui/input";
+import { Label } from "@/app/_components/ui/label";
 
 export function ClosedPeriodForm() {
   const t = useTranslations("dashboard.settings");
@@ -18,20 +21,29 @@ export function ClosedPeriodForm() {
 
   return (
     <form
-      className="grid max-w-xl gap-2"
+      className="grid gap-4"
       onSubmit={(event) => {
         event.preventDefault();
         action.execute({ name, startAt: new Date(startAt), endAt: new Date(endAt) });
       }}
     >
-      <input className="rounded-md border p-2" placeholder={t("reasonPlaceholder")} value={name} onChange={(e) => setName(e.target.value)} required />
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
-        <input type="datetime-local" className="min-w-0 rounded-md border p-2" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
+      <div className="grid gap-1.5">
+        <Label htmlFor="closed-period-name">{t("reasonPlaceholder")}</Label>
+        <Input id="closed-period-name" placeholder={t("reasonPlaceholder")} value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
-      <button type="submit" disabled={action.isPending} className="w-fit rounded-md border px-3 py-2 text-sm">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-1.5">
+          <Label htmlFor="closed-period-start">{t("closePeriodStart")}</Label>
+          <Input id="closed-period-start" type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="closed-period-end">{t("closePeriodEnd")}</Label>
+          <Input id="closed-period-end" type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} required />
+        </div>
+      </div>
+      <Button type="submit" disabled={action.isPending} className="w-fit">
         {action.isPending ? "..." : t("closePeriodSubmit")}
-      </button>
+      </Button>
     </form>
   );
 }

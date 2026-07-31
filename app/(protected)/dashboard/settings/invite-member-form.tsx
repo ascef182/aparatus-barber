@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { inviteMember } from "@/app/_actions/invite-member";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
+import { Label } from "@/app/_components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 
 const ROLE_OPTIONS = ["manager", "professional", "receptionist"] as const;
 
@@ -26,28 +28,28 @@ export function InviteMemberForm() {
 
   return (
     <form
-      className="flex flex-wrap items-end gap-2"
+      className="flex flex-wrap items-end gap-3"
       onSubmit={(event) => {
         event.preventDefault();
         action.execute({ email, role });
       }}
     >
-      <div className="flex-1 min-w-[200px]">
-        <label htmlFor="invite-member-email" className="text-xs text-muted-foreground">{t("inviteEmailLabel")}</label>
+      <div className="grid min-w-[200px] flex-1 gap-1.5">
+        <Label htmlFor="invite-member-email">{t("inviteEmailLabel")}</Label>
         <Input id="invite-member-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </div>
-      <div>
-        <label htmlFor="invite-member-role" className="text-xs text-muted-foreground">{t("inviteRoleLabel")}</label>
-        <select
-          id="invite-member-role"
-          className="block rounded-md border p-2 text-sm"
-          value={role}
-          onChange={(e) => setRole(e.target.value as typeof role)}
-        >
-          {ROLE_OPTIONS.map((option) => (
-            <option key={option} value={option}>{tRoles(option)}</option>
-          ))}
-        </select>
+      <div className="grid gap-1.5">
+        <Label htmlFor="invite-member-role">{t("inviteRoleLabel")}</Label>
+        <Select value={role} onValueChange={(value) => setRole(value as typeof role)}>
+          <SelectTrigger id="invite-member-role" className="w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ROLE_OPTIONS.map((option) => (
+              <SelectItem key={option} value={option}>{tRoles(option)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit" disabled={action.isPending}>
         {action.isPending ? t("inviting") : t("inviteSubmit")}

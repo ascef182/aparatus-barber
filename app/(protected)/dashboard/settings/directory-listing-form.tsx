@@ -5,7 +5,9 @@ import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { toggleDirectoryListing } from "@/app/_actions/manage-operations";
+import { Label } from "@/app/_components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
+import { Switch } from "@/app/_components/ui/switch";
 
 const BUSINESS_CATEGORIES = [
   "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
@@ -47,11 +49,11 @@ export function DirectoryListingForm({
   }
 
   return (
-    <div className="grid max-w-md gap-3">
+    <div className="grid gap-4">
       <div className="grid gap-1.5">
-        <span className="text-sm font-medium">{tCategories("label")}</span>
+        <Label htmlFor="directory-category">{tCategories("label")}</Label>
         <Select value={category} onValueChange={changeCategory} disabled={action.isPending}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger id="directory-category" className="w-full sm:w-72">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -63,10 +65,10 @@ export function DirectoryListingForm({
           </SelectContent>
         </Select>
       </div>
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={isListed} onChange={toggle} disabled={action.isPending} />
-        {t("directoryToggleLabel")}
-      </label>
+      <div className="flex items-center gap-3">
+        <Switch id="directory-listed" checked={isListed} onCheckedChange={toggle} disabled={action.isPending} />
+        <Label htmlFor="directory-listed">{t("directoryToggleLabel")}</Label>
+      </div>
       <p className="text-sm text-muted-foreground">{t("directoryToggleHelp")}</p>
       {isListed && (
         <p className="text-sm text-muted-foreground">

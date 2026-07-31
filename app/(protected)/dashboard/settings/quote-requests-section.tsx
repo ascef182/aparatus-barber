@@ -5,6 +5,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateQuoteRequestStatusAction } from "@/app/_actions/update-quote-request-status";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 
 type QuoteRequest = {
   id: string;
@@ -32,16 +33,16 @@ function StatusSelect({ quoteRequest }: { quoteRequest: QuoteRequest }) {
   }
 
   return (
-    <select
-      className="rounded-md border p-1.5 text-xs"
-      value={status}
-      disabled={action.isPending}
-      onChange={(e) => change(e.target.value as QuoteRequest["status"])}
-    >
-      <option value="NEW">{t("quoteStatusNew")}</option>
-      <option value="CONTACTED">{t("quoteStatusContacted")}</option>
-      <option value="CLOSED">{t("quoteStatusClosed")}</option>
-    </select>
+    <Select value={status} disabled={action.isPending} onValueChange={(value) => change(value as QuoteRequest["status"])}>
+      <SelectTrigger size="sm" className="w-36">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="NEW">{t("quoteStatusNew")}</SelectItem>
+        <SelectItem value="CONTACTED">{t("quoteStatusContacted")}</SelectItem>
+        <SelectItem value="CLOSED">{t("quoteStatusClosed")}</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
 
