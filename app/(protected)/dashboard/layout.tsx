@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug, isFreeTrialExpired, isSetupComplete } from "@/lib/services/organization-service";
+import { getOrganizationBySlug, isFreeTrialExpired, isSetupComplete, autoListDirectory } from "@/lib/services/organization-service";
 import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
 import { hasPermission, isAppRole } from "@/lib/auth/permissions";
 import { Badge } from "@/app/_components/ui/badge";
@@ -57,6 +57,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   const setupComplete = await isSetupComplete(organization.id);
+  // Listagem automática no diretório central (app.bladiq.com) assim que o
+  // setup básico termina — decisão de produto do roadmap (sem opt-in extra).
+  // autoListDirectory já é um no-op guardado (não reverte unlist manual).
+  if (setupComplete) {
+    await autoListDirectory(organization.id);
+  }
   const t = await getTranslations("dashboard");
   const tRoles = await getTranslations("roles");
   const roleLabel = isAppRole(membership.role) ? tRoles(membership.role) : membership.role;

@@ -452,9 +452,15 @@ model Organization {
   gracePeriodEndsAt      DateTime? @db.Timestamptz
 
   // Diretório público cross-tenant (lib/services/directory-service.ts):
-  // opt-in do dono, nunca automático.
+  // liga sozinho quando o setup básico termina (decisão de produto do
+  // roadmap 2026-07-21, Fase A2 — sem opt-in extra), mas nunca desliga
+  // sozinho nem religa por cima de uma escolha manual do dono/manager —
+  // `directoryListingSetByOwner` marca que a listagem já foi mexida à mão
+  // (em qualquer direção) e faz o gate automático (dashboard/layout.tsx)
+  // nunca mais tocar nela.
   isListed  Boolean   @default(false)
   listedAt  DateTime? @db.Timestamptz
+  directoryListingSetByOwner Boolean @default(false)
   category  BusinessCategory @default(OTHER)
 
   members     Member[]

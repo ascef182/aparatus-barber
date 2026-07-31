@@ -60,11 +60,35 @@ export function isFreeTrialExpired(organization: {
   return deadline < new Date();
 }
 
-/** Toggle do diretório público (app/(marketing)/find) — opt-in do dono/manager. */
+/**
+ * Toggle manual do diretório público (dashboard/settings) — sempre marca
+ * `directoryListingSetByOwner`, pra `autoListDirectory` nunca mais sobrepor
+ * essa escolha (ligar de novo depois de um unlist manual, por exemplo).
+ */
 export function setDirectoryListing(organizationId: string, isListed: boolean, category?: BusinessCategory) {
   return prisma.organization.update({
     where: { id: organizationId },
-    data: { isListed, listedAt: isListed ? new Date() : null, ...(category ? { category } : {}) },
+    data: {
+      isListed,
+      listedAt: isListed ? new Date() : null,
+      directoryListingSetByOwner: true,
+      ...(category ? { category } : {}),
+    },
+  });
+}
+
+/**
+ * Listagem automática no diretório central assim que o setup básico termina
+ * (decisão de produto do roadmap — sem opt-in extra). `updateMany` com os
+ * dois guards no `where` (ainda não listada E nunca mexida à mão) faz disso
+ * uma operação atômica e idempotente: chamado a cada carregamento do
+ * dashboard enquanto o setup estiver completo, mas só tem efeito uma vez,
+ * e nunca reverte uma escolha manual do dono/manager.
+ */
+export function autoListDirectory(organizationId: string) {
+  return prisma.organization.updateMany({
+    where: { id: organizationId, isListed: false, directoryListingSetByOwner: false },
+    data: { isListed: true, listedAt: new Date() },
   });
 }
 
