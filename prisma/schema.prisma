@@ -246,6 +246,7 @@ model Customer {
   notes          String?
   noShowCount    Int          @default(0)
   isBlocked      Boolean      @default(false)
+  tags           String[]     @default([])
   gdprErasedAt   DateTime?    @db.Timestamptz
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt

@@ -5,19 +5,69 @@ export function getCustomerById(id: string) {
   return db.customer.findUnique({ where: { id } });
 }
 
-export function listCustomers(search?: string) {
+export type CustomerStatusFilter = "all" | "active" | "blocked";
+
+export function listCustomers(search?: string, statusFilter: CustomerStatusFilter = "all") {
   return db.customer.findMany({
-    where: search?.trim()
-      ? {
-          OR: [
-            { name: { contains: search, mode: "insensitive" } },
-            { email: { contains: search, mode: "insensitive" } },
-            { phone: { contains: search } },
-          ],
-        }
-      : undefined,
+    where: {
+      ...(search?.trim()
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" as const } },
+              { email: { contains: search, mode: "insensitive" as const } },
+              { phone: { contains: search } },
+            ],
+          }
+        : {}),
+      ...(statusFilter === "active" ? { isBlocked: false } : {}),
+      ...(statusFilter === "blocked" ? { isBlocked: true } : {}),
+    },
     orderBy: { createdAt: "desc" },
   });
+}
+
+export type CustomerStats = {
+  totalSpentInCents: number;
+  lastVisitAt: Date | null;
+  nextAppointmentAt: Date | null;
+};
+
+/**
+ * Total gasto, última visita e próximo horário por cliente — três `groupBy`
+ * em vez de N+1 (uma query de agregação por cliente). Total gasto é sobre
+ * TODAS as reservas (não só concluídas): pagamento recebido menos
+ * reembolsado já reflete o que o cliente pagou de fato, independente do
+ * status atual da reserva.
+ */
+export async function getCustomerStats(customerIds: string[]): Promise<Map<string, CustomerStats>> {
+  const stats = new Map<string, CustomerStats>();
+  for (const id of customerIds) stats.set(id, { totalSpentInCents: 0, lastVisitAt: null, nextAppointmentAt: null });
+  if (!customerIds.length) return stats;
+
+  const now = new Date();
+  const [spend, lastVisit, nextAppointment] = await Promise.all([
+    db.booking.groupBy({
+      by: ["customerId"],
+      where: { customerId: { in: customerIds } },
+      _sum: { paymentReceivedInCents: true, refundedAmountInCents: true },
+    }),
+    db.booking.groupBy({
+      by: ["customerId"],
+      where: { customerId: { in: customerIds }, status: "COMPLETED" },
+      _max: { endAt: true },
+    }),
+    db.booking.groupBy({
+      by: ["customerId"],
+      where: { customerId: { in: customerIds }, status: "CONFIRMED", startAt: { gt: now } },
+      _min: { startAt: true },
+    }),
+  ]);
+  for (const row of spend) {
+    stats.get(row.customerId)!.totalSpentInCents = Math.max(0, (row._sum.paymentReceivedInCents ?? 0) - (row._sum.refundedAmountInCents ?? 0));
+  }
+  for (const row of lastVisit) stats.get(row.customerId)!.lastVisitAt = row._max.endAt;
+  for (const row of nextAppointment) stats.get(row.customerId)!.nextAppointmentAt = row._min.startAt;
+  return stats;
 }
 
 /**

@@ -80,7 +80,7 @@ export const absenceSchema = z.object({ staffId: z.uuid(), startAt: z.coerce.dat
 export const workingHourEntrySchema = z.object({ weekday: z.number().int().min(0).max(6), startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/) });
 export const staffWorkingHoursSchema = z.object({ staffId: z.uuid(), hours: z.array(workingHourEntrySchema) });
 export const closedPeriodSchema = z.object({ name: z.string().min(2).max(120), startAt: z.coerce.date(), endAt: z.coerce.date(), locationId: z.uuid().optional() });
-export const updateCustomerSchema = z.object({ id: z.uuid(), notes: z.string().max(2000).nullable(), isBlocked: z.boolean() });
+export const updateCustomerSchema = z.object({ id: z.uuid(), notes: z.string().max(2000).nullable(), isBlocked: z.boolean(), tags: z.array(z.string().trim().min(1).max(30)).max(10) });
 export const impressumSchema = z.object({ legalName: z.string().min(2).max(160), addressLine1: z.string().min(3).max(160), postalCode: z.string().min(3).max(12), city: z.string().min(2).max(80), country: z.string().length(2).default("DE"), representedBy: z.string().max(160).optional(), phone: z.string().max(40).optional(), email: z.email().optional(), registerCourt: z.string().max(120).optional(), registerNumber: z.string().max(60).optional(), vatId: z.string().max(40).optional() });
 export const toggleDirectoryListingSchema = z.object({
   isListed: z.boolean(),
