@@ -503,6 +503,7 @@ model StripeEvent {
 ///
 /// Archival strategy: Create automated job to move old records to archive table
 /// (future) after retention period expires. Use partition by date if >10M records.
+/// Full picture (all models, not just this one): docs/data-retention-policy.md.
 model AuditLog {
   id             String   @id @default(uuid())
   organizationId String?

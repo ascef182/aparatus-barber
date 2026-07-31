@@ -1,0 +1,24 @@
+# Política de retenção de dados
+
+**Status:** documenta o que já está implementado (anonimização de cliente, exportação GDPR) e o que ainda é só intenção documentada em comentário de schema (arquivamento automático de `AuditLog`). Onde os dois divergem, este documento diz qual é qual.
+
+## Por tipo de dado
+
+| Dado | Onde vive | Retenção | Como é aplicado |
+|---|---|---|---|
+| **PII do cliente** (nome, e-mail, telefone, notas) | `Customer` | Até pedido de apagamento (GDPR Art. 17) | `eraseCustomersForUser` (`lib/services/customer-service.ts`) anonimiza (`name: "ANONYMIZED"`, `email/phone/notes: null`, `gdprErasedAt` gravado) — via `app/api/gdpr/erase/route.ts` |
+| **Reserva/pagamento** (`Booking`, valores, status) | `Booking` | **10 anos, nunca apagado** | Lei fiscal alemã (GoBD §147 AO) — comentário explícito em `customer-service.ts:63-64`: apagar junto com o cliente seria ilegal, não só indesejado. `eraseCustomersForUser` deliberadamente não toca em `Booking` |
+| **Trilha de auditoria** (`AuditLog`) | `AuditLog` | Sem purge automático hoje — **90 dias (marketing) / 3 anos (booking/pagamento/assinatura) / 3 anos (prova de apagamento GDPR) é a política-alvo**, documentada em `prisma/schema.prisma:497-505`, ainda não implementada | Nenhum — tabela append-only (UPDATE/DELETE revogados de `app_runtime` na migração de RLS), cresce indefinidamente até existir o job de arquivamento mencionado no próprio comentário do schema |
+| **Consentimento** (`ConsentLog` — cookies/marketing/DPA) | `ConsentLog` | Sem prazo definido | Nenhuma remoção — é a prova de que o consentimento foi dado; mantido enquanto a conta existir |
+| **Log de notificação** (`NotificationLog`, envios de e-mail) | `NotificationLog` | Sem prazo definido | Append-only (mesmo padrão de `AuditLog`), sem job de purge |
+| **Eventos Stripe processados** (`StripeEvent`, dedupe de webhook) | `StripeEvent` | Sem prazo definido | Sem PII (só id/type/accountId), risco de compliance baixo |
+| **Sessão/conta** (Better Auth: `Session`, `Account`) | tabelas do Better Auth | Conforme configuração de sessão do Better Auth (`lib/auth.ts`) | Fora do escopo deste documento — gerenciado pelo plugin, não por lógica própria |
+
+## O que falta pra fechar a lacuna
+
+O comentário em `prisma/schema.prisma` (linhas 497-505) já registra a política-alvo pro `AuditLog` (90 dias / 3 anos / 3 anos) mas o job de arquivamento em si (mover registros expirados pra uma tabela de arquivo, particionar se passar de 10M linhas) **não existe ainda** — é trabalho futuro, sem prioridade definida pré-lançamento. `ConsentLog` e `NotificationLog` não têm nem política-alvo documentada ainda; ambos são pequenos o suficiente hoje (baixo volume) pra não serem urgência.
+
+## Base legal
+
+- **GDPR Art. 17** (direito ao esquecimento): implementado via anonimização do `Customer`, não deleção — preserva a integridade referencial de `Booking` (obrigatório manter por lei fiscal) sem expor PII depois do pedido.
+- **GoBD §147 AO** (Alemanha, retenção fiscal): é o motivo de `Booking`/pagamento nunca serem apagados, mesmo a pedido do titular — retenção legal tem precedência sobre o direito ao esquecimento nesse caso específico (a própria GDPR reconhece essa exceção, Art. 17(3)(b)).
