@@ -313,6 +313,8 @@
         "chooseDate": "Date",
         "loadingSlots": "Loading slots…",
         "noSlots": "No slots available for this date.",
+        "noStaffForService": "No staff member is linked to this service yet.",
+        "manageStaffLink": "Go to Team and link a staff member",
         "slotsError": "Could not load slots. Try again.",
         "continue": "Continue",
         "back": "Back",

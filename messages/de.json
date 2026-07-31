@@ -313,6 +313,8 @@
         "chooseDate": "Datum",
         "loadingSlots": "Zeiten werden geladen…",
         "noSlots": "Keine verfügbaren Zeiten für dieses Datum.",
+        "noStaffForService": "Noch keine Fachkraft mit dieser Leistung verknüpft.",
+        "manageStaffLink": "Zu Team gehen und eine Fachkraft verknüpfen",
         "slotsError": "Zeiten konnten nicht geladen werden. Bitte erneut versuchen.",
         "continue": "Weiter",
         "back": "Zurück",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -132,7 +133,16 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
                 </Select>
               </div>
 
-              {serviceId && (
+              {serviceId && eligibleStaff.length === 0 && (
+                <div className="rounded-input border border-dashed p-3 text-sm">
+                  <p className="text-muted-foreground">{t("noStaffForService")}</p>
+                  <Link href="/dashboard/staff" className="mt-1 inline-block font-medium text-primary hover:underline">
+                    {t("manageStaffLink")}
+                  </Link>
+                </div>
+              )}
+
+              {serviceId && eligibleStaff.length > 0 && (
                 <div className="grid gap-1.5">
                   <Label>{t("chooseStaff")}</Label>
                   <Select
@@ -158,7 +168,7 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
               )}
             </div>
 
-            {serviceId && (
+            {serviceId && eligibleStaff.length > 0 && (
               <div className="px-5">
                 <Calendar
                   mode="single"
@@ -170,7 +180,7 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
               </div>
             )}
 
-            {date && serviceId && (
+            {date && serviceId && eligibleStaff.length > 0 && (
               <>
                 <Separator />
                 {availability.isPending ? (

@@ -313,6 +313,8 @@
         "chooseDate": "Data",
         "loadingSlots": "Carregando horários…",
         "noSlots": "Nenhum horário disponível para esta data.",
+        "noStaffForService": "Nenhum profissional está vinculado a este serviço ainda.",
+        "manageStaffLink": "Ir em Equipe e vincular um profissional",
         "slotsError": "Não foi possível carregar os horários. Tente novamente.",
         "continue": "Continuar",
         "back": "Voltar",
