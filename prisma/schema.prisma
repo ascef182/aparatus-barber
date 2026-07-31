@@ -89,6 +89,11 @@ enum CouponScope {
   SELECTED_SERVICES
 }
 
+enum MessageSenderType {
+  CUSTOMER
+  STAFF
+}
+
 enum CompensationType {
   MONTHLY
   HOURLY
@@ -240,6 +245,8 @@ model Customer {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt
   bookings       Booking[]
+  conversations  Conversation[]
+  couponClaims   CustomerCoupon[]
 
   @@unique([organizationId, userId])
   @@index([organizationId, email])
@@ -260,6 +267,7 @@ model Coupon {
   createdAt      DateTime   @default(now())
   bookings       Booking[]
   services       CouponService[]
+  customerClaims CustomerCoupon[]
 
   @@unique([organizationId, code])
   @@index([organizationId, isActive])
@@ -452,6 +460,9 @@ model Organization {
   customers   Customer[]
   bookings    Booking[]
   quoteRequests QuoteRequest[]
+  conversations Conversation[]
+  messages    Message[]
+  customerCoupons CustomerCoupon[]
 
   @@map("organization")
 }
@@ -666,4 +677,53 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+// ===== MESSAGING & COUPONS (Fase B Hardening) =====
+
+model Conversation {
+  id                 String       @id @default(uuid())
+  organizationId     String
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customerId         String
+  customer           Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  lastMessageAt      DateTime?    @db.Timestamptz
+  lastStaffReadAt    DateTime?    @db.Timestamptz
+  lastCustomerReadAt DateTime?    @db.Timestamptz
+  createdAt          DateTime     @default(now())
+  messages           Message[]
+
+  @@unique([organizationId, customerId])
+  @@index([organizationId, lastMessageAt(sort: Desc)])
+  @@map("conversation")
+}
+
+model Message {
+  id             String            @id @default(uuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderType     MessageSenderType
+  senderUserId   String            // Better Auth User.id — not a FK (User isn't tenant-scoped), same pattern as Booking.cancelledBy
+  body           String
+  createdAt      DateTime          @default(now())
+
+  @@index([organizationId, conversationId, createdAt])
+  @@map("message")
+}
+
+model CustomerCoupon {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  couponId       String
+  coupon         Coupon       @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  claimedAt      DateTime     @default(now())
+
+  @@unique([customerId, couponId])
+  @@index([organizationId])
+  @@map("customerCoupon")
 }

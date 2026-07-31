@@ -11,8 +11,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/_components/ui/to
 // referências de componente para Client Components, só JSX já resolvido.
 export type NavItem = { href: string; label: string; icon: ReactNode };
 
+// Rotas de índice (mesma armadilha que "/dashboard" já tinha: sem esse
+// exact-match, o item de overview ficaria "active" em toda sub-rota, já
+// que pathname.startsWith(`${href}/`) também é true pra /account/bookings
+// quando href é apenas "/account").
+const INDEX_ROUTES = new Set(["/dashboard", "/account"]);
+
 function isActive(pathname: string, href: string) {
-  if (href === "/dashboard") return pathname === href;
+  if (INDEX_ROUTES.has(href)) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

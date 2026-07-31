@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, LayoutDashboard, User, Ticket, MessageCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
@@ -24,7 +24,11 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
   const t = await getTranslations("account");
   const navItems: NavItem[] = [
-    { href: "/account", label: t("nav.bookings"), icon: <CalendarDays className="size-4 shrink-0" /> },
+    { href: "/account", label: t("nav.overview"), icon: <LayoutDashboard className="size-4 shrink-0" /> },
+    { href: "/account/bookings", label: t("nav.bookings"), icon: <CalendarDays className="size-4 shrink-0" /> },
+    { href: "/account/profile", label: t("nav.profile"), icon: <User className="size-4 shrink-0" /> },
+    { href: "/account/coupons", label: t("nav.coupons"), icon: <Ticket className="size-4 shrink-0" /> },
+    { href: "/account/messages", label: t("nav.messages"), icon: <MessageCircle className="size-4 shrink-0" /> },
   ];
   const userMenu = (
     <AccountUserMenu

@@ -119,7 +119,11 @@
   },
   "account": {
     "nav": {
-      "bookings": "Minhas reservas"
+      "overview": "Visão geral",
+      "bookings": "Minhas reservas",
+      "profile": "Perfil",
+      "coupons": "Cupons",
+      "messages": "Mensagens"
     },
     "signOut": "Sair",
     "signingOut": "Saindo…",
@@ -143,6 +147,52 @@
         "created": "Reserva confirmada!",
         "createError": "Não foi possível confirmar sua reserva."
       }
+    },
+    "overview": {
+      "title": "Visão geral",
+      "totalBookings": "Total de reservas",
+      "completed": "Concluídas",
+      "totalSpent": "Total gasto",
+      "upcomingTitle": "Próximos agendamentos",
+      "noUpcoming": "Nenhum agendamento futuro",
+      "viewAllBookings": "Ver todas as reservas"
+    },
+    "profile": {
+      "title": "Perfil",
+      "nameLabel": "Nome",
+      "emailLabel": "E-mail",
+      "emailHint": "Este é o seu e-mail de contato para esta empresa (não o e-mail de login)",
+      "phoneLabel": "Telefone",
+      "save": "Salvar alterações",
+      "saving": "Salvando…",
+      "saved": "Perfil atualizado!",
+      "saveError": "Não foi possível salvar seu perfil."
+    },
+    "coupons": {
+      "title": "Cupons",
+      "claimTitle": "Resgatar cupom",
+      "codeLabel": "Código do cupom",
+      "codePlaceholder": "Digite o código do cupom",
+      "claim": "Resgatar",
+      "claiming": "Resgatando…",
+      "claimed": "Cupom resgatado!",
+      "claimError": "Não foi possível resgatar o cupom.",
+      "alreadyClaimed": "Você já resgatou este cupom.",
+      "myCoupons": "Meus cupons",
+      "noCoupons": "Você ainda não resgatou nenhum cupom.",
+      "historyTitle": "Histórico de resgates",
+      "noRedemptions": "Você ainda não usou nenhum cupom.",
+      "redeemedOn": "Resgatado em"
+    },
+    "messages": {
+      "title": "Mensagens",
+      "placeholder": "Digite sua mensagem…",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "sendError": "Não foi possível enviar sua mensagem.",
+      "empty": "Nenhuma mensagem ainda. Envie a primeira!",
+      "you": "Você",
+      "staffLabel": "Equipe de suporte"
     },
     "signIn": {
       "title": "Entrar",
@@ -182,7 +232,8 @@
       "customers": "Clientes",
       "settings": "Configurações",
       "billing": "Billing",
-      "coupons": "Cupons"
+      "coupons": "Cupons",
+      "messages": "Mensagens"
     },
     "layout": {
       "readOnly": "Somente leitura",
@@ -192,6 +243,18 @@
       "staffServiceLink": "vínculo profissional-serviço",
       "mfaBanner": "Ative a autenticação de dois fatores para proteger sua conta",
       "trialExpiredBanner": "Seu período de teste gratuito de 7 dias terminou — assine um plano para continuar"
+    },
+    "messages": {
+      "title": "Mensagens",
+      "noConversations": "Nenhuma conversa ainda",
+      "unread": "Não lida",
+      "lastMessage": "Última mensagem",
+      "openConversation": "Abrir",
+      "replyPlaceholder": "Digite sua resposta…",
+      "reply": "Responder",
+      "replying": "Enviando…",
+      "replyError": "Não foi possível enviar sua resposta.",
+      "customerLabel": "Cliente"
     },
     "userMenu": {
       "signOut": "Sair",

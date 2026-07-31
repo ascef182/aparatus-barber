@@ -29,7 +29,12 @@ export function countRedemptions(couponId: string) {
 // createBooking usa FALLBACK_MESSAGE ao lançar diretamente (mesmo padrão
 // de SLOT_TAKEN_MESSAGE em booking-service.ts: erro de corrida rara,
 // não fica atrás de i18n, só o caminho comum de preview fica).
-export type CouponReasonCode = "invalid" | "not_yet_valid" | "expired" | "exhausted" | "wrong_service";
+export type CouponReasonCode =
+  | "invalid"
+  | "not_yet_valid"
+  | "expired"
+  | "exhausted"
+  | "wrong_service";
 
 const FALLBACK_MESSAGE: Record<CouponReasonCode, string> = {
   invalid: "Cupom inválido.",
@@ -65,7 +70,8 @@ export async function validateCoupon(
   if (!coupon || !coupon.isActive) return invalid("invalid");
 
   const now = new Date();
-  if (coupon.validFrom && coupon.validFrom > now) return invalid("not_yet_valid");
+  if (coupon.validFrom && coupon.validFrom > now)
+    return invalid("not_yet_valid");
   if (coupon.validUntil && coupon.validUntil < now) return invalid("expired");
 
   if (coupon.maxRedemptions) {
@@ -74,11 +80,16 @@ export async function validateCoupon(
   }
 
   if (coupon.scope === "SELECTED_SERVICES") {
-    const link = await db.couponService.findFirst({ where: { couponId: coupon.id, serviceId } });
+    const link = await db.couponService.findFirst({
+      where: { couponId: coupon.id, serviceId },
+    });
     if (!link) return invalid("wrong_service");
   }
 
-  const rawDiscount = coupon.type === "PERCENT" ? Math.round((priceInCents * coupon.value) / 100) : coupon.value;
+  const rawDiscount =
+    coupon.type === "PERCENT"
+      ? Math.round((priceInCents * coupon.value) / 100)
+      : coupon.value;
   const discountInCents = Math.min(rawDiscount, priceInCents);
   return { valid: true, couponId: coupon.id, discountInCents };
 }
@@ -98,14 +109,17 @@ export function createCoupon(data: {
   const resolvedScope = scope ?? "ALL_SERVICES";
   // Vínculos com CouponService só fazem sentido em SELECTED_SERVICES —
   // scope ALL_SERVICES ignora serviceIds mesmo que venha preenchido.
-  const links = resolvedScope === "SELECTED_SERVICES" ? [...new Set(serviceIds ?? [])] : [];
+  const links =
+    resolvedScope === "SELECTED_SERVICES" ? [...new Set(serviceIds ?? [])] : [];
   return db.coupon.create({
     data: {
       ...rest,
       scope: resolvedScope,
       code: data.code.trim().toUpperCase(),
       organizationId,
-      services: { create: links.map((serviceId) => ({ organizationId, serviceId })) },
+      services: {
+        create: links.map((serviceId) => ({ organizationId, serviceId })),
+      },
     },
   });
 }
@@ -141,7 +155,11 @@ export async function updateCoupon(
     await db.couponService.deleteMany({ where: { couponId: id } });
     if (serviceIds.length) {
       await db.couponService.createMany({
-        data: [...new Set(serviceIds)].map((serviceId) => ({ organizationId, couponId: id, serviceId })),
+        data: [...new Set(serviceIds)].map((serviceId) => ({
+          organizationId,
+          couponId: id,
+          serviceId,
+        })),
       });
     }
   }
@@ -150,4 +168,13 @@ export async function updateCoupon(
 
 export function deleteCoupon(id: string) {
   return db.coupon.delete({ where: { id } });
+}
+
+/** List bookings where customer redeemed a coupon. */
+export function listCouponRedemptionsForCustomer(customerId: string) {
+  return db.booking.findMany({
+    where: { customerId, couponId: { not: null } },
+    include: { coupon: true, service: true },
+    orderBy: { startAt: "desc" },
+  });
 }

@@ -3,4 +3,5 @@
 export const POLL_INTERVAL_MS = {
   agenda: 15_000,
   overview: 45_000,
+  messages: 8_000,
 } as const;

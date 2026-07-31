@@ -119,7 +119,11 @@
   },
   "account": {
     "nav": {
-      "bookings": "Meine Buchungen"
+      "overview": "Übersicht",
+      "bookings": "Meine Buchungen",
+      "profile": "Profil",
+      "coupons": "Gutscheine",
+      "messages": "Nachrichten"
     },
     "signOut": "Abmelden",
     "signingOut": "Abmelden…",
@@ -143,6 +147,52 @@
         "created": "Buchung bestätigt!",
         "createError": "Buchung konnte nicht bestätigt werden."
       }
+    },
+    "overview": {
+      "title": "Übersicht",
+      "totalBookings": "Buchungen gesamt",
+      "completed": "Abgeschlossen",
+      "totalSpent": "Gesamtausgaben",
+      "upcomingTitle": "Bevorstehende Termine",
+      "noUpcoming": "Keine bevorstehenden Termine",
+      "viewAllBookings": "Alle Buchungen anzeigen"
+    },
+    "profile": {
+      "title": "Profil",
+      "nameLabel": "Name",
+      "emailLabel": "E-Mail",
+      "emailHint": "Dies ist deine Kontakt-E-Mail für dieses Unternehmen (nicht deine Anmelde-E-Mail)",
+      "phoneLabel": "Telefon",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Profil aktualisiert!",
+      "saveError": "Profil konnte nicht gespeichert werden."
+    },
+    "coupons": {
+      "title": "Gutscheine",
+      "claimTitle": "Gutschein einlösen",
+      "codeLabel": "Gutscheincode",
+      "codePlaceholder": "Gutscheincode eingeben",
+      "claim": "Einlösen",
+      "claiming": "Wird eingelöst…",
+      "claimed": "Gutschein eingelöst!",
+      "claimError": "Gutschein konnte nicht eingelöst werden.",
+      "alreadyClaimed": "Du hast diesen Gutschein bereits eingelöst.",
+      "myCoupons": "Meine Gutscheine",
+      "noCoupons": "Du hast noch keine Gutscheine eingelöst.",
+      "historyTitle": "Einlöseverlauf",
+      "noRedemptions": "Du hast noch keine Gutscheine verwendet.",
+      "redeemedOn": "Eingelöst am"
+    },
+    "messages": {
+      "title": "Nachrichten",
+      "placeholder": "Nachricht eingeben…",
+      "send": "Senden",
+      "sending": "Wird gesendet…",
+      "sendError": "Nachricht konnte nicht gesendet werden.",
+      "empty": "Noch keine Nachrichten. Schreib die erste!",
+      "you": "Du",
+      "staffLabel": "Support-Team"
     },
     "signIn": {
       "title": "Anmelden",
@@ -182,7 +232,8 @@
       "customers": "Kunden",
       "settings": "Einstellungen",
       "billing": "Abrechnung",
-      "coupons": "Gutscheine"
+      "coupons": "Gutscheine",
+      "messages": "Nachrichten"
     },
     "layout": {
       "readOnly": "Nur Lesezugriff",
@@ -192,6 +243,18 @@
       "staffServiceLink": "Zuordnung Fachkraft-Leistung",
       "mfaBanner": "Aktivieren Sie die Zwei-Faktor-Authentifizierung, um Ihr Konto zu schützen",
       "trialExpiredBanner": "Ihre 7-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren"
+    },
+    "messages": {
+      "title": "Nachrichten",
+      "noConversations": "Noch keine Unterhaltungen",
+      "unread": "Ungelesen",
+      "lastMessage": "Letzte Nachricht",
+      "openConversation": "Öffnen",
+      "replyPlaceholder": "Antwort eingeben…",
+      "reply": "Antworten",
+      "replying": "Wird gesendet…",
+      "replyError": "Antwort konnte nicht gesendet werden.",
+      "customerLabel": "Kunde"
     },
     "userMenu": {
       "signOut": "Abmelden",

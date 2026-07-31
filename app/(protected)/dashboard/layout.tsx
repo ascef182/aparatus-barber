@@ -8,6 +8,7 @@ import {
   Contact,
   CreditCard,
   LayoutDashboard,
+  MessageCircle,
   Scissors,
   Settings,
   ShieldAlert,
@@ -19,7 +20,7 @@ import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { getOrganizationBySlug, isFreeTrialExpired, isSetupComplete } from "@/lib/services/organization-service";
 import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
-import { isAppRole } from "@/lib/auth/permissions";
+import { hasPermission, isAppRole } from "@/lib/auth/permissions";
 import { Badge } from "@/app/_components/ui/badge";
 import { DashboardTour } from "./dashboard-tour";
 import { SidebarNav, type NavItem } from "./sidebar-nav";
@@ -69,6 +70,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: "/dashboard/staff", label: t("nav.staff"), icon: <Users className={navIconClass} /> },
     { href: "/dashboard/customers", label: t("nav.customers"), icon: <Contact className={navIconClass} /> },
     { href: "/dashboard/settings", label: t("nav.settings"), icon: <Settings className={navIconClass} /> },
+    ...(hasPermission(membership.role, { messages: ["read"] })
+      ? [{ href: "/dashboard/messages", label: t("nav.messages"), icon: <MessageCircle className={navIconClass} /> }]
+      : []),
     ...(membership.role === "owner"
       ? [{ href: "/dashboard/billing", label: t("nav.billing"), icon: <CreditCard className={navIconClass} /> }]
       : []),

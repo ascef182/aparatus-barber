@@ -119,7 +119,11 @@
   },
   "account": {
     "nav": {
-      "bookings": "My bookings"
+      "overview": "Overview",
+      "bookings": "My bookings",
+      "profile": "Profile",
+      "coupons": "Coupons",
+      "messages": "Messages"
     },
     "signOut": "Sign out",
     "signingOut": "Signing out…",
@@ -143,6 +147,52 @@
         "created": "Booking confirmed!",
         "createError": "Could not confirm your booking."
       }
+    },
+    "overview": {
+      "title": "Dashboard",
+      "totalBookings": "Total bookings",
+      "completed": "Completed",
+      "totalSpent": "Total spent",
+      "upcomingTitle": "Upcoming appointments",
+      "noUpcoming": "No upcoming appointments",
+      "viewAllBookings": "View all bookings"
+    },
+    "profile": {
+      "title": "Profile",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "emailHint": "This is your contact email for this business (not your login email)",
+      "phoneLabel": "Phone",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Profile updated!",
+      "saveError": "Could not save your profile."
+    },
+    "coupons": {
+      "title": "Coupons",
+      "claimTitle": "Claim a coupon",
+      "codeLabel": "Coupon code",
+      "codePlaceholder": "Enter coupon code",
+      "claim": "Claim",
+      "claiming": "Claiming…",
+      "claimed": "Coupon claimed!",
+      "claimError": "Could not claim the coupon.",
+      "alreadyClaimed": "You have already claimed this coupon.",
+      "myCoupons": "My coupons",
+      "noCoupons": "You haven't claimed any coupons yet.",
+      "historyTitle": "Redemption history",
+      "noRedemptions": "You haven't redeemed any coupons yet.",
+      "redeemedOn": "Redeemed on"
+    },
+    "messages": {
+      "title": "Messages",
+      "placeholder": "Type your message…",
+      "send": "Send",
+      "sending": "Sending…",
+      "sendError": "Could not send your message.",
+      "empty": "No messages yet. Send one to get started!",
+      "you": "You",
+      "staffLabel": "Support team"
     },
     "signIn": {
       "title": "Sign in",
@@ -182,7 +232,8 @@
       "customers": "Customers",
       "settings": "Settings",
       "billing": "Billing",
-      "coupons": "Coupons"
+      "coupons": "Coupons",
+      "messages": "Messages"
     },
     "layout": {
       "readOnly": "Read-only",
@@ -192,6 +243,18 @@
       "staffServiceLink": "staff-service assignment",
       "mfaBanner": "Enable two-factor authentication to protect your account",
       "trialExpiredBanner": "Your 7-day free trial has ended — subscribe to a plan to continue"
+    },
+    "messages": {
+      "title": "Messages",
+      "noConversations": "No conversations yet",
+      "unread": "Unread",
+      "lastMessage": "Last message",
+      "openConversation": "Open",
+      "replyPlaceholder": "Type your reply…",
+      "reply": "Reply",
+      "replying": "Sending…",
+      "replyError": "Could not send your reply.",
+      "customerLabel": "Customer"
     },
     "userMenu": {
       "signOut": "Sign out",

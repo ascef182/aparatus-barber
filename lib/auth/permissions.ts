@@ -20,6 +20,7 @@ export const statement = {
   customer: ["read", "manage", "export"],
   settings: ["read", "manage"],
   billing: ["read", "manage"],
+  messages: ["read", "reply"],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -34,6 +35,7 @@ export const owner = ac.newRole({
   customer: ["read", "manage", "export"],
   settings: ["read", "manage"],
   billing: ["read", "manage"],
+  messages: ["read", "reply"],
 });
 
 /** Gestão operacional: tudo exceto billing e exclusão da organização. */
@@ -46,6 +48,7 @@ export const manager = ac.newRole({
   customer: ["read", "manage", "export"],
   settings: ["read", "manage"],
   billing: ["read"],
+  messages: ["read", "reply"],
 });
 
 /** Profissional: vê e gerencia apenas a própria agenda. */
@@ -66,6 +69,7 @@ export const receptionist = ac.newRole({
   staff: ["read"],
   location: ["read"],
   customer: ["read", "manage"],
+  messages: ["read", "reply"],
 });
 
 export const roles = { owner, manager, professional, receptionist };

@@ -33,6 +33,9 @@ const TENANT_MODELS = new Set([
   "AuditLog",
   "TenantImpressum",
   "QuoteRequest",
+  "Conversation",
+  "Message",
+  "CustomerCoupon",
 ]);
 
 // Operações cujo `where` aceita filtro composto (lista não-única).
@@ -104,7 +107,10 @@ function scopeArgs(
     const data = a.data as Record<string, unknown> | undefined;
     assertNoForeignOrgId(data, organizationId, detail);
     a.data = { ...data, organizationId };
-  } else if (operation === "createMany" || operation === "createManyAndReturn") {
+  } else if (
+    operation === "createMany" ||
+    operation === "createManyAndReturn"
+  ) {
     const rows = Array.isArray(a.data) ? a.data : a.data ? [a.data] : [];
     for (const row of rows) {
       assertNoForeignOrgId(row, organizationId, detail);
@@ -113,7 +119,10 @@ function scopeArgs(
   }
 
   // Escritas não podem mover registros de tenant.
-  if ((operation === "update" || operation === "updateMany") && !Array.isArray(a.data)) {
+  if (
+    (operation === "update" || operation === "updateMany") &&
+    !Array.isArray(a.data)
+  ) {
     assertNoForeignOrgId(a.data, organizationId, detail);
   }
 
@@ -155,11 +164,19 @@ export const db = prisma.$extends({
 
         if (ctx.kind === "platform") {
           const setBypass = prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
-          const [, result] = await prisma.$transaction([setBypass, query(args)]);
+          const [, result] = await prisma.$transaction([
+            setBypass,
+            query(args),
+          ]);
           return result;
         }
 
-        const a = scopeArgs(model, operation, args, ctx.organizationId) as typeof args;
+        const a = scopeArgs(
+          model,
+          operation,
+          args,
+          ctx.organizationId,
+        ) as typeof args;
         const setTenant = prisma.$executeRaw`SELECT set_config('app.tenant_id', ${ctx.organizationId}, true), set_config('app.bypass_rls', 'off', true)`;
         const [, result] = await prisma.$transaction([setTenant, query(a)]);
         return result;
@@ -209,7 +226,11 @@ function buildScopedTransactionClient(
   return new Proxy(tx, {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
-      if (typeof prop !== "string" || typeof value !== "object" || value === null) {
+      if (
+        typeof prop !== "string" ||
+        typeof value !== "object" ||
+        value === null
+      ) {
         return value;
       }
       const model = prop.charAt(0).toUpperCase() + prop.slice(1);
@@ -224,7 +245,10 @@ function buildScopedTransactionClient(
             return fn;
           }
           return (args: unknown) =>
-            fn.call(delegateTarget, scopeArgs(model, operation, args, organizationId));
+            fn.call(
+              delegateTarget,
+              scopeArgs(model, operation, args, organizationId),
+            );
         },
       });
     },

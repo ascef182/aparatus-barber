@@ -3,7 +3,10 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getAvailableSlots } from "@/lib/scheduling/availability";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
-import { findOrCreateCustomerForUser, findOrCreateGuestCustomer } from "@/lib/services/customer-service";
+import {
+  findOrCreateCustomerForUser,
+  findOrCreateGuestCustomer,
+} from "@/lib/services/customer-service";
 import { getResolvedRules } from "@/lib/services/settings-service";
 import { validateCoupon } from "@/lib/services/coupon-service";
 import { enqueueBookingNotification } from "@/lib/notifications";
@@ -18,12 +21,23 @@ export type CreateBookingInput = {
   source?: "WEB" | "DASHBOARD";
   couponCode?: string;
 } & (
-  | { customer: { name: string; email?: string; phone?: string; locale?: string }; customerUser?: undefined }
+  | {
+      customer: {
+        name: string;
+        email?: string;
+        phone?: string;
+        locale?: string;
+      };
+      customerUser?: undefined;
+    }
   // Cliente logado na área de conta (app/t/[slug]/account) — identidade vem
   // da sessão (ctx.user, resolvido pelo customerActionClient), nunca de
   // input do cliente, o que descarta o risco de spoofing que
   // findOrCreateGuestCustomer precisa guardar contra no wizard sem login.
-  | { customerUser: { id: string; name: string; email: string }; customer?: undefined }
+  | {
+      customerUser: { id: string; name: string; email: string };
+      customer?: undefined;
+    }
 );
 
 const SLOT_TAKEN_MESSAGE = "Este horário não está mais disponível.";
@@ -52,7 +66,11 @@ export async function createBooking(input: CreateBookingInput) {
     db.staff.findUnique({ where: { id: input.staffId } }),
     getResolvedRules(),
   ]);
-  if (!service?.isActive || !staff?.isActive || staff.locationId !== service.locationId && service.locationId) {
+  if (
+    !service?.isActive ||
+    !staff?.isActive ||
+    (staff.locationId !== service.locationId && service.locationId)
+  ) {
     throw new Error("Serviço ou profissional indisponível.");
   }
   const link = await db.staffService.findUnique({
@@ -65,17 +83,23 @@ export async function createBooking(input: CreateBookingInput) {
     staffId: staff.id,
     dateISO: input.startAt.toISOString().slice(0, 10),
   });
-  if (!slots.some((slot) => slot.startAt.getTime() === input.startAt.getTime())) {
+  if (
+    !slots.some((slot) => slot.startAt.getTime() === input.startAt.getTime())
+  ) {
     throw new Error(SLOT_TAKEN_MESSAGE);
   }
 
   const isDashboardBooking = input.source === "DASHBOARD";
   const paymentMode = service.paymentMode ?? rules.paymentMode;
-  const requiresOnlinePayment = !isDashboardBooking && paymentMode !== "ON_SITE";
+  const requiresOnlinePayment =
+    !isDashboardBooking && paymentMode !== "ON_SITE";
   const customer = input.customerUser
     ? await findOrCreateCustomerForUser(input.customerUser)
     : await findOrCreateGuestCustomer(input.customer);
-  const totalMinutes = service.bufferBeforeMinutes + service.durationMinutes + service.bufferAfterMinutes;
+  const totalMinutes =
+    service.bufferBeforeMinutes +
+    service.durationMinutes +
+    service.bufferAfterMinutes;
   const priceInCents = service.priceInCents;
 
   // couponId/discountInCents validados aqui (não no wizard): o preview do
@@ -86,15 +110,20 @@ export async function createBooking(input: CreateBookingInput) {
   let couponId: string | undefined;
   let discountInCents = 0;
   if (input.couponCode) {
-    const result = await validateCoupon(input.couponCode, service.id, priceInCents);
+    const result = await validateCoupon(
+      input.couponCode,
+      service.id,
+      priceInCents,
+    );
     if (!result.valid) throw new Error(result.reason);
     couponId = result.couponId;
     discountInCents = result.discountInCents;
   }
   const finalPriceInCents = priceInCents - discountInCents;
-  const chargeAmount = paymentMode === "DEPOSIT"
-    ? Math.round(finalPriceInCents * (service.depositPercent ?? 0) / 100)
-    : finalPriceInCents;
+  const chargeAmount =
+    paymentMode === "DEPOSIT"
+      ? Math.round((finalPriceInCents * (service.depositPercent ?? 0)) / 100)
+      : finalPriceInCents;
 
   let booking;
   try {
@@ -118,7 +147,10 @@ export async function createBooking(input: CreateBookingInput) {
         paymentReceivedInCents: 0,
         onlinePaymentAmountInCents: requiresOnlinePayment ? chargeAmount : 0,
         expiresAt: requiresOnlinePayment ? addMinutes(new Date(), 30) : null,
-        notes: chargeAmount === priceInCents ? null : `online_amount=${chargeAmount}`,
+        notes:
+          chargeAmount === priceInCents
+            ? null
+            : `online_amount=${chargeAmount}`,
       },
     });
   } catch (error) {
@@ -132,11 +164,24 @@ export async function createBooking(input: CreateBookingInput) {
     throw error;
   }
   if (!requiresOnlinePayment) {
-    await enqueueBookingNotification({ bookingId: booking.id, type: "confirmation" });
-    await enqueueBookingNotification({ bookingId: booking.id, type: "reminder" }, Math.max(0, booking.startAt.getTime() - Date.now() - 24 * 60 * 60 * 1000));
+    await enqueueBookingNotification({
+      bookingId: booking.id,
+      type: "confirmation",
+    });
+    await enqueueBookingNotification(
+      { bookingId: booking.id, type: "reminder" },
+      Math.max(0, booking.startAt.getTime() - Date.now() - 24 * 60 * 60 * 1000),
+    );
   }
-  logger({ organizationId, bookingId: booking.id }).info({ status: booking.status }, "booking.created");
-  await logAuditEvent({ entity: "Booking", action: "BOOKING_CREATED", entityId: booking.id });
+  logger({ organizationId, bookingId: booking.id }).info(
+    { status: booking.status },
+    "booking.created",
+  );
+  await logAuditEvent({
+    entity: "Booking",
+    action: "BOOKING_CREATED",
+    entityId: booking.id,
+  });
   revalidateBookingCaches();
   return booking;
 }
@@ -151,7 +196,9 @@ export async function cancelBooking(id: string, cancelledBy?: string) {
   ]);
   const check = checkCancellation(existing, rules, new Date());
   if (!check.allowed) {
-    throw new Error("Reserva já iniciada — não pode ser cancelada pelo cliente.");
+    throw new Error(
+      "Reserva já iniciada — não pode ser cancelada pelo cliente.",
+    );
   }
   const booking = await db.booking.update({
     where: { id },
@@ -162,12 +209,20 @@ export async function cancelBooking(id: string, cancelledBy?: string) {
       cancellationFeeInCents: check.feeInCents,
     },
   });
-  await enqueueBookingNotification({ bookingId: booking.id, type: "cancellation" });
-  logger({ organizationId: booking.organizationId, bookingId: booking.id }).info(
-    { feeInCents: check.feeInCents },
-    "booking.cancelled",
-  );
-  await logAuditEvent({ entity: "Booking", action: "BOOKING_CANCELLED", entityId: booking.id, actorId: cancelledBy });
+  await enqueueBookingNotification({
+    bookingId: booking.id,
+    type: "cancellation",
+  });
+  logger({
+    organizationId: booking.organizationId,
+    bookingId: booking.id,
+  }).info({ feeInCents: check.feeInCents }, "booking.cancelled");
+  await logAuditEvent({
+    entity: "Booking",
+    action: "BOOKING_CANCELLED",
+    entityId: booking.id,
+    actorId: cancelledBy,
+  });
   return booking;
 }
 
@@ -202,7 +257,11 @@ export async function confirmBookingFromCheckoutSession(input: {
 }) {
   return runWithPlatformScope(async () => {
     const result = await db.booking.updateMany({
-      where: { id: input.bookingId, stripeCheckoutSessionId: input.sessionId, status: "PENDING_PAYMENT" },
+      where: {
+        id: input.bookingId,
+        stripeCheckoutSessionId: input.sessionId,
+        status: "PENDING_PAYMENT",
+      },
       data: {
         status: "CONFIRMED",
         paymentStatus: "PAID",
@@ -212,15 +271,20 @@ export async function confirmBookingFromCheckoutSession(input: {
       },
     });
     if (!result.count) return null;
-    const booking = await db.booking.findUnique({ where: { id: input.bookingId } });
+    const booking = await db.booking.findUnique({
+      where: { id: input.bookingId },
+    });
     if (booking) {
-      await db.booking.update({ where: { id: booking.id }, data: { paymentReceivedInCents: booking.onlinePaymentAmountInCents } });
+      await db.booking.update({
+        where: { id: booking.id },
+        data: { paymentReceivedInCents: booking.onlinePaymentAmountInCents },
+      });
     }
     if (booking) {
-      logger({ organizationId: booking.organizationId, bookingId: booking.id }).info(
-        {},
-        "booking.confirmed",
-      );
+      logger({
+        organizationId: booking.organizationId,
+        bookingId: booking.id,
+      }).info({}, "booking.confirmed");
       await logAuditEvent({
         entity: "Booking",
         action: "PAYMENT_CAPTURED",
@@ -244,7 +308,9 @@ export async function cancelPendingBookingByCheckoutSession(sessionId: string) {
       data: { status: "CANCELLED", cancelledAt: new Date() },
     });
     if (!result.count) return null;
-    return db.booking.findFirst({ where: { stripeCheckoutSessionId: sessionId } });
+    return db.booking.findFirst({
+      where: { stripeCheckoutSessionId: sessionId },
+    });
   });
 }
 
@@ -267,10 +333,46 @@ export async function expireStaleHolds(now = new Date()) {
   });
 }
 
+/** Customer overview stats: total bookings, completed count, total spent, and next 5 upcoming. */
+export async function getCustomerOverviewStats(customerId: string) {
+  const now = new Date();
+  const bookings = await db.booking.findMany({
+    where: { customerId },
+    include: { service: true },
+    orderBy: { startAt: "desc" },
+  });
+
+  const totalBookings = bookings.filter((b) => b.status !== "CANCELLED").length;
+  const completedCount = bookings.filter(
+    (b) => b.status === "COMPLETED",
+  ).length;
+  const totalSpentInCents = bookings.reduce((sum, b) => {
+    if (b.status === "CANCELLED") return sum;
+    return sum + (b.paymentReceivedInCents - b.refundedAmountInCents);
+  }, 0);
+
+  const upcomingBookings = bookings
+    .filter((b) => b.status !== "CANCELLED" && b.startAt >= now)
+    .sort((a, b) => a.startAt.getTime() - b.startAt.getTime())
+    .slice(0, 5);
+
+  return {
+    totalBookings,
+    completedCount,
+    totalSpentInCents,
+    upcomingBookings,
+  };
+}
+
 /** Aplica um refund (parcial ou total) via payment intent — webhook Connect. */
-export async function applyRefundToBooking(paymentIntentId: string, amountRefundedInCents: number) {
+export async function applyRefundToBooking(
+  paymentIntentId: string,
+  amountRefundedInCents: number,
+) {
   return runWithPlatformScope(async () => {
-    const booking = await db.booking.findFirst({ where: { stripePaymentIntentId: paymentIntentId } });
+    const booking = await db.booking.findFirst({
+      where: { stripePaymentIntentId: paymentIntentId },
+    });
     if (!booking) return null;
     // Compara contra o que foi de fato cobrado (onlinePaymentAmountInCents),
     // não booking.priceInCents (preço cheio do serviço) — com deposit mode
@@ -278,8 +380,12 @@ export async function applyRefundToBooking(paymentIntentId: string, amountRefund
     // contra o preço cheio classificava um reembolso 100% do cobrado como
     // PARTIALLY_REFUNDED por engano.
     const chargeAmount = booking.onlinePaymentAmountInCents;
-    const paymentStatus = amountRefundedInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
-    const updated = await db.booking.update({ where: { id: booking.id }, data: { paymentStatus, refundedAmountInCents: amountRefundedInCents } });
+    const paymentStatus =
+      amountRefundedInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
+    const updated = await db.booking.update({
+      where: { id: booking.id },
+      data: { paymentStatus, refundedAmountInCents: amountRefundedInCents },
+    });
     await logAuditEvent({
       entity: "Booking",
       action: "PAYMENT_REFUNDED",

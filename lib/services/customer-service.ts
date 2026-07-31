@@ -39,7 +39,10 @@ export async function findOrCreateGuestCustomer(data: {
 }) {
   if (data.email) {
     const existing = await db.customer.findFirst({
-      where: { email: { equals: data.email, mode: "insensitive" }, userId: null },
+      where: {
+        email: { equals: data.email, mode: "insensitive" },
+        userId: null,
+      },
     });
     if (existing) {
       const backfill: { name?: string; phone?: string } = {};
@@ -60,15 +63,28 @@ export async function findOrCreateGuestCustomer(data: {
  * platform scope. Booking/pagamento NÃO são tocados (retenção fiscal —
  * GoBD §147 AO, 10 anos).
  */
-export async function eraseCustomersForUser(userId: string): Promise<{ organizationIds: string[] }> {
+export async function eraseCustomersForUser(
+  userId: string,
+): Promise<{ organizationIds: string[] }> {
   return runWithPlatformScope(async () => {
-    const customers = await db.customer.findMany({ where: { userId }, select: { id: true, organizationId: true } });
+    const customers = await db.customer.findMany({
+      where: { userId },
+      select: { id: true, organizationId: true },
+    });
     if (!customers.length) return { organizationIds: [] };
     await db.customer.updateMany({
       where: { id: { in: customers.map((c) => c.id) } },
-      data: { name: "ANONYMIZED", email: null, phone: null, notes: null, gdprErasedAt: new Date() },
+      data: {
+        name: "ANONYMIZED",
+        email: null,
+        phone: null,
+        notes: null,
+        gdprErasedAt: new Date(),
+      },
     });
-    return { organizationIds: [...new Set(customers.map((c) => c.organizationId))] };
+    return {
+      organizationIds: [...new Set(customers.map((c) => c.organizationId))],
+    };
   });
 }
 
@@ -80,8 +96,15 @@ export async function exportCustomerDataForUser(userId: string) {
       include: {
         bookings: {
           select: {
-            id: true, startAt: true, endAt: true, status: true, priceInCents: true, currency: true,
-            paymentStatus: true, cancellationFeeInCents: true, createdAt: true,
+            id: true,
+            startAt: true,
+            endAt: true,
+            status: true,
+            priceInCents: true,
+            currency: true,
+            paymentStatus: true,
+            cancellationFeeInCents: true,
+            createdAt: true,
             service: { select: { name: true } },
           },
         },
@@ -112,5 +135,16 @@ export async function findOrCreateCustomerForUser(user: {
       name: user.name,
       email: user.email,
     },
+  });
+}
+
+/** Update customer profile (contact info for this organization). */
+export async function updateCustomerProfile(
+  customerId: string,
+  data: { name?: string; email?: string | null; phone?: string | null },
+) {
+  return db.customer.update({
+    where: { id: customerId },
+    data,
   });
 }

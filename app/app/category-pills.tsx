@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Scissors, Sparkles, Hand, HeartPulse, Stethoscope, Smile, Zap, HardHat, Store } from "lucide-react";
+import {
+  Scissors,
+  Sparkles,
+  Hand,
+  HeartPulse,
+  Stethoscope,
+  Smile,
+  Zap,
+  HardHat,
+  Store,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CATEGORIES = [
@@ -15,9 +25,10 @@ const CATEGORIES = [
   { value: "OTHER", Icon: Store },
 ] as const;
 
-export const CATEGORY_ICONS: Record<string, (typeof CATEGORIES)[number]["Icon"]> = Object.fromEntries(
-  CATEGORIES.map(({ value, Icon }) => [value, Icon]),
-);
+export const CATEGORY_ICONS: Record<
+  string,
+  (typeof CATEGORIES)[number]["Icon"]
+> = Object.fromEntries(CATEGORIES.map(({ value, Icon }) => [value, Icon]));
 
 export async function CategoryPills({ active }: { active?: string }) {
   const t = await getTranslations("businessCategories");

@@ -1,14 +1,24 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { listFeaturedBusinesses, searchBusinesses } from "@/lib/services/directory-service";
+import {
+  listFeaturedBusinesses,
+  searchBusinesses,
+} from "@/lib/services/directory-service";
 import { LastVisitedCard } from "./last-visited-card";
 import { AppSearchBar } from "./search-bar";
 import { CategoryPills } from "./category-pills";
 import { BusinessCard } from "./business-card";
 
 const VALID_CATEGORIES = [
-  "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
-  "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER",
+  "BARBERSHOP",
+  "HAIR_SALON",
+  "NAIL_SALON",
+  "BEAUTY_SALON",
+  "MEDICAL",
+  "DENTAL",
+  "ELECTRICIAN",
+  "CONSTRUCTION",
+  "OTHER",
 ] as const;
 
 /**
@@ -30,12 +40,14 @@ export default async function CustomerAppHomePage({
 
   const [t, businesses] = await Promise.all([
     getTranslations("app"),
-    hasFilter ? searchBusinesses({ query: q, category }) : listFeaturedBusinesses(),
+    hasFilter
+      ? searchBusinesses({ query: q, category })
+      : listFeaturedBusinesses(),
   ]);
 
   return (
-    <main className="min-h-screen bg-background">
-      <header className="border-b border-border p-5">
+    <main className="bg-background min-h-screen">
+      <header className="border-border border-b p-5">
         <Link href="/" className="text-lg font-bold tracking-tight">
           Bladiq
         </Link>
@@ -47,19 +59,23 @@ export default async function CustomerAppHomePage({
         <CategoryPills active={category} />
 
         {!hasFilter && (
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
-            <div className="absolute top-0 right-0 h-full w-1.5 bg-primary" />
-            <p className="text-xl font-bold text-foreground">{t("bannerTitle")}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{t("bannerSubtitle")}</p>
+          <div className="border-border bg-card relative overflow-hidden rounded-2xl border p-6">
+            <div className="bg-primary absolute top-0 right-0 h-full w-1.5" />
+            <p className="text-foreground text-xl font-bold">
+              {t("bannerTitle")}
+            </p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {t("bannerSubtitle")}
+            </p>
           </div>
         )}
 
         <div>
-          <h2 className="mb-3 text-xs font-semibold text-muted-foreground uppercase">
+          <h2 className="text-muted-foreground mb-3 text-xs font-semibold uppercase">
             {hasFilter ? t("resultsTitle") : t("featuredTitle")}
           </h2>
           {businesses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("empty")}</p>
+            <p className="text-muted-foreground text-sm">{t("empty")}</p>
           ) : (
             <div className="flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden">
               {businesses.map((business) => (
