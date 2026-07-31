@@ -3,122 +3,136 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Paleta "Minimal Premium" do Bladiq — Deep Forest / Midnight Green / Emerald
+ * Forest / Sage / Mint / Soft Mint, no espírito Linear/Stripe/Notion/Arc:
+ * verdes profundos e dessaturados em vez de verde vibrante de fintech.
+ * Midnight Green (#0B2B26) é a cor oficial da marca (logo, botão primário,
+ * KPIs positivos). A sidebar é escura (Deep Forest) sempre, independente do
+ * tema claro/escuro do conteúdo — mesmo padrão de produtos como Linear/
+ * Notion/Vercel, por isso os tokens --sidebar-* não mudam em .dark.
+ */
 :root {
-  --background: oklch(0.994 0 0);
-  --foreground: oklch(0.2178 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2178 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2178 0 0);
-  --primary: oklch(0.433 0.0745 149.7347);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.9067 0 0);
-  --secondary-foreground: oklch(0.2178 0 0);
-  --muted: oklch(0.9551 0 0);
-  --muted-foreground: oklch(0.5555 0 0);
-  --accent: oklch(0.9454 0.015 151.7659);
-  --accent-foreground: oklch(0.2178 0 0);
-  --destructive: oklch(0.53 0.1547 24.056);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.8699 0 0);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.433 0.0745 149.7347);
-  --chart-1: oklch(0.433 0.0745 149.7347);
-  --chart-2: oklch(0.6402 0.069 155.0903);
-  --chart-3: oklch(0.7641 0.0506 150.5513);
-  --chart-4: oklch(0.8883 0.0287 151.8825);
-  --chart-5: oklch(0.9712 0.0075 151.8901);
-  --sidebar: oklch(0.9791 0 0);
-  --sidebar-foreground: oklch(0.2178 0 0);
-  --sidebar-primary: oklch(0.433 0.0745 149.7347);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.9454 0.015 151.7659);
-  --sidebar-accent-foreground: oklch(0.2178 0 0);
-  --sidebar-border: oklch(0.9067 0 0);
-  --sidebar-ring: oklch(0.433 0.0745 149.7347);
+  --background: #F8FAF9;
+  --foreground: #1D2B28;
+  --card: #FFFFFF;
+  --card-foreground: #1D2B28;
+  --popover: #FFFFFF;
+  --popover-foreground: #1D2B28;
+  --primary: #0B2B26;
+  --primary-foreground: #FFFFFF;
+  --secondary: #DAF1DE;
+  --secondary-foreground: #163832;
+  --muted: #F4FAF5;
+  --muted-foreground: #6C7D76;
+  --accent: #DAF1DE;
+  --accent-foreground: #163832;
+  --destructive: #E0565B;
+  --destructive-foreground: #FFFFFF;
+  --success: #1FA971;
+  --success-foreground: #FFFFFF;
+  --warning: #F4A340;
+  --warning-foreground: #1D2B28;
+  --info: #4D8BF7;
+  --info-foreground: #FFFFFF;
+  --border: #E7ECE9;
+  --input: #FFFFFF;
+  --ring: #0B2B26;
+  --chart-1: #0B2B26;
+  --chart-2: #235347;
+  --chart-3: #8EB69B;
+  --chart-4: #DAF1DE;
+  --chart-5: #163832;
+  /* Sidebar fixa escura (Deep Forest) — mesma em claro/escuro, ver nota acima. */
+  --sidebar: #051F20;
+  --sidebar-foreground: #DAF1DE;
+  --sidebar-primary: #0B2B26;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #163832;
+  --sidebar-accent-foreground: #DAF1DE;
+  --sidebar-border: #163832;
+  --sidebar-ring: #8EB69B;
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
-  --radius: 0.5rem;
-  --shadow-x: 0;
-  --shadow-y: 0.125rem;
-  --shadow-blur: 0.25rem;
-  --shadow-spread: 0;
-  --shadow-opacity: 0.1;
-  --shadow-color: 0 0 0;
-  --shadow-2xs: 0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.05);
-  --shadow-xs: 0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.05);
-  --shadow-sm:
-    0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.1), 0 1px 2px -1px hsl(0 0 0 / 0.1);
-  --shadow:
-    0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.1), 0 1px 2px -1px hsl(0 0 0 / 0.1);
-  --shadow-md:
-    0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.1), 0 2px 4px -1px hsl(0 0 0 / 0.1);
-  --shadow-lg:
-    0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.1), 0 4px 6px -1px hsl(0 0 0 / 0.1);
-  --shadow-xl:
-    0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.1), 0 8px 10px -1px hsl(0 0 0 / 0.1);
-  --shadow-2xl: 0 0.125rem 0.25rem 0 hsl(0 0 0 / 0.25);
+  /* Radius geral (herdado por rounded-sm/md/lg/xl em componentes ainda não
+     migrados pros tokens dedicados abaixo) sobe um pouco pro ar "premium"
+     ficar consistente em todo canto. Card/Button/Input têm tokens próprios
+     porque o briefing pede valores bem diferentes entre si (24/16/14px). */
+  --radius: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-button: 1rem;
+  --radius-input: 0.875rem;
+  /* Sombra única, suave e de espalhamento largo (0 10px 30px, 5% opacidade)
+     em vez da escala anterior mais dura/próxima — mesmo valor em todos os
+     tiers, só a elevação (blur/spread) muda um pouco por tier. */
+  --shadow-2xs: 0 2px 8px 0 rgb(11 43 38 / 0.03);
+  --shadow-xs: 0 4px 12px 0 rgb(11 43 38 / 0.04);
+  --shadow-sm: 0 6px 20px 0 rgb(11 43 38 / 0.05);
+  --shadow: 0 10px 30px 0 rgb(11 43 38 / 0.05);
+  --shadow-md: 0 12px 36px 0 rgb(11 43 38 / 0.06);
+  --shadow-lg: 0 16px 48px 0 rgb(11 43 38 / 0.07);
+  --shadow-xl: 0 24px 64px 0 rgb(11 43 38 / 0.08);
+  --shadow-2xl: 0 32px 80px 0 rgb(11 43 38 / 0.1);
   --tracking-normal: 0;
   --spacing: 0.25rem;
 }
 
 .dark {
-  --background: oklch(0.2178 0 0);
-  --foreground: oklch(0.994 0 0);
-  --card: oklch(0.2686 0 0);
-  --card-foreground: oklch(0.994 0 0);
-  --popover: oklch(0.2686 0 0);
-  --popover-foreground: oklch(0.994 0 0);
-  --primary: oklch(0.433 0.0745 149.7347);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.3211 0 0);
-  --secondary-foreground: oklch(0.994 0 0);
-  --muted: oklch(0.2891 0 0);
-  --muted-foreground: oklch(0.7155 0 0);
-  --accent: oklch(0.3338 0.0309 150.119);
-  --accent-foreground: oklch(0.994 0 0);
-  --destructive: oklch(0.6591 0.153 22.1703);
-  --destructive-foreground: oklch(0.2178 0 0);
-  --border: oklch(0.3979 0 0);
-  --input: oklch(0.2686 0 0);
-  --ring: oklch(0.433 0.0745 149.7347);
-  --chart-1: oklch(0.433 0.0745 149.7347);
-  --chart-2: oklch(0.6402 0.069 155.0903);
-  --chart-3: oklch(0.7641 0.0506 150.5513);
-  --chart-4: oklch(0.8883 0.0287 151.8825);
-  --chart-5: oklch(0.9712 0.0075 151.8901);
-  --sidebar: oklch(0.2478 0 0);
-  --sidebar-foreground: oklch(0.994 0 0);
-  --sidebar-primary: oklch(0.433 0.0745 149.7347);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.3338 0.0309 150.119);
-  --sidebar-accent-foreground: oklch(0.994 0 0);
-  --sidebar-border: oklch(0.3485 0 0);
-  --sidebar-ring: oklch(0.433 0.0745 149.7347);
+  --background: #0B1210;
+  --foreground: #EAF3EE;
+  --card: #132019;
+  --card-foreground: #EAF3EE;
+  --popover: #132019;
+  --popover-foreground: #EAF3EE;
+  --primary: #235347;
+  --primary-foreground: #FFFFFF;
+  --secondary: #163832;
+  --secondary-foreground: #DAF1DE;
+  --muted: #16211D;
+  --muted-foreground: #8FA79D;
+  --accent: #163832;
+  --accent-foreground: #DAF1DE;
+  --destructive: #E0565B;
+  --destructive-foreground: #1D2B28;
+  --success: #34D399;
+  --success-foreground: #0B1210;
+  --warning: #FBBF24;
+  --warning-foreground: #1D2B28;
+  --info: #60A5FA;
+  --info-foreground: #0B1210;
+  --border: #1F2E28;
+  --input: #16211D;
+  --ring: #235347;
+  --chart-1: #DAF1DE;
+  --chart-2: #8EB69B;
+  --chart-3: #235347;
+  --chart-4: #163832;
+  --chart-5: #0B2B26;
+  /* Sidebar não muda no escuro — já é escura por padrão (ver :root acima). */
+  --sidebar: #051F20;
+  --sidebar-foreground: #DAF1DE;
+  --sidebar-primary: #0B2B26;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #163832;
+  --sidebar-accent-foreground: #DAF1DE;
+  --sidebar-border: #163832;
+  --sidebar-ring: #8EB69B;
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
-  --radius: 0.5rem;
-  --shadow-x: 0;
-  --shadow-y: 0.25rem;
-  --shadow-blur: 0.5rem;
-  --shadow-spread: 0;
-  --shadow-opacity: 0.4;
-  --shadow-color: 0 0 0;
-  --shadow-2xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2);
-  --shadow-xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2);
-  --shadow-sm:
-    0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.4), 0 1px 2px -1px hsl(0 0 0 / 0.4);
-  --shadow:
-    0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.4), 0 1px 2px -1px hsl(0 0 0 / 0.4);
-  --shadow-md:
-    0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.4), 0 2px 4px -1px hsl(0 0 0 / 0.4);
-  --shadow-lg:
-    0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.4), 0 4px 6px -1px hsl(0 0 0 / 0.4);
-  --shadow-xl:
-    0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.4), 0 8px 10px -1px hsl(0 0 0 / 0.4);
-  --shadow-2xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 1);
+  --radius: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-button: 1rem;
+  --radius-input: 0.875rem;
+  --shadow-2xs: 0 2px 8px 0 rgb(0 0 0 / 0.16);
+  --shadow-xs: 0 4px 12px 0 rgb(0 0 0 / 0.18);
+  --shadow-sm: 0 6px 20px 0 rgb(0 0 0 / 0.2);
+  --shadow: 0 10px 30px 0 rgb(0 0 0 / 0.22);
+  --shadow-md: 0 12px 36px 0 rgb(0 0 0 / 0.24);
+  --shadow-lg: 0 16px 48px 0 rgb(0 0 0 / 0.28);
+  --shadow-xl: 0 24px 64px 0 rgb(0 0 0 / 0.32);
+  --shadow-2xl: 0 32px 80px 0 rgb(0 0 0 / 0.4);
 }
 
 /* Tema exclusivo do app de descoberta pro cliente final (app.bladiq.com,
@@ -170,6 +184,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -195,6 +215,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-card: var(--radius-card);
+  --radius-button: var(--radius-button);
+  --radius-input: var(--radius-input);
 
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
