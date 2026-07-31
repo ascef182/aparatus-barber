@@ -37,6 +37,18 @@ export default async function globalSetup() {
         slug: SLUG,
         subscriptionStatus: "TRIALING",
         defaultLocale: "en",
+        // createBookingPaymentCheckout (app/_actions/create-booking-payment-checkout.ts)
+        // bloqueia com "Pagamento online ainda não está disponível" sem os
+        // dois campos abaixo -- sem isso o teste nunca chegava no redirect
+        // pro Stripe Checkout, falhava antes mesmo de tentar. chargesEnabled
+        // é só uma flag no nosso banco (fica true sempre aqui); já
+        // stripeConnectAccountId precisa ser uma connected account de
+        // teste que exista de verdade na conta Stripe usada localmente
+        // (Dashboard test mode → Connect → criar uma conta de teste) --
+        // sem isso a chamada real a checkout.sessions.create ainda falha,
+        // só que no lado do Stripe em vez do nosso gate de app.
+        stripeConnectAccountId: process.env.E2E_STRIPE_CONNECT_ACCOUNT_ID ?? "acct_e2e_test_placeholder",
+        chargesEnabled: true,
       },
     });
     const location = await prisma.location.create({
