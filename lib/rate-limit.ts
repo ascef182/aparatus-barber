@@ -78,6 +78,14 @@ function getIpFromHeaders(h: Headers): string {
   if (trustedHeader === "x-real-ip") {
     return h.get("x-real-ip")?.trim() || "unknown";
   }
+  // Vercel sobrescreve x-forwarded-for na própria borda antes de chegar na
+  // função — não é spoofável pelo cliente nesse caso específico (diferente
+  // de um proxy desconhecido), então confiar no primeiro IP é seguro só
+  // quando explicitamente configurado assim (deploy na Vercel sem Cloudflare
+  // na frente ainda).
+  if (trustedHeader === "x-forwarded-for") {
+    return h.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  }
   if (process.env.NODE_ENV === "production") return "unknown";
   const forwardedFor = h.get("x-forwarded-for");
   return forwardedFor?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/check-runtime-env.ts && next build",
     "release:migrate": "prisma migrate deploy",
     "start": "tsx scripts/check-runtime-env.ts && next start",
     "worker": "tsx worker/index.ts",

@@ -80,9 +80,14 @@ export function inspectEnv(content: string): {
   }
 
   const proxyHeader = occurrences.get("TRUSTED_PROXY_IP_HEADER")?.at(-1);
-  if (proxyHeader && !["x-real-ip", "cf-connecting-ip"].includes(proxyHeader)) {
+  if (
+    proxyHeader &&
+    !["x-real-ip", "cf-connecting-ip", "x-forwarded-for"].includes(
+      proxyHeader,
+    )
+  ) {
     errors.push(
-      "TRUSTED_PROXY_IP_HEADER: use x-real-ip localmente ou cf-connecting-ip atrás do Cloudflare",
+      "TRUSTED_PROXY_IP_HEADER: use x-real-ip localmente, x-forwarded-for na Vercel sem Cloudflare, ou cf-connecting-ip atrás do Cloudflare",
     );
   }
 

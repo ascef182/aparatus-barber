@@ -45,7 +45,11 @@ const webEnvSchema = loggingEnvSchema.and(
     CLOUDINARY_API_SECRET: z.string().min(1),
     HEALTHCHECK_SECRET: z.string().min(32),
     CONSENT_IP_HASH_SECRET: z.string().min(32),
-    TRUSTED_PROXY_IP_HEADER: z.enum(["cf-connecting-ip", "x-real-ip"]),
+    TRUSTED_PROXY_IP_HEADER: z.enum([
+      "cf-connecting-ip",
+      "x-real-ip",
+      "x-forwarded-for",
+    ]),
   }),
 );
 
