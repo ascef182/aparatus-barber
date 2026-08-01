@@ -55,7 +55,7 @@ export const updateCouponSchema = couponBaseSchema
   .superRefine(validateCouponValue);
 
 const staffBaseSchema = z.object({
-  displayName: z.string().trim().min(2).max(120), jobTitle: z.string().trim().max(120).optional(), imageUrl: z.url().optional(), locationId: z.uuid(), color: z.string().max(24).optional(), serviceIds: z.array(z.uuid()).default([]),
+  displayName: z.string().trim().min(2).max(120), jobTitle: z.string().trim().max(120).optional(), imageUrl: z.url().optional(), locationId: z.uuid(), color: z.string().max(24).optional(), serviceIds: z.array(z.uuid()).min(1, "Selecione ao menos um serviço."),
   compensationType: z.enum(["MONTHLY", "HOURLY", "PER_SERVICE_COMMISSION"]).optional(), compensationAmountInCents: z.coerce.number().int().positive().optional(), commissionBps: z.coerce.number().int().min(1).max(10000).optional(),
   invite: z.object({ email: z.email(), role: z.enum(["manager", "professional", "receptionist"]) }).optional(),
 });
@@ -82,8 +82,8 @@ export const staffWorkingHoursSchema = z.object({ staffId: z.uuid(), hours: z.ar
 export const closedPeriodSchema = z.object({ name: z.string().min(2).max(120), startAt: z.coerce.date(), endAt: z.coerce.date(), locationId: z.uuid().optional() });
 export const updateCustomerSchema = z.object({ id: z.uuid(), notes: z.string().max(2000).nullable(), isBlocked: z.boolean(), tags: z.array(z.string().trim().min(1).max(30)).max(10) });
 export const impressumSchema = z.object({ legalName: z.string().min(2).max(160), addressLine1: z.string().min(3).max(160), postalCode: z.string().min(3).max(12), city: z.string().min(2).max(80), country: z.string().length(2).default("DE"), representedBy: z.string().max(160).optional(), phone: z.string().max(40).optional(), email: z.email().optional(), registerCourt: z.string().max(120).optional(), registerNumber: z.string().max(60).optional(), vatId: z.string().max(40).optional() });
-export const toggleDirectoryListingSchema = z.object({
-  isListed: z.boolean(),
-  category: z.enum(["BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON", "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER"]).optional(),
+export const toggleDirectoryListingSchema = z.object({ isListed: z.boolean() });
+export const updateBusinessCategorySchema = z.object({
+  category: z.enum(["BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON", "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER"]),
 });
 export const updateCoverImageSchema = z.object({ coverImageUrl: z.url().nullable() });

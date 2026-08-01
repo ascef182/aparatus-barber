@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { toggleDirectoryListing } from "@/app/_actions/manage-operations";
+import { toggleDirectoryListing, updateBusinessCategory } from "@/app/_actions/manage-operations";
 import { Label } from "@/app/_components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 import { Switch } from "@/app/_components/ui/switch";
@@ -35,24 +35,28 @@ export function DirectoryListingForm({
       toast.error(error.serverError ?? t("directorySaveError"));
     },
   });
+  const categoryAction = useAction(updateBusinessCategory, {
+    onSuccess: () => toast.success(t("directorySaved")),
+    onError: ({ error }) => toast.error(error.serverError ?? t("directorySaveError")),
+  });
 
   function toggle() {
     const next = !isListed;
     setIsListed(next);
-    action.execute({ isListed: next, category });
+    action.execute({ isListed: next });
   }
 
   function changeCategory(value: string) {
     const next = value as (typeof BUSINESS_CATEGORIES)[number];
     setCategory(next);
-    action.execute({ isListed, category: next });
+    categoryAction.execute({ category: next });
   }
 
   return (
     <div className="grid gap-4">
       <div className="grid gap-1.5">
         <Label htmlFor="directory-category">{tCategories("label")}</Label>
-        <Select value={category} onValueChange={changeCategory} disabled={action.isPending}>
+        <Select value={category} onValueChange={changeCategory} disabled={categoryAction.isPending}>
           <SelectTrigger id="directory-category" className="w-full sm:w-72">
             <SelectValue />
           </SelectTrigger>

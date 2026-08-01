@@ -63,17 +63,28 @@ export function isFreeTrialExpired(organization: {
 /**
  * Toggle manual do diretório público (dashboard/settings) — sempre marca
  * `directoryListingSetByOwner`, pra `autoListDirectory` nunca mais sobrepor
- * essa escolha (ligar de novo depois de um unlist manual, por exemplo).
+ * essa escolha (ligar de novo depois de um unlist manual, por exemplo). Só
+ * deve ser chamada pelo próprio switch de listagem — nunca acoplada a outros
+ * campos do formulário (ver updateOrganizationCategory), senão qualquer
+ * edição não relacionada trava a flag como efeito colateral.
  */
-export function setDirectoryListing(organizationId: string, isListed: boolean, category?: BusinessCategory) {
+export function setDirectoryListing(organizationId: string, isListed: boolean) {
   return prisma.organization.update({
     where: { id: organizationId },
     data: {
       isListed,
       listedAt: isListed ? new Date() : null,
       directoryListingSetByOwner: true,
-      ...(category ? { category } : {}),
     },
+  });
+}
+
+/** Categoria do negócio (dashboard/settings) — deliberadamente separada de
+ * setDirectoryListing: não deve mexer em isListed/directoryListingSetByOwner. */
+export function updateOrganizationCategory(organizationId: string, category: BusinessCategory) {
+  return prisma.organization.update({
+    where: { id: organizationId },
+    data: { category },
   });
 }
 

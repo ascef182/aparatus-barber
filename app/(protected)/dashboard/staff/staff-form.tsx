@@ -155,8 +155,11 @@ export function StaffForm({
           })}
           {services.length === 0 && <p className="text-xs text-muted-foreground">{t("noServicesAssociated")}</p>}
         </div>
+        {!staff && serviceIds.length === 0 && services.length > 0 && (
+          <p className="text-xs text-destructive">{t("servicesRequiredHint")}</p>
+        )}
       </div>
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending || (!staff && serviceIds.length === 0)}>
         {pending ? "..." : staff ? t("saveChanges") : t("createSubmit")}
       </Button>
     </form>
