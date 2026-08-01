@@ -502,7 +502,7 @@ model StripeEvent {
   accountId   String?
   status      StripeEventStatus @default(PROCESSING)
   attempts    Int               @default(1)
-  startedAt   DateTime          @default(now())
+  startedAt   DateTime          @default(now()) @db.Timestamptz
   processedAt DateTime?
   lastError   String?
 
