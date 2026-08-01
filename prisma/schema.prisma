@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider   = "prisma-client-js"
+  output     = "../generated/prisma"
   engineType = "client"
 }
 
@@ -101,35 +101,42 @@ enum CompensationType {
 }
 
 enum NotificationStatus {
-  SENT
+  ACCEPTED
+  FAILED
+}
+
+enum StripeEventStatus {
+  PROCESSING
+  PROCESSED
   FAILED
 }
 
 model Staff {
-  id             String       @id @default(uuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  locationId     String
-  location       Location     @relation(fields: [locationId], references: [id])
-  memberId       String?      @unique // vínculo opcional a Member (staff sem login existe)
-  invitationId   String?      @unique
-  displayName    String
-  bio            String?
-  imageUrl       String?
-  jobTitle       String?
-  color          String? // cor no calendário do dashboard
-  allowOverbooking Boolean    @default(false)
-  commissionBps  Int? // comissão em basis points (4000 = 40%)
-  compensationType CompensationType?
+  id                        String              @id @default(uuid())
+  organizationId            String
+  organization              Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  locationId                String
+  location                  Location            @relation(fields: [locationId, organizationId], references: [id, organizationId])
+  memberId                  String?             @unique // vínculo opcional a Member (staff sem login existe)
+  invitationId              String?             @unique
+  displayName               String
+  bio                       String?
+  imageUrl                  String?
+  jobTitle                  String?
+  color                     String? // cor no calendário do dashboard
+  allowOverbooking          Boolean             @default(false)
+  commissionBps             Int? // comissão em basis points (4000 = 40%)
+  compensationType          CompensationType?
   compensationAmountInCents Int?
-  isActive       Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now()) @updatedAt
-  workingHours   StaffWorkingHours[]
-  absences       StaffAbsence[]
-  services       StaffService[]
-  bookings       Booking[]
+  isActive                  Boolean             @default(true)
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @default(now()) @updatedAt
+  workingHours              StaffWorkingHours[]
+  absences                  StaffAbsence[]
+  services                  StaffService[]
+  bookings                  Booking[]
 
+  @@unique([id, organizationId])
   @@index([organizationId, locationId])
   @@map("staff")
 }
@@ -138,7 +145,7 @@ model StaffWorkingHours {
   id             String    @id @default(uuid())
   organizationId String
   staffId        String
-  staff          Staff     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staff          Staff     @relation(fields: [staffId, organizationId], references: [id, organizationId], onDelete: Cascade)
   weekday        Int // 0 (domingo) – 6 (sábado)
   startTime      String // "09:00" no timezone do tenant
   endTime        String
@@ -154,7 +161,7 @@ model StaffAbsence {
   id             String      @id @default(uuid())
   organizationId String
   staffId        String
-  staff          Staff       @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staff          Staff       @relation(fields: [staffId, organizationId], references: [id, organizationId], onDelete: Cascade)
   type           AbsenceType @default(BLOCK)
   startAt        DateTime    @db.Timestamptz
   endAt          DateTime    @db.Timestamptz
@@ -169,6 +176,7 @@ model ClosedPeriod {
   id             String             @id @default(uuid())
   organizationId String
   locationId     String? // null = todas as filiais
+  location       Location?          @relation(fields: [locationId, organizationId], references: [id, organizationId])
   name           String
   startAt        DateTime           @db.Timestamptz
   endAt          DateTime           @db.Timestamptz
@@ -179,30 +187,32 @@ model ClosedPeriod {
 }
 
 model Service {
-  id                  String       @id @default(uuid())
+  id                  String          @id @default(uuid())
   organizationId      String
-  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   locationId          String? // null = todas as filiais
+  location            Location?       @relation(fields: [locationId, organizationId], references: [id, organizationId])
   name                String
   description         String?
   imageUrl            String?
   durationMinutes     Int
-  bufferBeforeMinutes Int          @default(0)
-  bufferAfterMinutes  Int          @default(0)
+  bufferBeforeMinutes Int             @default(0)
+  bufferAfterMinutes  Int             @default(0)
   priceInCents        Int
-  currency            String       @default("EUR")
+  currency            String          @default("EUR")
   depositInCents      Int?
   paymentMode         PaymentMode? // null = regra padrão do tenant
-  depositPercent      Int?         // obrigatório quando paymentMode = DEPOSIT
-  isActive            Boolean      @default(true)
-  sortOrder           Int          @default(0)
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @default(now()) @updatedAt
+  depositPercent      Int? // obrigatório quando paymentMode = DEPOSIT
+  isActive            Boolean         @default(true)
+  sortOrder           Int             @default(0)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @default(now()) @updatedAt
   staff               StaffService[]
   couponServices      CouponService[]
   images              ServiceImage[]
   bookings            Booking[]
 
+  @@unique([id, organizationId])
   @@index([organizationId, isActive])
   @@map("service")
 }
@@ -211,7 +221,7 @@ model ServiceImage {
   id             String   @id @default(uuid())
   organizationId String
   serviceId      String
-  service        Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service        Service  @relation(fields: [serviceId, organizationId], references: [id, organizationId], onDelete: Cascade)
   url            String
   publicId       String?
   sortOrder      Int      @default(0)
@@ -224,9 +234,9 @@ model ServiceImage {
 model StaffService {
   organizationId String
   staffId        String
-  staff          Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  staff          Staff   @relation(fields: [staffId, organizationId], references: [id, organizationId], onDelete: Cascade)
   serviceId      String
-  service        Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service        Service @relation(fields: [serviceId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@id([staffId, serviceId])
   @@index([organizationId])
@@ -235,47 +245,49 @@ model StaffService {
 }
 
 model Customer {
-  id             String       @id @default(uuid())
+  id             String           @id @default(uuid())
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String? // null = guest/walk-in
   name           String
   email          String?
   phone          String?
   locale         String?
   notes          String?
-  noShowCount    Int          @default(0)
-  isBlocked      Boolean      @default(false)
-  tags           String[]     @default([])
-  gdprErasedAt   DateTime?    @db.Timestamptz
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now()) @updatedAt
+  noShowCount    Int              @default(0)
+  isBlocked      Boolean          @default(false)
+  tags           String[]         @default([])
+  gdprErasedAt   DateTime?        @db.Timestamptz
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now()) @updatedAt
   bookings       Booking[]
   conversations  Conversation[]
   couponClaims   CustomerCoupon[]
 
   @@unique([organizationId, userId])
+  @@unique([id, organizationId])
   @@index([organizationId, email])
   @@map("customer")
 }
 
 model Coupon {
-  id             String     @id @default(uuid())
+  id             String           @id @default(uuid())
   organizationId String
   code           String // sempre armazenado uppercase
   type           CouponType
   value          Int // PERCENT: 1–100; FIXED: cents
-  validFrom      DateTime?  @db.Timestamptz
-  validUntil     DateTime?  @db.Timestamptz
+  validFrom      DateTime?        @db.Timestamptz
+  validUntil     DateTime?        @db.Timestamptz
   maxRedemptions Int?
-  scope          CouponScope @default(ALL_SERVICES)
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
+  scope          CouponScope      @default(ALL_SERVICES)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
   bookings       Booking[]
   services       CouponService[]
   customerClaims CustomerCoupon[]
 
   @@unique([organizationId, code])
+  @@unique([id, organizationId])
   @@index([organizationId, isActive])
   @@map("coupon")
 }
@@ -283,9 +295,9 @@ model Coupon {
 model CouponService {
   organizationId String
   couponId       String
-  coupon         Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  coupon         Coupon  @relation(fields: [couponId, organizationId], references: [id, organizationId], onDelete: Cascade)
   serviceId      String
-  service        Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service        Service @relation(fields: [serviceId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@id([couponId, serviceId])
   @@index([organizationId])
@@ -294,44 +306,45 @@ model CouponService {
 }
 
 model Booking {
-  id             String        @id @default(uuid())
-  organizationId String
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  locationId     String
-  staffId        String
-  staff          Staff         @relation(fields: [staffId], references: [id])
-  serviceId      String
-  service        Service       @relation(fields: [serviceId], references: [id])
-  customerId     String
-  customer       Customer      @relation(fields: [customerId], references: [id])
-  startAt        DateTime      @db.Timestamptz
-  endAt          DateTime      @db.Timestamptz // início + duração + buffers
-  status         BookingStatus
-  source         BookingSource @default(WEB)
-  priceInCents   Int // snapshot no momento do booking
-  currency       String        @default("EUR")
-  discountInCents Int          @default(0)
-  couponId       String?
-  coupon         Coupon?       @relation(fields: [couponId], references: [id])
-  paymentMode    PaymentMode   @default(ON_SITE)
-  paymentStatus  PaymentStatus @default(NONE)
-  paymentReceivedInCents Int   @default(0)
-  onlinePaymentAmountInCents Int @default(0)
-  refundedAmountInCents  Int   @default(0)
-  paidAt                 DateTime? @db.Timestamptz
-  completedAt            DateTime? @db.Timestamptz
-  noShowAt               DateTime? @db.Timestamptz
-  stripePaymentIntentId String?
-  stripeChargeId        String?
-  stripeCheckoutSessionId String? @unique
-  cancellationFeeInCents Int?
-  cancelledAt    DateTime?     @db.Timestamptz
-  cancelledBy    String? // userId
-  cancellationReason String?
-  expiresAt      DateTime?     @db.Timestamptz // hold p/ PENDING_PAYMENT
-  notes          String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @default(now()) @updatedAt
+  id                         String        @id @default(uuid())
+  organizationId             String
+  organization               Organization  @relation(fields: [organizationId], references: [id])
+  locationId                 String
+  location                   Location      @relation(fields: [locationId, organizationId], references: [id, organizationId])
+  staffId                    String
+  staff                      Staff         @relation(fields: [staffId, organizationId], references: [id, organizationId])
+  serviceId                  String
+  service                    Service       @relation(fields: [serviceId, organizationId], references: [id, organizationId])
+  customerId                 String
+  customer                   Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  startAt                    DateTime      @db.Timestamptz
+  endAt                      DateTime      @db.Timestamptz // início + duração + buffers
+  status                     BookingStatus
+  source                     BookingSource @default(WEB)
+  priceInCents               Int // snapshot no momento do booking
+  currency                   String        @default("EUR")
+  discountInCents            Int           @default(0)
+  couponId                   String?
+  coupon                     Coupon?       @relation(fields: [couponId], references: [id])
+  paymentMode                PaymentMode   @default(ON_SITE)
+  paymentStatus              PaymentStatus @default(NONE)
+  paymentReceivedInCents     Int           @default(0)
+  onlinePaymentAmountInCents Int           @default(0)
+  refundedAmountInCents      Int           @default(0)
+  paidAt                     DateTime?     @db.Timestamptz
+  completedAt                DateTime?     @db.Timestamptz
+  noShowAt                   DateTime?     @db.Timestamptz
+  stripePaymentIntentId      String?
+  stripeChargeId             String?
+  stripeCheckoutSessionId    String?       @unique
+  cancellationFeeInCents     Int?
+  cancelledAt                DateTime?     @db.Timestamptz
+  cancelledBy                String? // userId
+  cancellationReason         String?
+  expiresAt                  DateTime?     @db.Timestamptz // hold p/ PENDING_PAYMENT
+  notes                      String?
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @default(now()) @updatedAt
 
   @@index([organizationId, startAt])
   @@index([staffId, startAt])
@@ -355,42 +368,42 @@ model TenantSettings {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  id               String       @id
+  name             String
+  email            String
+  emailVerified    Boolean      @default(false)
+  image            String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now()) @updatedAt
   // Plugin admin (Better Auth): SuperAdmin da plataforma
-  role          String?
-  banned        Boolean?
-  banReason     String?
-  banExpires    DateTime?
+  role             String?
+  banned           Boolean?
+  banReason        String?
+  banExpires       DateTime?
   // Plugin twoFactor (Better Auth)
   twoFactorEnabled Boolean?
   // Preferência de idioma do usuário (i18n)
-  locale        String?
-  sessions      Session[]
-  accounts      Account[]
-  members       Member[]
-  invitations   Invitation[]
-  twoFactors    TwoFactor[]
+  locale           String?
+  sessions         Session[]
+  accounts         Account[]
+  members          Member[]
+  invitations      Invitation[]
+  twoFactors       TwoFactor[]
 
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String   @id
+  expiresAt            DateTime
+  token                String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  ipAddress            String?
+  userAgent            String?
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Plugin organization: organização ativa na sessão
   activeOrganizationId String?
   // Plugin admin: impersonation de suporte
@@ -427,30 +440,30 @@ enum BusinessCategory {
 }
 
 model Organization {
-  id        String   @id
-  name      String
-  slug      String   @unique // subdomínio: {slug}.bladiq.com
-  logo      String?
+  id            String   @id
+  name          String
+  slug          String   @unique // subdomínio: {slug}.bladiq.com
+  logo          String?
   coverImageUrl String? // hero da página pública (app/t/[slug])
-  createdAt DateTime @default(now())
-  metadata  String?
+  createdAt     DateTime @default(now())
+  metadata      String?
 
   // Extensões próprias (fora do plugin Better Auth):
-  timezone      String    @default("Europe/Berlin")
-  defaultLocale String    @default("de")
-  currency      String    @default("EUR") // ISO 4217
-  status        OrgStatus @default(TRIALING)
-  brandingJson  Json? // tokens de branding validados por Zod
-  stripeCustomerId       String? @unique
-  stripeConnectAccountId String? @unique
-  chargesEnabled         Boolean @default(false) // Stripe Connect account.updated
-  payoutsEnabled         Boolean @default(false)
-  subscriptionPlan       SubscriptionPlan?
-  subscriptionStatus     SubscriptionStatus @default(TRIALING)
-  stripeSubscriptionId   String? @unique
-  subscriptionCurrentPeriodEnd DateTime? @db.Timestamptz
-  trialEndsAt            DateTime? @db.Timestamptz
-  gracePeriodEndsAt      DateTime? @db.Timestamptz
+  timezone                     String             @default("Europe/Berlin")
+  defaultLocale                String             @default("de")
+  currency                     String             @default("EUR") // ISO 4217
+  status                       OrgStatus          @default(TRIALING)
+  brandingJson                 Json? // tokens de branding validados por Zod
+  stripeCustomerId             String?            @unique
+  stripeConnectAccountId       String?            @unique
+  chargesEnabled               Boolean            @default(false) // Stripe Connect account.updated
+  payoutsEnabled               Boolean            @default(false)
+  subscriptionPlan             SubscriptionPlan?
+  subscriptionStatus           SubscriptionStatus @default(TRIALING)
+  stripeSubscriptionId         String?            @unique
+  subscriptionCurrentPeriodEnd DateTime?          @db.Timestamptz
+  trialEndsAt                  DateTime?          @db.Timestamptz
+  gracePeriodEndsAt            DateTime?          @db.Timestamptz
 
   // Diretório público cross-tenant (lib/services/directory-service.ts):
   // liga sozinho quando o setup básico termina (decisão de produto do
@@ -459,34 +472,41 @@ model Organization {
   // `directoryListingSetByOwner` marca que a listagem já foi mexida à mão
   // (em qualquer direção) e faz o gate automático (dashboard/layout.tsx)
   // nunca mais tocar nela.
-  isListed  Boolean   @default(false)
-  listedAt  DateTime? @db.Timestamptz
-  directoryListingSetByOwner Boolean @default(false)
-  category  BusinessCategory @default(OTHER)
+  isListed                   Boolean          @default(false)
+  listedAt                   DateTime?        @db.Timestamptz
+  directoryListingSetByOwner Boolean          @default(false)
+  category                   BusinessCategory @default(OTHER)
 
-  members     Member[]
-  invitations Invitation[]
-  locations   Location[]
-  staff       Staff[]
-  services    Service[]
-  customers   Customer[]
-  bookings    Booking[]
-  quoteRequests QuoteRequest[]
-  conversations Conversation[]
-  messages    Message[]
-  customerCoupons CustomerCoupon[]
+  members          Member[]
+  invitations      Invitation[]
+  locations        Location[]
+  staff            Staff[]
+  services         Service[]
+  customers        Customer[]
+  bookings         Booking[]
+  quoteRequests    QuoteRequest[]
+  conversations    Conversation[]
+  messages         Message[]
+  customerCoupons  CustomerCoupon[]
   notificationLogs NotificationLog[]
 
   @@map("organization")
 }
 
-/** Eventos Stripe processados, para tornar os webhooks idempotentes. */
+/**
+ * Eventos Stripe processados, para tornar os webhooks idempotentes.
+ */
 model StripeEvent {
-  id          String   @id // Stripe event id
+  id          String            @id // Stripe event id
   type        String
   accountId   String?
-  processedAt DateTime @default(now())
+  status      StripeEventStatus @default(PROCESSING)
+  attempts    Int               @default(1)
+  startedAt   DateTime          @default(now())
+  processedAt DateTime?
+  lastError   String?
 
+  @@index([status, startedAt])
   @@map("stripeEvent")
 }
 
@@ -520,7 +540,9 @@ model AuditLog {
   @@map("auditLog")
 }
 
-/** Consentimentos (cookies, marketing) — imutável, escopo de plataforma. */
+/**
+ * Consentimentos (cookies, marketing) — imutável, escopo de plataforma.
+ */
 model ConsentLog {
   id        String   @id @default(uuid())
   userId    String?
@@ -535,17 +557,17 @@ model ConsentLog {
 }
 
 model Member {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String // "owner" | "manager" | "professional" | "receptionist"
-  createdAt      DateTime     @default(now())
+  id                           String       @id
+  organizationId               String
+  organization                 Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId                       String
+  user                         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role                         String // "owner" | "manager" | "professional" | "receptionist"
+  createdAt                    DateTime     @default(now())
   // Prazo para ativar 2FA antes do redirect obrigatório (dashboard/layout.tsx).
   // Guardado (não computado de createdAt) para não mover retroativamente o
   // prazo de quem já tem conta se a política mudar depois.
-  mfaGracePeriodEndsAt DateTime?
+  mfaGracePeriodEndsAt         DateTime?
   // Timestamp do envio do e-mail de lembrete (1 dia antes do prazo expirar).
   // Evita reenviar o lembrete a cada execução do job de varredura.
   mfaGracePeriodReminderSentAt DateTime?
@@ -573,11 +595,11 @@ model Invitation {
 }
 
 model TwoFactor {
-  id          String @id
+  id          String  @id
   secret      String
   backupCodes String
   userId      String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   verified    Boolean @default(false)
 
   @@index([userId])
@@ -587,25 +609,29 @@ model TwoFactor {
 // ===== ESTRUTURA DO TENANT =====
 
 model Location {
-  id             String       @id @default(uuid())
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  name           String
-  addressLine1   String
-  addressLine2   String?
-  postalCode     String
-  city           String
-  countryCode    String       @default("DE")
-  phone          String?
-  description    String? // curta, exibida na página pública de agendamento
-  timezone       String? // override do timezone do tenant (raro)
+  id               String         @id @default(uuid())
+  organizationId   String
+  organization     Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name             String
+  addressLine1     String
+  addressLine2     String?
+  postalCode       String
+  city             String
+  countryCode      String         @default("DE")
+  phone            String?
+  description      String? // curta, exibida na página pública de agendamento
+  timezone         String? // override do timezone do tenant (raro)
   openingHoursJson Json? // horário por weekday, validado por Zod
-  isActive       Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now()) @updatedAt
-  staff          Staff[]
-  quoteRequests  QuoteRequest[]
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  staff            Staff[]
+  services         Service[]
+  closedPeriods    ClosedPeriod[]
+  bookings         Booking[]
+  quoteRequests    QuoteRequest[]
 
+  @@unique([id, organizationId])
   @@index([organizationId])
   @@index([city])
   @@map("location")
@@ -630,7 +656,7 @@ model QuoteRequest {
   organizationId String
   organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   locationId     String?
-  location       Location?          @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  location       Location?          @relation(fields: [locationId, organizationId], references: [id, organizationId])
   customerName   String
   customerEmail  String?
   customerPhone  String?
@@ -700,7 +726,7 @@ model Conversation {
   organizationId     String
   organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   customerId         String
-  customer           Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer           Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId], onDelete: Cascade)
   lastMessageAt      DateTime?    @db.Timestamptz
   lastStaffReadAt    DateTime?    @db.Timestamptz
   lastCustomerReadAt DateTime?    @db.Timestamptz
@@ -708,6 +734,7 @@ model Conversation {
   messages           Message[]
 
   @@unique([organizationId, customerId])
+  @@unique([id, organizationId])
   @@index([organizationId, lastMessageAt(sort: Desc)])
   @@map("conversation")
 }
@@ -717,9 +744,9 @@ model Message {
   organizationId String
   organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   conversationId String
-  conversation   Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   Conversation      @relation(fields: [conversationId, organizationId], references: [id, organizationId], onDelete: Cascade)
   senderType     MessageSenderType
-  senderUserId   String            // Better Auth User.id — not a FK (User isn't tenant-scoped), same pattern as Booking.cancelledBy
+  senderUserId   String // Better Auth User.id — not a FK (User isn't tenant-scoped), same pattern as Booking.cancelledBy
   body           String
   createdAt      DateTime          @default(now())
 
@@ -732,9 +759,9 @@ model CustomerCoupon {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   customerId     String
-  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId], onDelete: Cascade)
   couponId       String
-  coupon         Coupon       @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  coupon         Coupon       @relation(fields: [couponId, organizationId], references: [id, organizationId], onDelete: Cascade)
   claimedAt      DateTime     @default(now())
 
   @@unique([customerId, couponId])
@@ -752,15 +779,15 @@ model CustomerCoupon {
  * (não enum) para dar espaço a SMS/push sem migration.
  */
 model NotificationLog {
-  id             String              @id @default(uuid())
+  id             String             @id @default(uuid())
   organizationId String
-  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   type           String
-  channel        String              @default("EMAIL")
+  channel        String             @default("EMAIL")
   recipient      String
   status         NotificationStatus
   errorMessage   String?
-  createdAt      DateTime            @default(now())
+  createdAt      DateTime           @default(now())
 
   @@index([organizationId, createdAt(sort: Desc)])
   @@map("notificationLog")
