@@ -40,7 +40,7 @@ export async function isSetupComplete(organizationId: string): Promise<boolean> 
   });
 }
 
-export const TRIAL_DAYS = 14;
+export const TRIAL_DAYS = 7;
 
 /**
  * Organização nunca teve uma subscription Stripe real (cadastro grátis, sem

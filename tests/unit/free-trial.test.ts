@@ -4,7 +4,7 @@ import { isFreeTrialExpired } from "@/lib/services/organization-service";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 describe("isFreeTrialExpired", () => {
-  it("expira depois de 14 dias sem nunca ter tido subscription", () => {
+  it("expira depois de 7 dias sem nunca ter tido subscription", () => {
     const createdAt = new Date(Date.now() - 15 * DAY_MS);
     expect(isFreeTrialExpired({ createdAt, stripeSubscriptionId: null })).toBe(
       true,

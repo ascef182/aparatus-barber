@@ -173,7 +173,7 @@ export function staffWriteActionClient(permission: PermissionCheck) {
   return staffActionClient(permission).use(async ({ next, ctx }) => {
     if (isFreeTrialExpired(ctx.organization)) {
       throw new ActionError(
-        "Seu período de teste gratuito de 14 dias terminou. Assine um plano para continuar.",
+        "Seu período de teste gratuito de 7 dias terminou. Assine um plano para continuar.",
       );
     }
     return next({ ctx });

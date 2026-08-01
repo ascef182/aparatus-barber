@@ -68,7 +68,7 @@ const inputSchema = z.object({
   // Plano escolhido antes do cadastro grátis (query string ?plan= vinda da
   // landing) — sem Checkout Stripe nenhum ainda, só para a Organization já
   // nascer com o plano "pretendido" e a tela de billing lembrar a escolha
-  // quando o teste de 14 dias acabar (ver isFreeTrialExpired).
+  // quando o teste de 7 dias acabar (ver isFreeTrialExpired).
   intendedPlan: z.enum(["STARTER", "GROWTH", "PRO"]).optional(),
   dpaAccepted: z.literal(
     true,
@@ -178,7 +178,7 @@ export const createOrganization = authActionClient
       // Sem claim (cadastro grátis via /sign-up): a Organization fica nos
       // defaults do Prisma (status/subscriptionStatus=TRIALING, sem
       // stripeSubscriptionId) — isFreeTrialExpired() passa a contar os
-      // 14 dias de graça a partir de createdAt. Se veio um plano escolhido
+      // 7 dias de graça a partir de createdAt. Se veio um plano escolhido
       // na landing, grava só como "intenção" (subscriptionPlan), sem
       // nenhuma cobrança — a assinatura Stripe de verdade só é criada
       // depois, quando o dono assina em /dashboard/billing.

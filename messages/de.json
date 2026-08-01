@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Online-Buchung für Ihren Barbershop",
-    "subtitle": "14 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
+    "subtitle": "7 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
     "starterName": "Starter",
     "starterTagline": "Für den Einstieg",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# Mitarbeiter} other {# Mitarbeiter}}",
     "unlimitedStaff": "Unbegrenzte Mitarbeiter",
     "cta": "Kostenlos testen",
-    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 14 Testtagen weiter nutzen möchten.",
+    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 7 Testtagen weiter nutzen möchten.",
     "popularBadge": "Am beliebtesten",
     "featureOnlineBooking": "Unbegrenzte Online-Buchungen",
     "featureStripePayments": "Zahlungen über Stripe",
@@ -246,7 +246,7 @@
       "servicesLink": "Leistungen",
       "staffServiceLink": "Zuordnung Fachkraft-Leistung",
       "mfaBanner": "Aktivieren Sie die Zwei-Faktor-Authentifizierung, um Ihr Konto zu schützen",
-      "trialExpiredBanner": "Ihre 14-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren",
+      "trialExpiredBanner": "Ihre 7-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren",
       "greeting": "Hallo, {name}",
       "searchPlaceholder": "Kunden suchen...",
       "notifications": "Benachrichtigungen",
@@ -855,7 +855,7 @@
     "howItWorks": {
       "title": "So funktioniert's",
       "step1Title": "1. Kostenlose Testphase starten",
-      "step1Body": "14 Tage kostenlos, keine Kreditkarte nötig.",
+      "step1Body": "7 Tage kostenlos, keine Kreditkarte nötig.",
       "step2Title": "2. Barbershop einrichten",
       "step2Body": "Team, Leistungen und Öffnungszeiten hinzufügen.",
       "step3Title": "3. Ihren Link teilen",
@@ -864,7 +864,7 @@
     "faq": {
       "title": "Häufige Fragen",
       "q1": "Brauche ich eine Kreditkarte, um zu starten?",
-      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 14 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
+      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
@@ -889,7 +889,7 @@
     },
     "finalCta": {
       "title": "Bereit, Ihren Barbershop zu modernisieren?",
-      "subtitle": "Jetzt starten — 14 Tage kostenlos, keine Kreditkarte nötig.",
+      "subtitle": "Jetzt starten — 7 Tage kostenlos, keine Kreditkarte nötig.",
       "cta": "Kostenlos testen"
     },
     "footer": {

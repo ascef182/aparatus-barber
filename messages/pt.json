@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Agendamento online para sua barbearia",
-    "subtitle": "14 dias grátis, sem cartão de crédito. Cancele quando quiser.",
+    "subtitle": "7 dias grátis, sem cartão de crédito. Cancele quando quiser.",
     "starterName": "Starter",
     "starterTagline": "Para quem está começando",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 14 dias de teste.",
+    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 7 dias de teste.",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
@@ -246,7 +246,7 @@
       "servicesLink": "serviços",
       "staffServiceLink": "vínculo profissional-serviço",
       "mfaBanner": "Ative a autenticação de dois fatores para proteger sua conta",
-      "trialExpiredBanner": "Seu período de teste gratuito de 14 dias terminou — assine um plano para continuar",
+      "trialExpiredBanner": "Seu período de teste gratuito de 7 dias terminou — assine um plano para continuar",
       "greeting": "Olá, {name}",
       "searchPlaceholder": "Buscar clientes...",
       "notifications": "Notificações",
@@ -855,7 +855,7 @@
     "howItWorks": {
       "title": "Como funciona",
       "step1Title": "1. Comece o teste grátis",
-      "step1Body": "14 dias grátis, sem cartão de crédito necessário.",
+      "step1Body": "7 dias grátis, sem cartão de crédito necessário.",
       "step2Title": "2. Configure sua barbearia",
       "step2Body": "Adicione equipe, serviços e horários de funcionamento.",
       "step3Title": "3. Compartilhe seu link",
@@ -864,7 +864,7 @@
     "faq": {
       "title": "Perguntas frequentes",
       "q1": "Preciso de cartão de crédito para começar?",
-      "a1": "Não — cadastre-se grátis e teste por 14 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
+      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
@@ -889,7 +889,7 @@
     },
     "finalCta": {
       "title": "Pronto para modernizar sua barbearia?",
-      "subtitle": "Comece agora — 14 dias grátis, sem cartão necessário.",
+      "subtitle": "Comece agora — 7 dias grátis, sem cartão necessário.",
       "cta": "Começar teste grátis"
     },
     "footer": {

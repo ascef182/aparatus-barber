@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Online booking for your barbershop",
-    "subtitle": "14 days free, no credit card required. Cancel anytime.",
+    "subtitle": "7 days free, no credit card required. Cancel anytime.",
     "starterName": "Starter",
     "starterTagline": "For getting started",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "No credit card required — add one only if you keep your shop after the 14-day trial.",
+    "trialNote": "No credit card required — add one only if you keep your shop after the 7-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
@@ -246,7 +246,7 @@
       "servicesLink": "services",
       "staffServiceLink": "staff-service assignment",
       "mfaBanner": "Enable two-factor authentication to protect your account",
-      "trialExpiredBanner": "Your 14-day free trial has ended — subscribe to a plan to continue",
+      "trialExpiredBanner": "Your 7-day free trial has ended — subscribe to a plan to continue",
       "greeting": "Hi, {name}",
       "searchPlaceholder": "Search customers...",
       "notifications": "Notifications",
@@ -855,7 +855,7 @@
     "howItWorks": {
       "title": "How it works",
       "step1Title": "1. Start your free trial",
-      "step1Body": "14 days free, no credit card required.",
+      "step1Body": "7 days free, no credit card required.",
       "step2Title": "2. Set up your shop",
       "step2Body": "Add your team, services, and working hours.",
       "step3Title": "3. Share your link",
@@ -864,7 +864,7 @@
     "faq": {
       "title": "Frequently asked questions",
       "q1": "Do I need a credit card to start?",
-      "a1": "No — sign up for free and try it for 14 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
+      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
@@ -889,7 +889,7 @@
     },
     "finalCta": {
       "title": "Ready to modernize your barbershop?",
-      "subtitle": "Get started now — 14 days free, no card required.",
+      "subtitle": "Get started now — 7 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {

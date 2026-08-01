@@ -46,7 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const readOnly = trialExpired;
   const needsMfaSetup = (membership.role === "owner" || session.user.role === "superadmin") && !session.user.twoFactorEnabled;
 
-  // Redirect obrigatório após o prazo (14 dias) — nunca em /dashboard/settings,
+  // Redirect obrigatório após o prazo (7 dias) — nunca em /dashboard/settings,
   // a única página que permite cumprir a exigência. Prazo é escrito na
   // primeira vez que é lido (contas criadas antes desta feature não têm
   // mfaGracePeriodEndsAt salvo ainda).
