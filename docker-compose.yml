@@ -10,13 +10,31 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aparatus
       RUNTIME_DATABASE_URL: postgresql://app_runtime:app_runtime_change_me@postgres:5432/aparatus
       REDIS_URL: redis://redis:6379
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-development-secret}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-development-secret-change-me-32}
       BETTER_AUTH_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_ROOT_DOMAIN: localhost:3000
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-local-google-client}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-local-google-secret}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_local}
+      STRIPE_BILLING_WEBHOOK_SECRET: ${STRIPE_BILLING_WEBHOOK_SECRET:-whsec_local_billing}
+      STRIPE_CONNECT_WEBHOOK_SECRET: ${STRIPE_CONNECT_WEBHOOK_SECRET:-whsec_local_connect}
+      STRIPE_PRICE_STARTER_MONTHLY: ${STRIPE_PRICE_STARTER_MONTHLY:-price_local_starter}
+      STRIPE_PRICE_GROWTH_MONTHLY: ${STRIPE_PRICE_GROWTH_MONTHLY:-price_local_growth}
+      STRIPE_PRICE_PRO_MONTHLY: ${STRIPE_PRICE_PRO_MONTHLY:-price_local_pro}
+      RESEND_API_KEY: ${RESEND_API_KEY:-re_local}
+      EMAIL_FROM: ${EMAIL_FROM:-Bladiq <bookings@localhost>}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-local-cloud}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-local-cloud-key}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-local-cloud-secret}
+      HEALTHCHECK_SECRET: ${HEALTHCHECK_SECRET:-local-healthcheck-secret-change-me-32}
+      CONSENT_IP_HASH_SECRET: ${CONSENT_IP_HASH_SECRET:-local-consent-hash-secret-change-me-32}
+      TRUSTED_PROXY_IP_HEADER: ${TRUSTED_PROXY_IP_HEADER:-x-real-ip}
     ports:
       - "3000:3000"
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
@@ -24,19 +42,28 @@ services:
 
   worker:
     build: .
-    # Migração é idempotente (Prisma usa lock advisory) — seguro rodar em
-    # paralelo com o CMD do web, que também migra antes de iniciar.
-    command: sh -c "pnpm db:migrate:deploy && pnpm worker"
+    command: pnpm worker
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aparatus
       RUNTIME_DATABASE_URL: postgresql://app_runtime:app_runtime_change_me@postgres:5432/aparatus
       REDIS_URL: redis://redis:6379
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      EMAIL_FROM: ${EMAIL_FROM}
+      RESEND_API_KEY: ${RESEND_API_KEY:-re_local}
+      EMAIL_FROM: ${EMAIL_FROM:-Bladiq <bookings@localhost>}
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+
+  migrate:
+    build: .
+    command: pnpm release:migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aparatus
+    depends_on:
+      postgres:
         condition: service_healthy
 
   postgres:
