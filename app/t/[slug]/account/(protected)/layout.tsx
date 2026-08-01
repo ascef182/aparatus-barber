@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, LayoutDashboard, User, Ticket, MessageCircle } from "lucide-react";
+import { ArrowLeft, CalendarDays, LayoutDashboard, User, Ticket, MessageCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { SidebarNav, type NavItem } from "@/app/(protected)/dashboard/sidebar-nav";
+import { MobileNav } from "@/app/(protected)/dashboard/mobile-nav";
 import { AccountUserMenu } from "./account-user-menu";
 
 /**
@@ -31,14 +33,23 @@ export default async function AccountLayout({ children }: { children: React.Reac
     { href: "/account/messages", label: t("nav.messages"), icon: <MessageCircle className="size-4 shrink-0" /> },
   ];
   const userMenu = (
-    <AccountUserMenu
-      name={session.user.name}
-      email={session.user.email}
-      slug={slug}
-      signOutLabel={t("signOut")}
-      signingOutLabel={t("signingOut")}
-      signOutErrorFallback={t("signOutError")}
-    />
+    <div className="flex flex-col gap-2">
+      <Link
+        href="/"
+        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+      >
+        <ArrowLeft className="size-3.5" />
+        {t("backToSite")}
+      </Link>
+      <AccountUserMenu
+        name={session.user.name}
+        email={session.user.email}
+        slug={slug}
+        signOutLabel={t("signOut")}
+        signingOutLabel={t("signingOut")}
+        signOutErrorFallback={t("signOutError")}
+      />
+    </div>
   );
 
   return (
@@ -54,9 +65,9 @@ export default async function AccountLayout({ children }: { children: React.Reac
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+          <MobileNav organizationName={organization.name} navItems={navItems} userMenu={userMenu} />
           <span className="truncate font-semibold tracking-tight">{organization.name}</span>
-          <div className="w-48">{userMenu}</div>
         </header>
         <main className="min-w-0 flex-1">{children}</main>
       </div>

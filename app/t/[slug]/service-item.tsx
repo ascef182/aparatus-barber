@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { de, enUS, ptBR } from "date-fns/locale";
 import { format } from "date-fns";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
@@ -15,6 +15,7 @@ import { Calendar } from "@/app/_components/ui/calendar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { getPublicAvailability } from "@/app/_actions/get-public-availability";
 import { createPublicBooking } from "@/app/_actions/create-public-booking";
+import { createCustomerBooking } from "@/app/_actions/create-customer-booking";
 import { publicBookingCustomerSchema } from "@/app/_actions/create-public-booking.schemas";
 import { createBookingPaymentCheckout } from "@/app/_actions/create-booking-payment-checkout";
 import { validateCouponAction } from "@/app/_actions/validate-coupon";
@@ -32,17 +33,22 @@ const DATE_FNS_LOCALES: Record<Locale, typeof ptBR> = { de, en: enUS, pt: ptBR }
  * adaptado pro booking de convidado (sem login) da nova arquitetura
  * multi-tenant: coleta nome/e-mail/telefone no lugar do gate de login,
  * e usa as actions públicas com contexto de tenant resolvido pelo host.
+ * `customerName` (sessão do cliente já logado) pula esse formulário e usa
+ * createCustomerBooking (identidade vem da sessão), mesma action já usada
+ * em app/t/[slug]/account/(protected)/bookings/new-booking-sheet.tsx.
  */
 export function ServiceItem({
   service,
   eligibleStaff,
   organizationName,
   locale,
+  customerName,
 }: {
   service: Service;
   eligibleStaff: Staff[];
   organizationName: string;
   locale: Locale;
+  customerName: string | null;
 }) {
   const t = useTranslations("booking");
   const [open, setOpen] = useState(false);
@@ -63,6 +69,7 @@ export function ServiceItem({
 
   const availability = useAction(getPublicAvailability);
   const booking = useAction(createPublicBooking);
+  const customerBooking = useAction(createCustomerBooking);
   const checkout = useAction(createBookingPaymentCheckout);
   const couponValidation = useAction(validateCouponAction);
 
@@ -122,14 +129,22 @@ export function ServiceItem({
   }
 
   async function handleConfirm() {
-    if (!slot || !staffId || !name || !email) return;
-    const result = await booking.executeAsync({
-      serviceId: service.id,
-      staffId,
-      startAt: slot.startAt,
-      customer: { name, email, phone: phone || undefined, locale },
-      couponCode: appliedCoupon?.code,
-    });
+    if (!slot || !staffId) return;
+    if (!customerName && (!name || !email)) return;
+    const result = customerName
+      ? await customerBooking.executeAsync({
+          serviceId: service.id,
+          staffId,
+          startAt: slot.startAt,
+          couponCode: appliedCoupon?.code,
+        })
+      : await booking.executeAsync({
+          serviceId: service.id,
+          staffId,
+          startAt: slot.startAt,
+          customer: { name, email, phone: phone || undefined, locale },
+          couponCode: appliedCoupon?.code,
+        });
     if (result.serverError || result.validationErrors) {
       // Se foi erro de slot indisponível, carrega alternativas
       if (result.serverError?.includes("horário")) {
@@ -197,30 +212,40 @@ export function ServiceItem({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <div className="flex items-center gap-3 rounded-2xl border p-3">
-        {service.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image
-          <img src={service.imageUrl} alt="" className="size-[72px] shrink-0 rounded-lg object-cover" />
-        )}
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="truncate font-semibold">{service.name}</p>
-          <p className="text-sm text-muted-foreground">
-            {priceLabel} · {service.durationMinutes} min
-          </p>
+      <div className="p-3">
+        <div className="flex items-center gap-3">
+          {service.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image
+            <img src={service.imageUrl} alt="" className="size-[72px] shrink-0 rounded-lg object-cover" />
+          )}
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <p className="truncate font-semibold">{service.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {priceLabel} · {service.durationMinutes} min
+            </p>
+          </div>
+          <SheetTrigger asChild>
+            <Button className="shrink-0 rounded-full" disabled={eligibleStaff.length === 0}>
+              {t("reserve")}
+            </Button>
+          </SheetTrigger>
         </div>
-        <SheetTrigger asChild>
-          <Button className="shrink-0 rounded-full" disabled={eligibleStaff.length === 0}>
-            {t("reserve")}
-          </Button>
-        </SheetTrigger>
+        {eligibleStaff.length === 0 && (
+          <p className="mt-2 text-xs text-muted-foreground">{t("temporarilyUnavailable")}</p>
+        )}
       </div>
 
       <SheetContent className="w-full overflow-y-auto p-0 sm:max-w-sm">
         {confirmed ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-            <p className="text-lg font-semibold">{t("bookingConfirmedTitle")}</p>
-            <p className="text-sm text-muted-foreground">{t("bookingConfirmedBody")}</p>
-            <Button onClick={() => setOpen(false)}>{t("close")}</Button>
+          <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+            <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
+              <CheckCircle2 className="size-8 text-primary" />
+            </div>
+            <div>
+              <p className="text-lg font-bold">{t("bookingConfirmedTitle")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t("bookingConfirmedBody")}</p>
+            </div>
+            <Button className="rounded-full" onClick={() => setOpen(false)}>{t("close")}</Button>
           </div>
         ) : step === "datetime" ? (
           <div className="flex flex-col gap-6">
@@ -331,42 +356,50 @@ export function ServiceItem({
               <SheetTitle className="text-lg font-bold">{t("makeReservation")}</SheetTitle>
             </SheetHeader>
 
-            <div className="grid gap-3 px-5">
-              <div className="grid gap-1.5">
-                <Label htmlFor={`${service.id}-name`}>{t("namePlaceholder")}</Label>
-                <Input
-                  id={`${service.id}-name`}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => markTouched("name")}
-                  aria-invalid={!!fieldError("name")}
-                />
-                {fieldError("name") && <p className="text-xs text-destructive">{fieldError("name")}</p>}
+            {customerName ? (
+              <div className="px-5">
+                <p className="text-sm text-muted-foreground">
+                  {t("bookingAsUser", { name: customerName })}
+                </p>
               </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor={`${service.id}-email`}>{t("emailPlaceholder")}</Label>
-                <Input
-                  id={`${service.id}-email`}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => markTouched("email")}
-                  aria-invalid={!!fieldError("email")}
-                />
-                {fieldError("email") && <p className="text-xs text-destructive">{fieldError("email")}</p>}
+            ) : (
+              <div className="grid gap-3 px-5">
+                <div className="grid gap-1.5">
+                  <Label htmlFor={`${service.id}-name`}>{t("namePlaceholder")}</Label>
+                  <Input
+                    id={`${service.id}-name`}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={() => markTouched("name")}
+                    aria-invalid={!!fieldError("name")}
+                  />
+                  {fieldError("name") && <p className="text-xs text-destructive">{fieldError("name")}</p>}
+                </div>
+                <div className="grid gap-1.5">
+                  <Label htmlFor={`${service.id}-email`}>{t("emailPlaceholder")}</Label>
+                  <Input
+                    id={`${service.id}-email`}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => markTouched("email")}
+                    aria-invalid={!!fieldError("email")}
+                  />
+                  {fieldError("email") && <p className="text-xs text-destructive">{fieldError("email")}</p>}
+                </div>
+                <div className="grid gap-1.5">
+                  <Label htmlFor={`${service.id}-phone`}>{t("phonePlaceholder")}</Label>
+                  <Input
+                    id={`${service.id}-phone`}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    onBlur={() => markTouched("phone")}
+                    aria-invalid={!!fieldError("phone")}
+                  />
+                  {fieldError("phone") && <p className="text-xs text-destructive">{fieldError("phone")}</p>}
+                </div>
               </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor={`${service.id}-phone`}>{t("phonePlaceholder")}</Label>
-                <Input
-                  id={`${service.id}-phone`}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  onBlur={() => markTouched("phone")}
-                  aria-invalid={!!fieldError("phone")}
-                />
-                {fieldError("phone") && <p className="text-xs text-destructive">{fieldError("phone")}</p>}
-              </div>
-            </div>
+            )}
 
             <Separator />
 
@@ -398,7 +431,7 @@ export function ServiceItem({
             </div>
 
             <div className="px-5">
-              <div className="flex flex-col gap-3 rounded-lg border p-3">
+              <div className="flex flex-col gap-3 rounded-2xl border p-3">
                 <div className="flex items-center justify-between">
                   <p className="text-base font-bold">{service.name}</p>
                   {discountedPriceLabel ? (
@@ -428,10 +461,15 @@ export function ServiceItem({
             <div className="px-5 pb-6">
               <Button
                 className="w-full rounded-full"
-                disabled={!validation.success || booking.isPending || checkout.isPending}
+                disabled={
+                  (!customerName && !validation.success) ||
+                  booking.isPending ||
+                  customerBooking.isPending ||
+                  checkout.isPending
+                }
                 onClick={handleConfirm}
               >
-                {booking.isPending || checkout.isPending ? t("booking") : t("confirmBooking")}
+                {booking.isPending || customerBooking.isPending || checkout.isPending ? t("booking") : t("confirmBooking")}
               </Button>
             </div>
           </div>

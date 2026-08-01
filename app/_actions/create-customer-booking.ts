@@ -8,12 +8,24 @@ import { z } from "zod";
  * da sessão (ctx.customer, já resolvido pelo customerActionClient), o
  * cliente nunca informa nome/e-mail de novo. */
 export const createCustomerBooking = customerActionClient
-  .inputSchema(z.object({ serviceId: z.uuid(), staffId: z.uuid(), startAt: z.coerce.date() }))
+  .inputSchema(
+    z.object({
+      serviceId: z.uuid(),
+      staffId: z.uuid(),
+      startAt: z.coerce.date(),
+      couponCode: z.string().trim().min(1).max(32).optional(),
+    }),
+  )
   .action(async ({ parsedInput, ctx }) => {
     try {
       return await createBooking({
         ...parsedInput,
-        customerUser: { id: ctx.user.id, name: ctx.user.name, email: ctx.user.email },
+        customerUser: {
+          id: ctx.user.id,
+          name: ctx.user.name,
+          email: ctx.user.email,
+          emailVerified: ctx.user.emailVerified,
+        },
         source: "WEB",
       });
     } catch (error) {

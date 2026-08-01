@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/lib/auth";
 import { getOrganizationBySlug, isFreeTrialExpired } from "@/lib/services/organization-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
@@ -10,6 +12,7 @@ import { isQuoteBasedCategory } from "@/lib/business-category";
 import { ServiceItem } from "./service-item";
 import { BookingStatusToast } from "./booking-status-toast";
 import { BackButton } from "./back-button";
+import { TenantNav } from "./tenant-nav";
 import { StructuredData } from "./structured-data";
 import { QuoteRequestForm } from "./quote-request-form";
 
@@ -61,10 +64,11 @@ const TenantHomePage = async ({
 }) => {
   const { slug } = await params;
   const { booking: bookingStatus } = await searchParams;
-  const [organization, t, tBooking] = await Promise.all([
+  const [organization, t, tBooking, session] = await Promise.all([
     getOrganizationBySlug(slug),
     getTranslations("tenant"),
     getTranslations("booking"),
+    auth.api.getSession({ headers: await headers() }),
   ]);
 
   if (!organization || organization.status === "CHURNED") {
@@ -124,6 +128,7 @@ const TenantHomePage = async ({
       />
       <BookingStatusToast status={status} successMessage={t("bookingSuccessBanner")} canceledMessage={t("bookingCanceledBanner")} />
       <BackButton />
+      <TenantNav customerName={session?.user?.name ?? null} />
       {organization.coverImageUrl ? (
         <header className="relative flex min-h-48 items-end p-6 text-white">
           {/* eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image */}
@@ -136,7 +141,7 @@ const TenantHomePage = async ({
           </div>
         </header>
       ) : (
-        <header className="border-b p-6">
+        <header className="border-b bg-gradient-to-br from-primary/10 via-background to-accent/30 p-6 pt-16">
           <h1 className="text-2xl font-bold">{organization.name}</h1>
           {defaultLocation?.description && <p className="mt-2 text-sm text-muted-foreground">{defaultLocation.description}</p>}
           {defaultLocation?.phone && <p className="mt-1 text-sm text-muted-foreground">{defaultLocation.phone}</p>}
@@ -155,15 +160,18 @@ const TenantHomePage = async ({
         ) : (
           <>
             <h2 className="text-lg font-bold">{tBooking("chooseService")}</h2>
-            {services.map((service) => (
-              <ServiceItem
-                key={service.id}
-                service={service}
-                eligibleStaff={staffList.filter((member) => member.serviceIds.includes(service.id))}
-                organizationName={organization.name}
-                locale={locale}
-              />
-            ))}
+            <div className="divide-y rounded-2xl border">
+              {services.map((service) => (
+                <ServiceItem
+                  key={service.id}
+                  service={service}
+                  eligibleStaff={staffList.filter((member) => member.serviceIds.includes(service.id))}
+                  organizationName={organization.name}
+                  locale={locale}
+                  customerName={session?.user?.name ?? null}
+                />
+              ))}
+            </div>
           </>
         )}
       </section>
