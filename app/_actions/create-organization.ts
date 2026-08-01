@@ -14,6 +14,10 @@ import {
 import { retrieveClaimableCheckoutSession } from "@/lib/services/subscription-claim-service";
 import { getStripe } from "@/lib/stripe";
 import { logAuditEvent } from "@/lib/services/audit-service";
+import {
+  countOtherOrganizationsForVisitor,
+  recordDeviceFingerprint,
+} from "@/lib/services/fingerprint-service";
 import { ensureMfaGracePeriod } from "@/lib/services/member-service";
 import { upsertImpressum } from "@/lib/services/impressum-service";
 import { RESERVED_SUBDOMAINS } from "@/lib/tenant-host";
@@ -74,6 +78,10 @@ const inputSchema = z.object({
     true,
     "É necessário aceitar o Acordo de Processamento de Dados (DPA).",
   ),
+  // Device fingerprint (FingerprintJS open source, best-effort) — usado só
+  // para sinalizar reuso de dispositivo entre trials, nunca para bloquear
+  // o cadastro (ver SIGNUP_DEVICE_REUSE_DETECTED abaixo).
+  visitorId: z.string().max(64).optional(),
 });
 
 /**
@@ -104,6 +112,7 @@ export const createOrganization = authActionClient
         registerCourt,
         registerNumber,
         vatId,
+        visitorId,
       },
       ctx,
     }) => {
@@ -243,6 +252,37 @@ export const createOrganization = authActionClient
               },
               tx,
             );
+            if (visitorId) {
+              await recordDeviceFingerprint(
+                {
+                  organizationId: organization.id,
+                  visitorId,
+                  context: "SIGNUP",
+                  ipHash: clientIpHash,
+                  userAgent: requestHeaders.get("user-agent") ?? undefined,
+                },
+                tx,
+              );
+              // Só sinaliza (não bloqueia) — dispositivos compartilhados
+              // (NAT, coworking) ou donos com várias filiais geram falso
+              // positivo legítimo.
+              const otherOrgs = await countOtherOrganizationsForVisitor(
+                visitorId,
+                organization.id,
+                tx,
+              );
+              if (otherOrgs >= 2) {
+                await logAuditEvent(
+                  {
+                    entity: "Organization",
+                    entityId: organization.id,
+                    action: "SIGNUP_DEVICE_REUSE_DETECTED",
+                    metadata: { visitorId, otherOrganizationsCount: otherOrgs },
+                  },
+                  tx,
+                );
+              }
+            }
             await logAuditEvent(
               {
                 actorId: ctx.user.id,

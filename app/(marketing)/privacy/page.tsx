@@ -8,7 +8,7 @@ export default async function PrivacyPage() {
   if (isEn) {
     return (
       <LegalPage title="Privacy Policy">
-        <p>Last updated: 2026-07-14.</p>
+        <p>Last updated: 2026-08-01.</p>
         <section>
           <h2>1. Who we are</h2>
           <p>
@@ -24,6 +24,7 @@ export default async function PrivacyPage() {
             <li>Booking data: name, email, phone (optional), appointment details, payment status.</li>
             <li>Payment data: processed entirely by Stripe — we never store card numbers.</li>
             <li>Technical data: IP address, request logs (for security and rate limiting), cookies.</li>
+            <li>Device fingerprint: collected at sign-up and subscription checkout, for fraud prevention.</li>
           </ul>
         </section>
         <section>
@@ -63,7 +64,7 @@ export default async function PrivacyPage() {
 
   return (
     <LegalPage title="Datenschutzerklärung">
-      <p>Stand: 14.07.2026.</p>
+      <p>Stand: 01.08.2026.</p>
       <section>
         <h2>1. Verantwortlicher</h2>
         <p>
@@ -80,6 +81,7 @@ export default async function PrivacyPage() {
           <li>Buchungsdaten: Name, E-Mail, Telefon (optional), Termindetails, Zahlungsstatus.</li>
           <li>Zahlungsdaten: vollständig durch Stripe verarbeitet — wir speichern niemals Kartennummern.</li>
           <li>Technische Daten: IP-Adresse, Request-Logs (Sicherheit, Rate-Limiting), Cookies.</li>
+          <li>Geräte-Fingerabdruck: erhoben bei Registrierung und Abonnement-Checkout, zur Betrugsprävention.</li>
         </ul>
       </section>
       <section>

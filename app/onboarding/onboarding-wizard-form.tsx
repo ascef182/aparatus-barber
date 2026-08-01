@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { createOrganization } from "@/app/_actions/create-organization";
+import { getVisitorId } from "@/lib/fingerprint-client";
 import { Button } from "@/app/_components/ui/button";
 import {
   Card,
@@ -216,9 +217,10 @@ export function OnboardingWizardForm({
       <CardContent>
         <form
           className="flex flex-col gap-3"
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
             if (!dpaAccepted || !category) return;
+            const visitorId = await getVisitorId();
             execute({
               name,
               category,
@@ -238,6 +240,7 @@ export function OnboardingWizardForm({
               registerCourt: registerCourt || undefined,
               registerNumber: registerNumber || undefined,
               vatId: vatId || undefined,
+              visitorId: visitorId ?? undefined,
             });
           }}
         >

@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
+    "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@logtail/pino": "^0.5.8",
     "@prisma/adapter-pg": "^6.19.0",
     "@prisma/client": "6.18.0",

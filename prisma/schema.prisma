@@ -556,6 +556,27 @@ model ConsentLog {
   @@map("consentLog")
 }
 
+/**
+ * Device fingerprint (FingerprintJS open source, client-side) capturado no
+ * signup e no checkout de assinatura, para correlacionar o mesmo dispositivo
+ * entre várias organizations (abuso de trial / fraude em pagamento).
+ * Global (não tenant-scoped): a checagem de fraude precisa buscar por
+ * visitorId através de todas as organizations, não só a atual.
+ */
+model DeviceFingerprint {
+  id             String   @id @default(uuid())
+  organizationId String?
+  visitorId      String
+  context        String // "SIGNUP" | "SUBSCRIPTION_CHECKOUT"
+  ipHash         String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  @@index([visitorId])
+  @@index([organizationId])
+  @@map("deviceFingerprint")
+}
+
 model Member {
   id                           String       @id
   organizationId               String
