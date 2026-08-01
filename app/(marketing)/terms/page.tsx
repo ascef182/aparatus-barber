@@ -20,7 +20,7 @@ export default async function TermsPage() {
         <section>
           <h2>2. Subscriptions and billing</h2>
           <p>
-            Subscriptions include a 14-day free trial and renew monthly via Stripe. You may cancel or change your
+            Subscriptions include a 7-day free trial and renew monthly via Stripe. You may cancel or change your
             plan at any time through the Customer Portal. Fees already charged are non-refundable except where
             required by law.
           </p>
