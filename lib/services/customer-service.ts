@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, runInTenantTransaction } from "@/lib/db";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
 
 export function getCustomerById(id: string) {
@@ -7,7 +7,10 @@ export function getCustomerById(id: string) {
 
 export type CustomerStatusFilter = "all" | "active" | "blocked";
 
-export function listCustomers(search?: string, statusFilter: CustomerStatusFilter = "all") {
+export function listCustomers(
+  search?: string,
+  statusFilter: CustomerStatusFilter = "all",
+) {
   return db.customer.findMany({
     where: {
       ...(search?.trim()
@@ -39,9 +42,16 @@ export type CustomerStats = {
  * reembolsado já reflete o que o cliente pagou de fato, independente do
  * status atual da reserva.
  */
-export async function getCustomerStats(customerIds: string[]): Promise<Map<string, CustomerStats>> {
+export async function getCustomerStats(
+  customerIds: string[],
+): Promise<Map<string, CustomerStats>> {
   const stats = new Map<string, CustomerStats>();
-  for (const id of customerIds) stats.set(id, { totalSpentInCents: 0, lastVisitAt: null, nextAppointmentAt: null });
+  for (const id of customerIds)
+    stats.set(id, {
+      totalSpentInCents: 0,
+      lastVisitAt: null,
+      nextAppointmentAt: null,
+    });
   if (!customerIds.length) return stats;
 
   const now = new Date();
@@ -58,15 +68,25 @@ export async function getCustomerStats(customerIds: string[]): Promise<Map<strin
     }),
     db.booking.groupBy({
       by: ["customerId"],
-      where: { customerId: { in: customerIds }, status: "CONFIRMED", startAt: { gt: now } },
+      where: {
+        customerId: { in: customerIds },
+        status: "CONFIRMED",
+        startAt: { gt: now },
+      },
       _min: { startAt: true },
     }),
   ]);
   for (const row of spend) {
-    stats.get(row.customerId)!.totalSpentInCents = Math.max(0, (row._sum.paymentReceivedInCents ?? 0) - (row._sum.refundedAmountInCents ?? 0));
+    stats.get(row.customerId)!.totalSpentInCents = Math.max(
+      0,
+      (row._sum.paymentReceivedInCents ?? 0) -
+        (row._sum.refundedAmountInCents ?? 0),
+    );
   }
-  for (const row of lastVisit) stats.get(row.customerId)!.lastVisitAt = row._max.endAt;
-  for (const row of nextAppointment) stats.get(row.customerId)!.nextAppointmentAt = row._min.startAt;
+  for (const row of lastVisit)
+    stats.get(row.customerId)!.lastVisitAt = row._max.endAt;
+  for (const row of nextAppointment)
+    stats.get(row.customerId)!.nextAppointmentAt = row._min.startAt;
   return stats;
 }
 
@@ -168,23 +188,91 @@ export async function findOrCreateCustomerForUser(user: {
   id: string;
   name: string;
   email: string;
+  emailVerified: boolean;
 }) {
-  const existing = await db.customer.findUnique({
-    where: {
-      organizationId_userId: {
-        organizationId: requireTenantId(),
-        userId: user.id,
+  const organizationId = requireTenantId();
+  return runInTenantTransaction(async (tx) => {
+    let primary = await tx.customer.findUnique({
+      where: {
+        organizationId_userId: { organizationId, userId: user.id },
       },
-    },
-  });
-  if (existing) return existing;
-  return db.customer.create({
-    data: {
-      organizationId: requireTenantId(),
-      userId: user.id,
-      name: user.name,
-      email: user.email,
-    },
+    });
+
+    const guests = user.emailVerified
+      ? await tx.customer.findMany({
+          where: {
+            userId: null,
+            email: { equals: user.email, mode: "insensitive" },
+            gdprErasedAt: null,
+          },
+          orderBy: { createdAt: "asc" },
+        })
+      : [];
+
+    if (!primary && guests.length) {
+      primary = await tx.customer.update({
+        where: { id: guests[0]!.id },
+        data: { userId: user.id, name: user.name, email: user.email },
+      });
+      guests.shift();
+    }
+    if (!primary) {
+      primary = await tx.customer.create({
+        data: {
+          organizationId,
+          userId: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    }
+
+    for (const duplicate of guests) {
+      await tx.booking.updateMany({
+        where: { customerId: duplicate.id },
+        data: { customerId: primary.id },
+      });
+
+      const [primaryConversation, duplicateConversation] = await Promise.all([
+        tx.conversation.findFirst({ where: { customerId: primary.id } }),
+        tx.conversation.findFirst({ where: { customerId: duplicate.id } }),
+      ]);
+      if (duplicateConversation && primaryConversation) {
+        await tx.message.updateMany({
+          where: { conversationId: duplicateConversation.id },
+          data: { conversationId: primaryConversation.id },
+        });
+        await tx.conversation.delete({
+          where: { id: duplicateConversation.id },
+        });
+      } else if (duplicateConversation) {
+        await tx.conversation.update({
+          where: { id: duplicateConversation.id },
+          data: { customerId: primary.id },
+        });
+      }
+
+      const existingClaims = await tx.customerCoupon.findMany({
+        where: { customerId: primary.id },
+        select: { couponId: true },
+      });
+      const claimedCouponIds = existingClaims.map((claim) => claim.couponId);
+      if (claimedCouponIds.length) {
+        await tx.customerCoupon.deleteMany({
+          where: {
+            customerId: duplicate.id,
+            couponId: { in: claimedCouponIds },
+          },
+        });
+      }
+      await tx.customerCoupon.updateMany({
+        where: { customerId: duplicate.id },
+        data: { customerId: primary.id },
+      });
+      await tx.customer.delete({ where: { id: duplicate.id } });
+    }
+
+    return primary;
   });
 }
 

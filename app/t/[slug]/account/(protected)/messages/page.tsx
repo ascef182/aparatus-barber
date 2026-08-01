@@ -22,6 +22,7 @@ export default async function AccountMessagesPage() {
       id: session.user.id,
       name: session.user.name,
       email: session.user.email,
+      emailVerified: session.user.emailVerified,
     });
     return getConversationForCustomer(customer.id);
   });

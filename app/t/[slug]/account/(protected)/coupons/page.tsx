@@ -24,6 +24,7 @@ export default async function AccountCouponsPage() {
       id: session.user.id,
       name: session.user.name,
       email: session.user.email,
+      emailVerified: session.user.emailVerified,
     });
     return Promise.all([
       listClaimedCouponsForCustomer(customer.id),

@@ -21,6 +21,7 @@ export default async function AccountProfilePage() {
       id: session.user.id,
       name: session.user.name,
       email: session.user.email,
+      emailVerified: session.user.emailVerified,
     }),
   );
 
