@@ -14,7 +14,7 @@ export async function recordNotificationLog(
     organizationId: string;
     type: string;
     recipient: string;
-    status: "SENT" | "FAILED";
+    status: "ACCEPTED" | "FAILED";
     errorMessage?: string;
   },
   client: NotificationLogClient = db,

@@ -35,7 +35,12 @@ export type CreateBookingInput = {
   // input do cliente, o que descarta o risco de spoofing que
   // findOrCreateGuestCustomer precisa guardar contra no wizard sem login.
   | {
-      customerUser: { id: string; name: string; email: string };
+      customerUser: {
+        id: string;
+        name: string;
+        email: string;
+        emailVerified: boolean;
+      };
       customer?: undefined;
     }
 );

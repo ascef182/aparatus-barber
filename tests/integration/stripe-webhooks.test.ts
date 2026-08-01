@@ -6,6 +6,11 @@ import { runWithPlatformScope } from "@/lib/tenant-context";
 import { getStripe } from "@/lib/stripe";
 import { POST as billingWebhook } from "@/app/api/stripe/billing/webhook/route";
 import { POST as connectWebhook } from "@/app/api/stripe/connect/webhook/route";
+import {
+  claimStripeEvent,
+  markStripeEventFailed,
+  markStripeEventProcessed,
+} from "@/lib/services/stripe-event-service";
 
 process.env.STRIPE_SECRET_KEY ||= "sk_test_fake";
 const BILLING_SECRET = "whsec_test_billing";
@@ -15,7 +20,10 @@ process.env.STRIPE_CONNECT_WEBHOOK_SECRET = CONNECT_SECRET;
 
 function signedRequest(url: string, payload: object, secret: string) {
   const body = JSON.stringify(payload);
-  const signature = getStripe().webhooks.generateTestHeaderString({ payload: body, secret });
+  const signature = getStripe().webhooks.generateTestHeaderString({
+    payload: body,
+    secret,
+  });
   return new Request(url, {
     method: "POST",
     body,
@@ -23,7 +31,12 @@ function signedRequest(url: string, payload: object, secret: string) {
   });
 }
 
-function subscriptionEvent(id: string, organizationId: string, status: string, plan = "GROWTH") {
+function subscriptionEvent(
+  id: string,
+  organizationId: string,
+  status: string,
+  plan = "GROWTH",
+) {
   return {
     id,
     type: `customer.subscription.${status === "canceled" ? "deleted" : "updated"}`,
@@ -32,16 +45,47 @@ function subscriptionEvent(id: string, organizationId: string, status: string, p
         id: `sub_${randomUUID().slice(0, 8)}`,
         status,
         metadata: { organizationId, plan },
-        items: { data: [{ current_period_end: Math.floor(Date.now() / 1000) + 30 * 86400 }] },
+        items: {
+          data: [
+            { current_period_end: Math.floor(Date.now() / 1000) + 30 * 86400 },
+          ],
+        },
       },
     },
   };
 }
 
+describe("lifecycle idempotente de StripeEvent", () => {
+  test("evento falho é retomado e evento concluído não é reprocessado", async () => {
+    const eventId = `evt_${randomUUID()}`;
+    expect(await claimStripeEvent({ id: eventId, type: "test.event" })).toBe(
+      "claimed",
+    );
+    expect(await claimStripeEvent({ id: eventId, type: "test.event" })).toBe(
+      "in_progress",
+    );
+    await markStripeEventFailed(eventId, new Error("transient failure"));
+    expect(await claimStripeEvent({ id: eventId, type: "test.event" })).toBe(
+      "claimed",
+    );
+    await markStripeEventProcessed(eventId);
+    expect(await claimStripeEvent({ id: eventId, type: "test.event" })).toBe(
+      "processed",
+    );
+    const stored = await prisma.stripeEvent.findUniqueOrThrow({
+      where: { id: eventId },
+    });
+    expect(stored.attempts).toBe(2);
+    expect(stored.processedAt).not.toBeNull();
+  });
+});
+
 const org = { id: randomUUID(), slug: `wh-${randomUUID().slice(0, 8)}` };
 
 beforeAll(async () => {
-  await prisma.organization.create({ data: { id: org.id, name: "Webhook Org", slug: org.slug } });
+  await prisma.organization.create({
+    data: { id: org.id, name: "Webhook Org", slug: org.slug },
+  });
 });
 
 afterAll(async () => {
@@ -61,7 +105,11 @@ afterAll(async () => {
 
 describe("webhook de billing SaaS", () => {
   test("assinatura inválida é rejeitada com 400 sem processar", async () => {
-    const body = JSON.stringify({ id: "evt_bad", type: "customer.subscription.updated", data: { object: {} } });
+    const body = JSON.stringify({
+      id: "evt_bad",
+      type: "customer.subscription.updated",
+      data: { object: {} },
+    });
     const request = new Request("http://localhost/api/stripe/billing/webhook", {
       method: "POST",
       body,
@@ -74,10 +122,16 @@ describe("webhook de billing SaaS", () => {
   test("customer.subscription.updated atualiza plano e status, e grava SUBSCRIPTION_CHANGED", async () => {
     const eventId = `evt_${randomUUID()}`;
     const response = await billingWebhook(
-      signedRequest("http://localhost/api/stripe/billing/webhook", subscriptionEvent(eventId, org.id, "active"), BILLING_SECRET),
+      signedRequest(
+        "http://localhost/api/stripe/billing/webhook",
+        subscriptionEvent(eventId, org.id, "active"),
+        BILLING_SECRET,
+      ),
     );
     expect(response.status).toBe(200);
-    const reloaded = await prisma.organization.findUniqueOrThrow({ where: { id: org.id } });
+    const reloaded = await prisma.organization.findUniqueOrThrow({
+      where: { id: org.id },
+    });
     expect(reloaded.subscriptionPlan).toBe("GROWTH");
     expect(reloaded.subscriptionStatus).toBe("ACTIVE");
     const auditLog = await runWithPlatformScope(() =>
@@ -92,27 +146,52 @@ describe("webhook de billing SaaS", () => {
   test("evento duplicado (mesmo event id) é processado uma única vez", async () => {
     const eventId = `evt_${randomUUID()}`;
     const first = subscriptionEvent(eventId, org.id, "active");
-    const second = { ...subscriptionEvent(eventId, org.id, "past_due"), id: eventId };
-    const r1 = await billingWebhook(signedRequest("http://localhost/api/stripe/billing/webhook", first, BILLING_SECRET));
-    const r2 = await billingWebhook(signedRequest("http://localhost/api/stripe/billing/webhook", second, BILLING_SECRET));
+    const second = {
+      ...subscriptionEvent(eventId, org.id, "past_due"),
+      id: eventId,
+    };
+    const r1 = await billingWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/billing/webhook",
+        first,
+        BILLING_SECRET,
+      ),
+    );
+    const r2 = await billingWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/billing/webhook",
+        second,
+        BILLING_SECRET,
+      ),
+    );
     expect(r1.status).toBe(200);
     expect(r2.status).toBe(200);
-    const reloaded = await prisma.organization.findUniqueOrThrow({ where: { id: org.id } });
+    const reloaded = await prisma.organization.findUniqueOrThrow({
+      where: { id: org.id },
+    });
     // A 2a entrega tem o MESMO event id (replay) mas conteúdo diferente
     // (past_due); dedupe por StripeEvent.id deve ignorá-la — o status
     // continua refletindo apenas a 1a entrega (active).
     expect(reloaded.subscriptionStatus).toBe("ACTIVE");
-    const eventCount = await prisma.stripeEvent.count({ where: { id: eventId } });
+    const eventCount = await prisma.stripeEvent.count({
+      where: { id: eventId },
+    });
     expect(eventCount).toBe(1);
   });
 
   test("customer.subscription.deleted move Organization.status para CHURNED", async () => {
     const eventId = `evt_${randomUUID()}`;
     const response = await billingWebhook(
-      signedRequest("http://localhost/api/stripe/billing/webhook", subscriptionEvent(eventId, org.id, "canceled"), BILLING_SECRET),
+      signedRequest(
+        "http://localhost/api/stripe/billing/webhook",
+        subscriptionEvent(eventId, org.id, "canceled"),
+        BILLING_SECRET,
+      ),
     );
     expect(response.status).toBe(200);
-    const reloaded = await prisma.organization.findUniqueOrThrow({ where: { id: org.id } });
+    const reloaded = await prisma.organization.findUniqueOrThrow({
+      where: { id: org.id },
+    });
     expect(reloaded.subscriptionStatus).toBe("CANCELED");
     expect(reloaded.status).toBe("CHURNED");
   });
@@ -123,11 +202,36 @@ describe("webhook Stripe Connect", () => {
     const sessionId = `cs_${randomUUID().slice(0, 8)}`;
     const booking = await runWithPlatformScope(async () => {
       const location = await db.location.create({
-        data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+        data: {
+          organizationId: org.id,
+          name: "Filial",
+          addressLine1: "Str 1",
+          postalCode: "10115",
+          city: "Berlin",
+        },
       });
-      const staff = await db.staff.create({ data: { organizationId: org.id, locationId: location.id, displayName: "Ana" } });
-      const service = await db.service.create({ data: { organizationId: org.id, name: "Corte", durationMinutes: 30, priceInCents: 3000 } });
-      const customer = await db.customer.create({ data: { organizationId: org.id, name: "Cliente", email: "c@example.com" } });
+      const staff = await db.staff.create({
+        data: {
+          organizationId: org.id,
+          locationId: location.id,
+          displayName: "Ana",
+        },
+      });
+      const service = await db.service.create({
+        data: {
+          organizationId: org.id,
+          name: "Corte",
+          durationMinutes: 30,
+          priceInCents: 3000,
+        },
+      });
+      const customer = await db.customer.create({
+        data: {
+          organizationId: org.id,
+          name: "Cliente",
+          email: "c@example.com",
+        },
+      });
       return db.booking.create({
         data: {
           organizationId: org.id,
@@ -147,10 +251,22 @@ describe("webhook Stripe Connect", () => {
       });
     });
 
-    const event = { id: `evt_${randomUUID()}`, type: "checkout.session.expired", data: { object: { id: sessionId } } };
-    const response = await connectWebhook(signedRequest("http://localhost/api/stripe/connect/webhook", event, CONNECT_SECRET));
+    const event = {
+      id: `evt_${randomUUID()}`,
+      type: "checkout.session.expired",
+      data: { object: { id: sessionId } },
+    };
+    const response = await connectWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/connect/webhook",
+        event,
+        CONNECT_SECRET,
+      ),
+    );
     expect(response.status).toBe(200);
-    const reloaded = await runWithPlatformScope(() => db.booking.findUniqueOrThrow({ where: { id: booking.id } }));
+    const reloaded = await runWithPlatformScope(() =>
+      db.booking.findUniqueOrThrow({ where: { id: booking.id } }),
+    );
     expect(reloaded.status).toBe("CANCELLED");
   });
 
@@ -158,11 +274,36 @@ describe("webhook Stripe Connect", () => {
     const sessionId = `cs_${randomUUID().slice(0, 8)}`;
     const booking = await runWithPlatformScope(async () => {
       const location = await db.location.create({
-        data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+        data: {
+          organizationId: org.id,
+          name: "Filial",
+          addressLine1: "Str 1",
+          postalCode: "10115",
+          city: "Berlin",
+        },
       });
-      const staff = await db.staff.create({ data: { organizationId: org.id, locationId: location.id, displayName: "Ana" } });
-      const service = await db.service.create({ data: { organizationId: org.id, name: "Corte", durationMinutes: 30, priceInCents: 3000 } });
-      const customer = await db.customer.create({ data: { organizationId: org.id, name: "Cliente", email: "c2@example.com" } });
+      const staff = await db.staff.create({
+        data: {
+          organizationId: org.id,
+          locationId: location.id,
+          displayName: "Ana",
+        },
+      });
+      const service = await db.service.create({
+        data: {
+          organizationId: org.id,
+          name: "Corte",
+          durationMinutes: 30,
+          priceInCents: 3000,
+        },
+      });
+      const customer = await db.customer.create({
+        data: {
+          organizationId: org.id,
+          name: "Cliente",
+          email: "c2@example.com",
+        },
+      });
       return db.booking.create({
         data: {
           organizationId: org.id,
@@ -185,15 +326,33 @@ describe("webhook Stripe Connect", () => {
     const event = {
       id: `evt_${randomUUID()}`,
       type: "checkout.session.completed",
-      data: { object: { id: sessionId, metadata: { bookingId: booking.id }, payment_intent: `pi_${randomUUID().slice(0, 8)}` } },
+      data: {
+        object: {
+          id: sessionId,
+          metadata: { bookingId: booking.id },
+          payment_intent: `pi_${randomUUID().slice(0, 8)}`,
+        },
+      },
     };
-    const response = await connectWebhook(signedRequest("http://localhost/api/stripe/connect/webhook", event, CONNECT_SECRET));
+    const response = await connectWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/connect/webhook",
+        event,
+        CONNECT_SECRET,
+      ),
+    );
     expect(response.status).toBe(200);
-    const reloaded = await runWithPlatformScope(() => db.booking.findUniqueOrThrow({ where: { id: booking.id } }));
+    const reloaded = await runWithPlatformScope(() =>
+      db.booking.findUniqueOrThrow({ where: { id: booking.id } }),
+    );
     expect(reloaded.status).toBe("CONFIRMED");
     const auditLog = await runWithPlatformScope(() =>
       db.auditLog.findFirst({
-        where: { organizationId: org.id, action: "PAYMENT_CAPTURED", entityId: booking.id },
+        where: {
+          organizationId: org.id,
+          action: "PAYMENT_CAPTURED",
+          entityId: booking.id,
+        },
       }),
     );
     expect(auditLog).not.toBeNull();
@@ -203,11 +362,36 @@ describe("webhook Stripe Connect", () => {
     const paymentIntentId = `pi_${randomUUID().slice(0, 8)}`;
     const booking = await runWithPlatformScope(async () => {
       const location = await db.location.create({
-        data: { organizationId: org.id, name: "Filial", addressLine1: "Str 1", postalCode: "10115", city: "Berlin" },
+        data: {
+          organizationId: org.id,
+          name: "Filial",
+          addressLine1: "Str 1",
+          postalCode: "10115",
+          city: "Berlin",
+        },
       });
-      const staff = await db.staff.create({ data: { organizationId: org.id, locationId: location.id, displayName: "Ana" } });
-      const service = await db.service.create({ data: { organizationId: org.id, name: "Corte", durationMinutes: 30, priceInCents: 3000 } });
-      const customer = await db.customer.create({ data: { organizationId: org.id, name: "Cliente", email: "c3@example.com" } });
+      const staff = await db.staff.create({
+        data: {
+          organizationId: org.id,
+          locationId: location.id,
+          displayName: "Ana",
+        },
+      });
+      const service = await db.service.create({
+        data: {
+          organizationId: org.id,
+          name: "Corte",
+          durationMinutes: 30,
+          priceInCents: 3000,
+        },
+      });
+      const customer = await db.customer.create({
+        data: {
+          organizationId: org.id,
+          name: "Cliente",
+          email: "c3@example.com",
+        },
+      });
       return db.booking.create({
         data: {
           organizationId: org.id,
@@ -231,13 +415,25 @@ describe("webhook Stripe Connect", () => {
       type: "charge.refund.updated",
       data: { object: { payment_intent: paymentIntentId, amount: 3000 } },
     };
-    const response = await connectWebhook(signedRequest("http://localhost/api/stripe/connect/webhook", event, CONNECT_SECRET));
+    const response = await connectWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/connect/webhook",
+        event,
+        CONNECT_SECRET,
+      ),
+    );
     expect(response.status).toBe(200);
-    const reloaded = await runWithPlatformScope(() => db.booking.findUniqueOrThrow({ where: { id: booking.id } }));
+    const reloaded = await runWithPlatformScope(() =>
+      db.booking.findUniqueOrThrow({ where: { id: booking.id } }),
+    );
     expect(reloaded.paymentStatus).toBe("REFUNDED");
     const auditLog = await runWithPlatformScope(() =>
       db.auditLog.findFirst({
-        where: { organizationId: org.id, action: "PAYMENT_REFUNDED", entityId: booking.id },
+        where: {
+          organizationId: org.id,
+          action: "PAYMENT_REFUNDED",
+          entityId: booking.id,
+        },
       }),
     );
     expect(auditLog).not.toBeNull();
@@ -245,16 +441,33 @@ describe("webhook Stripe Connect", () => {
 
   test("account.updated persiste chargesEnabled/payoutsEnabled", async () => {
     const accountId = `acct_${randomUUID().slice(0, 8)}`;
-    await prisma.organization.update({ where: { id: org.id }, data: { stripeConnectAccountId: accountId } });
+    await prisma.organization.update({
+      where: { id: org.id },
+      data: { stripeConnectAccountId: accountId },
+    });
     const event = {
       id: `evt_${randomUUID()}`,
       type: "account.updated",
       account: accountId,
-      data: { object: { id: accountId, charges_enabled: true, payouts_enabled: false } },
+      data: {
+        object: {
+          id: accountId,
+          charges_enabled: true,
+          payouts_enabled: false,
+        },
+      },
     };
-    const response = await connectWebhook(signedRequest("http://localhost/api/stripe/connect/webhook", event, CONNECT_SECRET));
+    const response = await connectWebhook(
+      signedRequest(
+        "http://localhost/api/stripe/connect/webhook",
+        event,
+        CONNECT_SECRET,
+      ),
+    );
     expect(response.status).toBe(200);
-    const reloaded = await prisma.organization.findUniqueOrThrow({ where: { id: org.id } });
+    const reloaded = await prisma.organization.findUniqueOrThrow({
+      where: { id: org.id },
+    });
     expect(reloaded.chargesEnabled).toBe(true);
     expect(reloaded.payoutsEnabled).toBe(false);
   });

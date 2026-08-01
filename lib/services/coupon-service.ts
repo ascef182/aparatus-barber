@@ -118,7 +118,13 @@ export function createCoupon(data: {
       code: data.code.trim().toUpperCase(),
       organizationId,
       services: {
-        create: links.map((serviceId) => ({ organizationId, serviceId })),
+        create: links.map((serviceId) => ({
+          service: {
+            connect: {
+              id_organizationId: { id: serviceId, organizationId },
+            },
+          },
+        })),
       },
     },
   });
