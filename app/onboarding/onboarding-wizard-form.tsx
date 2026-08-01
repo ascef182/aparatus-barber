@@ -13,12 +13,25 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 import { Input } from "@/app/_components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/_components/ui/select";
 import { getRootDomain, getTenantUrl } from "@/lib/tenant-host";
 
 const BUSINESS_CATEGORIES = [
-  "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
-  "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER",
+  "BARBERSHOP",
+  "HAIR_SALON",
+  "NAIL_SALON",
+  "BEAUTY_SALON",
+  "MEDICAL",
+  "DENTAL",
+  "ELECTRICIAN",
+  "CONSTRUCTION",
+  "OTHER",
 ] as const;
 
 const slugify = (value: string) =>
@@ -49,7 +62,9 @@ export function OnboardingWizardForm({
 
   const tCategories = useTranslations("businessCategories");
   const [name, setName] = useState("");
-  const [category, setCategory] = useState<(typeof BUSINESS_CATEGORIES)[number] | "">("");
+  const [category, setCategory] = useState<
+    (typeof BUSINESS_CATEGORIES)[number] | ""
+  >("");
   const [slug, setSlug] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -94,14 +109,19 @@ export function OnboardingWizardForm({
               {createdSlug}.{getRootDomain()}
             </span>
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("directoryHint")}{" "}
-            <a href={getTenantUrl(createdSlug, "/dashboard/settings")} className="underline">
+            <a
+              href={getTenantUrl(createdSlug, "/dashboard/settings")}
+              className="underline"
+            >
               {t("directoryHintLink")}
             </a>
           </p>
           <Button asChild>
-            <a href={getTenantUrl(createdSlug, "/dashboard")}>{t("goToDashboard")}</a>
+            <a href={getTenantUrl(createdSlug, "/dashboard")}>
+              {t("goToDashboard")}
+            </a>
           </Button>
         </CardContent>
       </Card>
@@ -133,7 +153,12 @@ export function OnboardingWizardForm({
               }}
               required
             />
-            <Select value={category} onValueChange={(value) => setCategory(value as (typeof BUSINESS_CATEGORIES)[number])}>
+            <Select
+              value={category}
+              onValueChange={(value) =>
+                setCategory(value as (typeof BUSINESS_CATEGORIES)[number])
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={tCategories("label")} />
               </SelectTrigger>
@@ -195,7 +220,15 @@ export function OnboardingWizardForm({
             event.preventDefault();
             if (!dpaAccepted || !category) return;
             execute({
-              name, category, slug, addressLine1, postalCode, city, sessionId, intendedPlan, dpaAccepted: true,
+              name,
+              category,
+              slug,
+              addressLine1,
+              postalCode,
+              city,
+              sessionId,
+              intendedPlan,
+              dpaAccepted: true,
               phone: phone || undefined,
               description: description || undefined,
               legalName: legalName || name,
@@ -218,7 +251,9 @@ export function OnboardingWizardForm({
             value={description}
             onChange={(event) => setDescription(event.target.value)}
           />
-          <p className="mt-2 text-xs font-medium text-muted-foreground">{t("impressumLegend")}</p>
+          <p className="text-muted-foreground mt-2 text-xs font-medium">
+            {t("impressumLegend")}
+          </p>
           <Input
             placeholder={t("legalNamePlaceholder")}
             value={legalName}
@@ -258,7 +293,7 @@ export function OnboardingWizardForm({
             value={vatId}
             onChange={(event) => setVatId(event.target.value)}
           />
-          <label className="flex items-start gap-2 text-xs text-muted-foreground">
+          <label className="text-muted-foreground flex items-start gap-2 text-xs">
             <input
               type="checkbox"
               className="mt-0.5"
@@ -266,7 +301,12 @@ export function OnboardingWizardForm({
               onChange={(event) => setDpaAccepted(event.target.checked)}
               required
             />
-            <a href="/dpa" target="_blank" rel="noreferrer" className="underline">
+            <a
+              href="/dpa"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
               {t("dpaCheckboxLabel")}
             </a>
           </label>
@@ -274,7 +314,11 @@ export function OnboardingWizardForm({
             <Button type="button" variant="outline" onClick={() => setStep(1)}>
               {t("backStep")}
             </Button>
-            <Button type="submit" disabled={isPending || !dpaAccepted} className="flex-1">
+            <Button
+              type="submit"
+              disabled={isPending || !dpaAccepted}
+              className="flex-1"
+            >
               {isPending ? t("submitting") : t("submit")}
             </Button>
           </div>

@@ -11,7 +11,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   // MFA obrigatório sem grace period (diferente de owner em
   // dashboard/layout.tsx): superadmin é o maior privilégio da plataforma
   // (acesso cross-tenant, impersonation, audit log de todos os tenants) —
-  // sem a fricção de onboarding de massa que justifica o prazo de 7 dias
+  // sem a fricção de onboarding de massa que justifica o prazo de 14 dias
   // pra owner, então não há razão pra tolerar a mesma janela de exposição
   // aqui. Bloqueia a UI em vez de redirect: reaproveita o SecuritySection
   // já usado por owners (mesmo fluxo testado), sem risco de redirect loop.

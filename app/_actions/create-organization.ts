@@ -17,10 +17,18 @@ import { logAuditEvent } from "@/lib/services/audit-service";
 import { ensureMfaGracePeriod } from "@/lib/services/member-service";
 import { upsertImpressum } from "@/lib/services/impressum-service";
 import { RESERVED_SUBDOMAINS } from "@/lib/tenant-host";
+import { getClientIp, hashIpAddress } from "@/lib/rate-limit";
 
 const BUSINESS_CATEGORIES = [
-  "BARBERSHOP", "HAIR_SALON", "NAIL_SALON", "BEAUTY_SALON",
-  "MEDICAL", "DENTAL", "ELECTRICIAN", "CONSTRUCTION", "OTHER",
+  "BARBERSHOP",
+  "HAIR_SALON",
+  "NAIL_SALON",
+  "BEAUTY_SALON",
+  "MEDICAL",
+  "DENTAL",
+  "ELECTRICIAN",
+  "CONSTRUCTION",
+  "OTHER",
 ] as const;
 
 const inputSchema = z.object({
@@ -60,9 +68,12 @@ const inputSchema = z.object({
   // Plano escolhido antes do cadastro grátis (query string ?plan= vinda da
   // landing) — sem Checkout Stripe nenhum ainda, só para a Organization já
   // nascer com o plano "pretendido" e a tela de billing lembrar a escolha
-  // quando o teste de 7 dias acabar (ver isFreeTrialExpired).
+  // quando o teste de 14 dias acabar (ver isFreeTrialExpired).
   intendedPlan: z.enum(["STARTER", "GROWTH", "PRO"]).optional(),
-  dpaAccepted: z.literal(true, "É necessário aceitar o Acordo de Processamento de Dados (DPA)."),
+  dpaAccepted: z.literal(
+    true,
+    "É necessário aceitar o Acordo de Processamento de Dados (DPA).",
+  ),
 });
 
 /**
@@ -74,23 +85,47 @@ const inputSchema = z.object({
 export const createOrganization = authActionClient
   .inputSchema(inputSchema)
   .action(
-    async ({ parsedInput: {
-      name, category, slug, addressLine1, postalCode, city, sessionId, intendedPlan,
-      phone, description, legalName, representedBy, contactEmail, country,
-      registerCourt, registerNumber, vatId,
-    }, ctx }) => {
-      let claim: Awaited<ReturnType<typeof retrieveClaimableCheckoutSession>> = null;
+    async ({
+      parsedInput: {
+        name,
+        category,
+        slug,
+        addressLine1,
+        postalCode,
+        city,
+        sessionId,
+        intendedPlan,
+        phone,
+        description,
+        legalName,
+        representedBy,
+        contactEmail,
+        country,
+        registerCourt,
+        registerNumber,
+        vatId,
+      },
+      ctx,
+    }) => {
+      let claim: Awaited<ReturnType<typeof retrieveClaimableCheckoutSession>> =
+        null;
       if (sessionId) {
         claim = await retrieveClaimableCheckoutSession(sessionId);
         if (!claim) {
-          throw new ActionError("Sessão de pagamento inválida ou expirada. Escolha um plano novamente.");
+          throw new ActionError(
+            "Sessão de pagamento inválida ou expirada. Escolha um plano novamente.",
+          );
         }
         if (claim.email.toLowerCase() !== ctx.user.email.toLowerCase()) {
           throw new ActionError("Esta assinatura foi paga com outro e-mail.");
         }
-        const alreadyClaimed = await getOrganizationByStripeSubscriptionId(claim.stripeSubscriptionId);
+        const alreadyClaimed = await getOrganizationByStripeSubscriptionId(
+          claim.stripeSubscriptionId,
+        );
         if (alreadyClaimed) {
-          throw new ActionError("Esta assinatura já está vinculada a uma conta. Faça login.");
+          throw new ActionError(
+            "Esta assinatura já está vinculada a uma conta. Faça login.",
+          );
         }
       }
 
@@ -115,7 +150,10 @@ export const createOrganization = authActionClient
 
       {
         const { prisma } = await import("@/lib/prisma");
-        await prisma.organization.update({ where: { id: organization.id }, data: { category } });
+        await prisma.organization.update({
+          where: { id: organization.id },
+          data: { category },
+        });
       }
 
       if (claim) {
@@ -140,7 +178,7 @@ export const createOrganization = authActionClient
       // Sem claim (cadastro grátis via /sign-up): a Organization fica nos
       // defaults do Prisma (status/subscriptionStatus=TRIALING, sem
       // stripeSubscriptionId) — isFreeTrialExpired() passa a contar os
-      // 7 dias de graça a partir de createdAt. Se veio um plano escolhido
+      // 14 dias de graça a partir de createdAt. Se veio um plano escolhido
       // na landing, grava só como "intenção" (subscriptionPlan), sem
       // nenhuma cobrança — a assinatura Stripe de verdade só é criada
       // depois, quando o dono assina em /dashboard/billing.
@@ -155,6 +193,7 @@ export const createOrganization = authActionClient
       await ensureMfaGracePeriod(organization.id, ctx.user.id);
 
       const requestHeaders = await headers();
+      const clientIpHash = hashIpAddress(await getClientIp());
       // Location + Impressum + audit logs commitam ou falham juntos: uma
       // Organization nunca deve existir sem o Impressum que desbloqueia o
       // agendamento público (app/t/[slug]/page.tsx) para filiais alemãs.
@@ -162,11 +201,31 @@ export const createOrganization = authActionClient
         await runWithTenant(organization.id, () =>
           db.$transaction(async (tx) => {
             await createLocation(
-              { name, addressLine1, postalCode, city, countryCode: country, phone, description },
+              {
+                name,
+                addressLine1,
+                postalCode,
+                city,
+                countryCode: country,
+                phone,
+                description,
+              },
               tx,
             );
             const impressum = await upsertImpressum(
-              { legalName, addressLine1, postalCode, city, country, representedBy, phone, email: contactEmail, registerCourt, registerNumber, vatId },
+              {
+                legalName,
+                addressLine1,
+                postalCode,
+                city,
+                country,
+                representedBy,
+                phone,
+                email: contactEmail,
+                registerCourt,
+                registerNumber,
+                vatId,
+              },
               ctx.user.id,
               tx,
             );
@@ -178,7 +237,7 @@ export const createOrganization = authActionClient
                 action: "DPA_ACCEPTED",
                 metadata: {
                   version: "1.0",
-                  ip: requestHeaders.get("x-forwarded-for"),
+                  ipHash: clientIpHash,
                   userAgent: requestHeaders.get("user-agent"),
                 },
               },

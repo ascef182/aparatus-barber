@@ -40,11 +40,11 @@ export async function isSetupComplete(organizationId: string): Promise<boolean> 
   });
 }
 
-const FREE_GRACE_PERIOD_DAYS = 7;
+export const TRIAL_DAYS = 14;
 
 /**
  * Organização nunca teve uma subscription Stripe real (cadastro grátis, sem
- * Checkout) e passou dos 7 dias de graça desde a criação. Não usa a coluna
+ * Checkout) e passou do trial desde a criação. Não usa a coluna
  * `gracePeriodEndsAt` — essa é escrita só pelo webhook de billing quando uma
  * assinatura PAGA entra em `past_due` (ver `updateSubscriptionFromStripe`),
  * semântica diferente; reaproveitar colidiria com esse fluxo.
@@ -55,7 +55,7 @@ export function isFreeTrialExpired(organization: {
 }): boolean {
   if (organization.stripeSubscriptionId) return false;
   const deadline = new Date(
-    organization.createdAt.getTime() + FREE_GRACE_PERIOD_DAYS * 24 * 60 * 60 * 1000,
+    organization.createdAt.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000,
   );
   return deadline < new Date();
 }
