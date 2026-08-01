@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Agendamento online para sua barbearia",
-    "subtitle": "7 dias grátis, sem cartão de crédito. Cancele quando quiser.",
+    "subtitle": "14 dias grátis, sem cartão de crédito. Cancele quando quiser.",
     "starterName": "Starter",
     "starterTagline": "Para quem está começando",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 7 dias de teste.",
+    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 14 dias de teste.",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
@@ -115,6 +115,9 @@
       "phone": "Telefone:",
       "email": "E-mail:",
       "vatId": "Nº fiscal (USt-IdNr.):"
+    },
+    "nav": {
+      "signIn": "Entrar"
     }
   },
   "account": {
@@ -128,6 +131,7 @@
     "signOut": "Sair",
     "signingOut": "Saindo…",
     "signOutError": "Não foi possível sair.",
+    "backToSite": "Voltar ao site",
     "bookings": {
       "title": "Minhas reservas",
       "empty": "Você ainda não tem reservas.",
@@ -242,7 +246,7 @@
       "servicesLink": "serviços",
       "staffServiceLink": "vínculo profissional-serviço",
       "mfaBanner": "Ative a autenticação de dois fatores para proteger sua conta",
-      "trialExpiredBanner": "Seu período de teste gratuito de 7 dias terminou — assine um plano para continuar",
+      "trialExpiredBanner": "Seu período de teste gratuito de 14 dias terminou — assine um plano para continuar",
       "greeting": "Olá, {name}",
       "searchPlaceholder": "Buscar clientes...",
       "notifications": "Notificações",
@@ -264,7 +268,8 @@
       "signOut": "Sair",
       "signingOut": "Saindo...",
       "theme": "Alternar tema",
-      "signOutError": "Não foi possível sair. Tente novamente."
+      "signOutError": "Não foi possível sair. Tente novamente.",
+      "profile": "Meu perfil"
     },
     "tour": {
       "skip": "Pular",
@@ -471,6 +476,7 @@
       "namePlaceholder": "Nome do profissional",
       "servicesPerformed": "Serviços executados",
       "noServicesAssociated": "Sem serviços",
+      "servicesRequiredHint": "Selecione ao menos um serviço para que este profissional apareça na Agenda.",
       "noStaff": "Nenhum profissional cadastrado.",
       "schedule": "Horário",
       "registerAbsenceLink": "Registrar ausência",
@@ -687,6 +693,16 @@
       "genericError": "Erro.",
       "saveChanges": "Salvar alterações",
       "createSubmit": "Criar cupom"
+    },
+    "profile": {
+      "eyebrow": "Conta",
+      "title": "Meu perfil",
+      "description": "Atualize as informações da sua conta.",
+      "nameLabel": "Nome",
+      "save": "Salvar alterações",
+      "saving": "Salvando…",
+      "saved": "Perfil atualizado!",
+      "saveError": "Não foi possível salvar seu perfil."
     }
   },
   "invitation": {
@@ -731,6 +747,8 @@
     "cookieNoticePrefix": "Este site usa cookies essenciais para funcionar. Ao reservar, seus dados são processados conforme nossa",
     "privacyPolicyLink": "política de privacidade",
     "reserve": "Reservar",
+    "temporarilyUnavailable": "Indisponível no momento.",
+    "bookingAsUser": "Reservando como {name}.",
     "makeReservation": "Fazer Reserva",
     "continue": "Continuar",
     "back": "Voltar",
@@ -837,7 +855,7 @@
     "howItWorks": {
       "title": "Como funciona",
       "step1Title": "1. Comece o teste grátis",
-      "step1Body": "7 dias grátis, sem cartão de crédito necessário.",
+      "step1Body": "14 dias grátis, sem cartão de crédito necessário.",
       "step2Title": "2. Configure sua barbearia",
       "step2Body": "Adicione equipe, serviços e horários de funcionamento.",
       "step3Title": "3. Compartilhe seu link",
@@ -846,7 +864,7 @@
     "faq": {
       "title": "Perguntas frequentes",
       "q1": "Preciso de cartão de crédito para começar?",
-      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
+      "a1": "Não — cadastre-se grátis e teste por 14 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
@@ -871,7 +889,7 @@
     },
     "finalCta": {
       "title": "Pronto para modernizar sua barbearia?",
-      "subtitle": "Comece agora — 7 dias grátis, sem cartão necessário.",
+      "subtitle": "Comece agora — 14 dias grátis, sem cartão necessário.",
       "cta": "Começar teste grátis"
     },
     "footer": {
@@ -937,7 +955,75 @@
     "bannerSubtitle": "Barbearias, salões, clínicas e mais — tudo num só lugar.",
     "featuredTitle": "Recomendados",
     "resultsTitle": "Resultados",
-    "empty": "Nenhum negócio encontrado."
+    "categoriesAll": "Todos",
+    "empty": "Nenhum negócio encontrado.",
+    "nav": {
+      "home": "Início",
+      "bookings": "Reservas",
+      "account": "Conta"
+    },
+    "bookings": {
+      "title": "Minhas reservas",
+      "empty": "Você ainda não tem reservas.",
+      "exploreCta": "Explorar negócios",
+      "upcoming": "Próximas",
+      "past": "Anteriores",
+      "signInPrompt": "Entre para ver suas reservas.",
+      "signInPromptDescription": "Veja e gerencie os agendamentos que você já fez, em qualquer negócio.",
+      "signInCta": "Entrar",
+      "status": {
+        "pendingPayment": "Aguardando pagamento",
+        "pending": "Pendente",
+        "confirmed": "Confirmada",
+        "completed": "Concluída",
+        "cancelled": "Cancelada",
+        "noShow": "Não compareceu"
+      }
+    },
+    "account": {
+      "title": "Conta",
+      "signInPrompt": "Entre para gerenciar sua conta.",
+      "signInPromptDescription": "Entre para editar seu perfil e ver os negócios onde você tem conta.",
+      "signInCta": "Entrar",
+      "exploreCta": "Explorar negócios",
+      "nameLabel": "Nome",
+      "save": "Salvar alterações",
+      "saving": "Salvando…",
+      "saved": "Perfil atualizado!",
+      "saveError": "Não foi possível salvar seu perfil.",
+      "signOut": "Sair",
+      "signingOut": "Saindo…",
+      "signOutError": "Não foi possível sair.",
+      "businessesTitle": "Meus negócios",
+      "businessesEmpty": "Você ainda não reservou em nenhum negócio.",
+      "newMessage": "Nova mensagem",
+      "couponsTitle": "Meus cupons",
+      "couponsEmpty": "Nenhum cupom resgatado ainda.",
+      "percentOff": "{value}% OFF",
+      "amountOff": "{value} OFF",
+      "couponExpired": "Expirado"
+    },
+    "signIn": {
+      "title": "Entrar",
+      "signUpTitle": "Criar conta",
+      "subtitle": "Entre para reservar e gerenciar horários em qualquer negócio.",
+      "quote": "Reserve em qualquer negócio, tudo numa única conta.",
+      "googleCta": "Continuar com Google",
+      "orDivider": "ou",
+      "nameLabel": "Nome",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "emailInUse": "Este e-mail já está cadastrado.",
+      "submit": "Entrar",
+      "submitSignUp": "Criar conta",
+      "submitting": "Enviando…",
+      "noAccountPrefix": "Ainda não tem conta?",
+      "noAccountLink": "Criar conta",
+      "hasAccountPrefix": "Já tem conta?",
+      "hasAccountLink": "Entrar",
+      "invalidCredentials": "E-mail ou senha inválidos.",
+      "genericError": "Algo deu errado. Tente novamente."
+    }
   },
   "emails": {
     "footer": "Enviado por {organization} via Bladiq — agendamento online para negócios locais.",

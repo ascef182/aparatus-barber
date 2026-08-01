@@ -6,20 +6,8 @@ import {
 } from "@/lib/services/directory-service";
 import { LastVisitedCard } from "./last-visited-card";
 import { AppSearchBar } from "./search-bar";
-import { CategoryPills } from "./category-pills";
-import { BusinessCard } from "./business-card";
-
-const VALID_CATEGORIES = [
-  "BARBERSHOP",
-  "HAIR_SALON",
-  "NAIL_SALON",
-  "BEAUTY_SALON",
-  "MEDICAL",
-  "DENTAL",
-  "ELECTRICIAN",
-  "CONSTRUCTION",
-  "OTHER",
-] as const;
+import { CategoryPills, CATEGORY_VALUES } from "./category-pills";
+import { BusinessRail } from "./business-rail";
 
 /**
  * Entrada do app de cliente final (wrapper TWA/WKWebView aponta pra cá) —
@@ -35,15 +23,22 @@ export default async function CustomerAppHomePage({
   searchParams: Promise<{ q?: string; category?: string }>;
 }) {
   const { q, category: rawCategory } = await searchParams;
-  const category = VALID_CATEGORIES.find((value) => value === rawCategory);
+  const category = CATEGORY_VALUES.find((value) => value === rawCategory);
   const hasFilter = Boolean(q?.trim()) || Boolean(category);
 
-  const [t, businesses] = await Promise.all([
+  const [t, tCategories, businesses] = await Promise.all([
     getTranslations("app"),
-    hasFilter
-      ? searchBusinesses({ query: q, category })
-      : listFeaturedBusinesses(),
+    getTranslations("businessCategories"),
+    hasFilter ? searchBusinesses({ query: q, category }) : listFeaturedBusinesses(60),
   ]);
+
+  const sections = hasFilter
+    ? [{ key: "results", title: t("resultsTitle"), businesses }]
+    : CATEGORY_VALUES.map((value) => ({
+        key: value,
+        title: tCategories(value),
+        businesses: businesses.filter((b) => b.organization.category === value),
+      })).filter((section) => section.businesses.length > 0);
 
   return (
     <main className="bg-background min-h-screen">
@@ -56,7 +51,7 @@ export default async function CustomerAppHomePage({
       <div className="flex flex-col gap-6 p-5">
         {!hasFilter && <LastVisitedCard />}
         <AppSearchBar placeholder={t("searchPlaceholder")} initialQuery={q} />
-        <CategoryPills active={category} />
+        <CategoryPills active={category} q={q} />
 
         {!hasFilter && (
           <div className="border-border bg-card relative overflow-hidden rounded-2xl border p-6">
@@ -70,20 +65,20 @@ export default async function CustomerAppHomePage({
           </div>
         )}
 
-        <div>
-          <h2 className="text-muted-foreground mb-3 text-xs font-semibold uppercase">
-            {hasFilter ? t("resultsTitle") : t("featuredTitle")}
-          </h2>
-          {businesses.length === 0 ? (
+        {sections.length === 0 ? (
+          <div>
+            <h2 className="text-muted-foreground mb-3 text-xs font-semibold uppercase">
+              {hasFilter ? t("resultsTitle") : t("featuredTitle")}
+            </h2>
             <p className="text-muted-foreground text-sm">{t("empty")}</p>
-          ) : (
-            <div className="flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden">
-              {businesses.map((business) => (
-                <BusinessCard key={business.id} business={business} />
-              ))}
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {sections.map((section) => (
+              <BusinessRail key={section.key} title={section.title} businesses={section.businesses} />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

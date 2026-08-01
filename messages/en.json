@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Online booking for your barbershop",
-    "subtitle": "7 days free, no credit card required. Cancel anytime.",
+    "subtitle": "14 days free, no credit card required. Cancel anytime.",
     "starterName": "Starter",
     "starterTagline": "For getting started",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "No credit card required — add one only if you keep your shop after the 7-day trial.",
+    "trialNote": "No credit card required — add one only if you keep your shop after the 14-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
@@ -115,6 +115,9 @@
       "phone": "Phone:",
       "email": "Email:",
       "vatId": "VAT ID:"
+    },
+    "nav": {
+      "signIn": "Sign in"
     }
   },
   "account": {
@@ -128,6 +131,7 @@
     "signOut": "Sign out",
     "signingOut": "Signing out…",
     "signOutError": "Could not sign out.",
+    "backToSite": "Back to site",
     "bookings": {
       "title": "My bookings",
       "empty": "You don't have any bookings yet.",
@@ -242,7 +246,7 @@
       "servicesLink": "services",
       "staffServiceLink": "staff-service assignment",
       "mfaBanner": "Enable two-factor authentication to protect your account",
-      "trialExpiredBanner": "Your 7-day free trial has ended — subscribe to a plan to continue",
+      "trialExpiredBanner": "Your 14-day free trial has ended — subscribe to a plan to continue",
       "greeting": "Hi, {name}",
       "searchPlaceholder": "Search customers...",
       "notifications": "Notifications",
@@ -264,7 +268,8 @@
       "signOut": "Sign out",
       "signingOut": "Signing out...",
       "theme": "Toggle theme",
-      "signOutError": "Couldn't sign out. Please try again."
+      "signOutError": "Couldn't sign out. Please try again.",
+      "profile": "My profile"
     },
     "tour": {
       "skip": "Skip",
@@ -471,6 +476,7 @@
       "namePlaceholder": "Staff member name",
       "servicesPerformed": "Services performed",
       "noServicesAssociated": "No services",
+      "servicesRequiredHint": "Select at least one service so this professional shows up in the schedule.",
       "noStaff": "No staff members yet.",
       "schedule": "Schedule",
       "registerAbsenceLink": "Log absence",
@@ -687,6 +693,16 @@
       "genericError": "Error.",
       "saveChanges": "Save changes",
       "createSubmit": "Create coupon"
+    },
+    "profile": {
+      "eyebrow": "Account",
+      "title": "My profile",
+      "description": "Update your account information.",
+      "nameLabel": "Name",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Profile updated!",
+      "saveError": "Couldn't save your profile."
     }
   },
   "invitation": {
@@ -731,6 +747,8 @@
     "cookieNoticePrefix": "This site uses essential cookies to operate. By booking, your data is processed according to our",
     "privacyPolicyLink": "privacy policy",
     "reserve": "Book",
+    "temporarilyUnavailable": "Not available right now.",
+    "bookingAsUser": "Booking as {name}.",
     "makeReservation": "Book appointment",
     "continue": "Continue",
     "back": "Back",
@@ -837,7 +855,7 @@
     "howItWorks": {
       "title": "How it works",
       "step1Title": "1. Start your free trial",
-      "step1Body": "7 days free, no credit card required.",
+      "step1Body": "14 days free, no credit card required.",
       "step2Title": "2. Set up your shop",
       "step2Body": "Add your team, services, and working hours.",
       "step3Title": "3. Share your link",
@@ -846,7 +864,7 @@
     "faq": {
       "title": "Frequently asked questions",
       "q1": "Do I need a credit card to start?",
-      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
+      "a1": "No — sign up for free and try it for 14 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
@@ -871,7 +889,7 @@
     },
     "finalCta": {
       "title": "Ready to modernize your barbershop?",
-      "subtitle": "Get started now — 7 days free, no card required.",
+      "subtitle": "Get started now — 14 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {
@@ -937,7 +955,75 @@
     "bannerSubtitle": "Barbershops, salons, clinics, and more — all in one place.",
     "featuredTitle": "Recommended",
     "resultsTitle": "Results",
-    "empty": "No businesses found."
+    "categoriesAll": "All",
+    "empty": "No businesses found.",
+    "nav": {
+      "home": "Home",
+      "bookings": "Bookings",
+      "account": "Account"
+    },
+    "bookings": {
+      "title": "My bookings",
+      "empty": "You don't have any bookings yet.",
+      "exploreCta": "Explore businesses",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "signInPrompt": "Sign in to see your bookings.",
+      "signInPromptDescription": "See and manage the appointments you've booked, at any business.",
+      "signInCta": "Sign in",
+      "status": {
+        "pendingPayment": "Awaiting payment",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No-show"
+      }
+    },
+    "account": {
+      "title": "Account",
+      "signInPrompt": "Sign in to manage your account.",
+      "signInPromptDescription": "Sign in to edit your profile and see the businesses you have an account with.",
+      "signInCta": "Sign in",
+      "exploreCta": "Explore businesses",
+      "nameLabel": "Name",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Profile updated!",
+      "saveError": "Couldn't save your profile.",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…",
+      "signOutError": "Couldn't sign out.",
+      "businessesTitle": "My businesses",
+      "businessesEmpty": "You haven't booked with any business yet.",
+      "newMessage": "New message",
+      "couponsTitle": "My coupons",
+      "couponsEmpty": "No coupons claimed yet.",
+      "percentOff": "{value}% off",
+      "amountOff": "{value} off",
+      "couponExpired": "Expired"
+    },
+    "signIn": {
+      "title": "Sign in",
+      "signUpTitle": "Create account",
+      "subtitle": "Sign in to book and manage appointments with any business.",
+      "quote": "Book with any business, all from one account.",
+      "googleCta": "Continue with Google",
+      "orDivider": "or",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "emailInUse": "This email is already registered.",
+      "submit": "Sign in",
+      "submitSignUp": "Create account",
+      "submitting": "Submitting…",
+      "noAccountPrefix": "Don't have an account?",
+      "noAccountLink": "Create account",
+      "hasAccountPrefix": "Already have an account?",
+      "hasAccountLink": "Sign in",
+      "invalidCredentials": "Invalid email or password.",
+      "genericError": "Something went wrong. Try again."
+    }
   },
   "emails": {
     "footer": "Sent by {organization} via Bladiq — online booking for local businesses.",

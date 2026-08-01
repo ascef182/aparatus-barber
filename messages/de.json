@@ -10,7 +10,7 @@
   },
   "pricing": {
     "title": "Online-Buchung für Ihren Barbershop",
-    "subtitle": "7 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
+    "subtitle": "14 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
     "starterName": "Starter",
     "starterTagline": "Für den Einstieg",
     "growthName": "Growth",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# Mitarbeiter} other {# Mitarbeiter}}",
     "unlimitedStaff": "Unbegrenzte Mitarbeiter",
     "cta": "Kostenlos testen",
-    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 7 Testtagen weiter nutzen möchten.",
+    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 14 Testtagen weiter nutzen möchten.",
     "popularBadge": "Am beliebtesten",
     "featureOnlineBooking": "Unbegrenzte Online-Buchungen",
     "featureStripePayments": "Zahlungen über Stripe",
@@ -115,6 +115,9 @@
       "phone": "Telefon:",
       "email": "E-Mail:",
       "vatId": "USt-IdNr.:"
+    },
+    "nav": {
+      "signIn": "Anmelden"
     }
   },
   "account": {
@@ -128,6 +131,7 @@
     "signOut": "Abmelden",
     "signingOut": "Abmelden…",
     "signOutError": "Abmelden fehlgeschlagen.",
+    "backToSite": "Zurück zur Website",
     "bookings": {
       "title": "Meine Buchungen",
       "empty": "Du hast noch keine Buchungen.",
@@ -242,7 +246,7 @@
       "servicesLink": "Leistungen",
       "staffServiceLink": "Zuordnung Fachkraft-Leistung",
       "mfaBanner": "Aktivieren Sie die Zwei-Faktor-Authentifizierung, um Ihr Konto zu schützen",
-      "trialExpiredBanner": "Ihre 7-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren",
+      "trialExpiredBanner": "Ihre 14-tägige kostenlose Testphase ist abgelaufen — abonnieren Sie einen Plan, um fortzufahren",
       "greeting": "Hallo, {name}",
       "searchPlaceholder": "Kunden suchen...",
       "notifications": "Benachrichtigungen",
@@ -264,7 +268,8 @@
       "signOut": "Abmelden",
       "signingOut": "Wird abgemeldet...",
       "theme": "Design wechseln",
-      "signOutError": "Abmelden nicht möglich. Bitte erneut versuchen."
+      "signOutError": "Abmelden nicht möglich. Bitte erneut versuchen.",
+      "profile": "Mein Profil"
     },
     "tour": {
       "skip": "Überspringen",
@@ -471,6 +476,7 @@
       "namePlaceholder": "Name der Fachkraft",
       "servicesPerformed": "Ausgeführte Leistungen",
       "noServicesAssociated": "Keine Leistungen",
+      "servicesRequiredHint": "Wählen Sie mindestens eine Leistung, damit dieser Mitarbeiter im Terminplan erscheint.",
       "noStaff": "Keine Fachkräfte vorhanden.",
       "schedule": "Arbeitszeiten",
       "registerAbsenceLink": "Abwesenheit erfassen",
@@ -687,6 +693,16 @@
       "genericError": "Fehler.",
       "saveChanges": "Änderungen speichern",
       "createSubmit": "Gutschein erstellen"
+    },
+    "profile": {
+      "eyebrow": "Konto",
+      "title": "Mein Profil",
+      "description": "Aktualisieren Sie Ihre Kontoinformationen.",
+      "nameLabel": "Name",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Profil aktualisiert!",
+      "saveError": "Profil konnte nicht gespeichert werden."
     }
   },
   "invitation": {
@@ -731,6 +747,8 @@
     "cookieNoticePrefix": "Diese Website verwendet essenzielle Cookies für den Betrieb. Mit Ihrer Buchung werden Ihre Daten gemäß unserer",
     "privacyPolicyLink": "Datenschutzerklärung",
     "reserve": "Buchen",
+    "temporarilyUnavailable": "Derzeit nicht verfügbar.",
+    "bookingAsUser": "Buchung als {name}.",
     "makeReservation": "Termin buchen",
     "continue": "Weiter",
     "back": "Zurück",
@@ -837,7 +855,7 @@
     "howItWorks": {
       "title": "So funktioniert's",
       "step1Title": "1. Kostenlose Testphase starten",
-      "step1Body": "7 Tage kostenlos, keine Kreditkarte nötig.",
+      "step1Body": "14 Tage kostenlos, keine Kreditkarte nötig.",
       "step2Title": "2. Barbershop einrichten",
       "step2Body": "Team, Leistungen und Öffnungszeiten hinzufügen.",
       "step3Title": "3. Ihren Link teilen",
@@ -846,7 +864,7 @@
     "faq": {
       "title": "Häufige Fragen",
       "q1": "Brauche ich eine Kreditkarte, um zu starten?",
-      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
+      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 14 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
@@ -871,7 +889,7 @@
     },
     "finalCta": {
       "title": "Bereit, Ihren Barbershop zu modernisieren?",
-      "subtitle": "Jetzt starten — 7 Tage kostenlos, keine Kreditkarte nötig.",
+      "subtitle": "Jetzt starten — 14 Tage kostenlos, keine Kreditkarte nötig.",
       "cta": "Kostenlos testen"
     },
     "footer": {
@@ -937,7 +955,75 @@
     "bannerSubtitle": "Friseursalons, Kliniken und mehr — alles an einem Ort.",
     "featuredTitle": "Empfohlen",
     "resultsTitle": "Ergebnisse",
-    "empty": "Keine Unternehmen gefunden."
+    "categoriesAll": "Alle",
+    "empty": "Keine Unternehmen gefunden.",
+    "nav": {
+      "home": "Start",
+      "bookings": "Buchungen",
+      "account": "Konto"
+    },
+    "bookings": {
+      "title": "Meine Buchungen",
+      "empty": "Sie haben noch keine Buchungen.",
+      "exploreCta": "Unternehmen entdecken",
+      "upcoming": "Bevorstehend",
+      "past": "Vergangen",
+      "signInPrompt": "Melden Sie sich an, um Ihre Buchungen zu sehen.",
+      "signInPromptDescription": "Sehen und verwalten Sie Ihre gebuchten Termine bei jedem Unternehmen.",
+      "signInCta": "Anmelden",
+      "status": {
+        "pendingPayment": "Zahlung ausstehend",
+        "pending": "Ausstehend",
+        "confirmed": "Bestätigt",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert",
+        "noShow": "Nicht erschienen"
+      }
+    },
+    "account": {
+      "title": "Konto",
+      "signInPrompt": "Melden Sie sich an, um Ihr Konto zu verwalten.",
+      "signInPromptDescription": "Melden Sie sich an, um Ihr Profil zu bearbeiten und Ihre Unternehmen zu sehen.",
+      "signInCta": "Anmelden",
+      "exploreCta": "Unternehmen entdecken",
+      "nameLabel": "Name",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Profil aktualisiert!",
+      "saveError": "Profil konnte nicht gespeichert werden.",
+      "signOut": "Abmelden",
+      "signingOut": "Wird abgemeldet…",
+      "signOutError": "Abmelden fehlgeschlagen.",
+      "businessesTitle": "Meine Unternehmen",
+      "businessesEmpty": "Sie haben noch bei keinem Unternehmen gebucht.",
+      "newMessage": "Neue Nachricht",
+      "couponsTitle": "Meine Gutscheine",
+      "couponsEmpty": "Noch keine Gutscheine eingelöst.",
+      "percentOff": "{value}% Rabatt",
+      "amountOff": "{value} Rabatt",
+      "couponExpired": "Abgelaufen"
+    },
+    "signIn": {
+      "title": "Anmelden",
+      "signUpTitle": "Konto erstellen",
+      "subtitle": "Melden Sie sich an, um Termine bei jedem Unternehmen zu buchen und zu verwalten.",
+      "quote": "Buchen Sie bei jedem Unternehmen — alles mit einem Konto.",
+      "googleCta": "Mit Google fortfahren",
+      "orDivider": "oder",
+      "nameLabel": "Name",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "emailInUse": "Diese E-Mail ist bereits registriert.",
+      "submit": "Anmelden",
+      "submitSignUp": "Konto erstellen",
+      "submitting": "Wird gesendet…",
+      "noAccountPrefix": "Noch kein Konto?",
+      "noAccountLink": "Konto erstellen",
+      "hasAccountPrefix": "Bereits ein Konto?",
+      "hasAccountLink": "Anmelden",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+    }
   },
   "emails": {
     "footer": "Gesendet von {organization} über Bladiq — Online-Buchung für lokale Unternehmen.",
