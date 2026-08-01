@@ -1,33 +1,35 @@
-# Product
+# Bladiq Product
 
-## Register
+## Audience and promise
 
-product
+Bladiq serves owner-operated barbershops, hair salons, nail studios, and beauty salons in Germany and the wider DACH region, with an initial emphasis on multilingual teams and immigrant-led businesses.
 
-## Users
+**Promise:** own your customer relationship, take bookings and deposits around the clock, and protect the working day without marketplace commission on customers you bring yourself.
 
-Owners, managers, receptionists, and professionals run a barbershop through Bladiq. They need to keep the day moving, protect revenue, and understand the health of the business without relying on spreadsheets or disconnected tools.
+## Product principles
 
-## Product Purpose
+- Make the next operational decision obvious on desktop and mobile.
+- Protect revenue through reliable availability, deposits, reminders, and clear cancellation rules.
+- Treat tenant isolation, payment integrity, and explainable financial data as product features.
+- Keep the business and customer experience usable in German, English, and Portuguese.
+- Prefer a focused workflow over a generic local-business feature grid.
+- Meet WCAG AA, keyboard, reduced-motion, and non-color-only status expectations.
 
-Bladiq combines white-label online booking, payments, team operations, and compliant customer management for barbershops. Its dashboard must turn bookings into confident daily decisions: what needs attention now, how the team is performing, and how the business is growing.
+## Commercial model
 
-## Brand Personality
+- Assisted beta: 30-day pilot, then Founder Plan at €29/month for 12 months for the first 20 partners.
+- General availability: 14-day self-service trial; Starter €39, Growth €79, Pro €149.
+- No directory commission during validation. The directory is a free SEO/discovery surface, not a guaranteed lead source.
+- Stripe processing fees remain transparent and separate.
 
-Clear, dependable, and quietly premium. The product should feel as focused as Linear and as financially trustworthy as Stripe, without becoming a generic SaaS control panel.
+## Boundaries
 
-## Anti-references
+- Public onboarding supports `BARBERSHOP`, `HAIR_SALON`, `NAIL_SALON`, and `BEAUTY_SALON`.
+- POS/TSE, inventory, native mobile apps, construction quotes, and regulated medical workflows are outside the launch scope.
+- AI returns only after evidence supports a safe receptionist product connected to real availability, booking changes, and human escalation.
 
-Avoid noisy card grids, decorative gradients, cramped admin tables, financial data without operational context, and interfaces that depend on color alone to communicate status.
+## Measures
 
-## Design Principles
+North star: confirmed/protected revenue processed through Bladiq per active business.
 
-- Make the next operational decision obvious.
-- Separate business insight from daily execution by role.
-- Earn trust with accurate, explainable financial data.
-- Keep power accessible without visual noise.
-- Design every screen for a busy business owner on desktop and mobile.
-
-## Accessibility & Inclusion
-
-Meet WCAG AA contrast and keyboard expectations. Respect reduced motion, retain text labels alongside color-coded states, and support Portuguese, English, and German text length.
+Activation is a published booking page in under 15 minutes and a first booking within 7 days. Supporting measures are weekly active owners, payment attachment, no-show rate, completed bookings, 4/12-week tenant retention, notification reliability, and support incidents per 100 bookings.
