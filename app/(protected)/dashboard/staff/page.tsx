@@ -38,6 +38,7 @@ export default async function StaffPage() {
           id: member.id,
           displayName: member.displayName,
           jobTitle: member.jobTitle,
+          imageUrl: member.imageUrl,
           color: member.color,
           isActive: member.isActive,
           locationId: member.locationId,

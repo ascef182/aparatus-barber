@@ -23,6 +23,15 @@ const RESERVED_PREFIXES = [
   "/onboarding",
 ];
 
+// Ícones/manifest PWA (app/icon.tsx, app/apple-icon.tsx, app/icons/[size]/,
+// app/manifest.ts) são servidos na raiz do domínio, não sob /app nem /t/{slug}
+// — sem essa exceção o rewrite abaixo os reescreve para /app/icons/192 ou
+// /t/{slug}/icons/192, que não existem (404 do manifest em toda instalação PWA).
+const PWA_ASSET_PATHS = ["/icon", "/apple-icon", "/manifest.webmanifest"];
+function isPwaAssetPath(pathname: string) {
+  return PWA_ASSET_PATHS.includes(pathname) || pathname.startsWith("/icons/");
+}
+
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("host");
@@ -33,6 +42,10 @@ export default function proxy(request: NextRequest) {
   // expõe isso nativamente fora de Client Components.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", pathname);
+
+  if (isPwaAssetPath(pathname)) {
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   if (!slug) {
     if (pathname === "/t" || pathname.startsWith("/t/")) {

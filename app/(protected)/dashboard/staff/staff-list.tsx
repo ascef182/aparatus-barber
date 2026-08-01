@@ -6,7 +6,7 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { CalendarOff, Clock, Pencil, Power, Users } from "lucide-react";
 import { updateStaff } from "@/app/_actions/manage-operations";
-import { Avatar, AvatarFallback } from "@/app/_components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/_components/ui/avatar";
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
 import { EmptyState } from "@/app/_components/ui/empty-state";
@@ -34,6 +34,7 @@ type StaffItem = {
   id: string;
   displayName: string;
   jobTitle: string | null;
+  imageUrl: string | null;
   color: string | null;
   isActive: boolean;
   locationId: string;
@@ -116,9 +117,11 @@ export function StaffList({
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <Button onClick={() => setCreating(true)}>{t("newProfessional")}</Button>
-      </div>
+      {staff.length > 0 && (
+        <div>
+          <Button onClick={() => setCreating(true)}>{t("newProfessional")}</Button>
+        </div>
+      )}
       <Sheet open={creating} onOpenChange={setCreating}>
         <SheetContent className="w-full overflow-y-auto p-6 sm:max-w-xl">
           <SheetHeader>
@@ -147,6 +150,7 @@ export function StaffList({
               <div className="flex items-center gap-3">
                 <div className="relative shrink-0">
                   <Avatar className="size-10">
+                    {member.imageUrl && <AvatarImage src={member.imageUrl} alt="" />}
                     <AvatarFallback className="bg-muted text-sm font-medium">{initialsOf(member.displayName)}</AvatarFallback>
                   </Avatar>
                   <span
@@ -224,6 +228,7 @@ export function StaffList({
                       id: member.id,
                       displayName: member.displayName,
                       jobTitle: member.jobTitle,
+                      imageUrl: member.imageUrl,
                       locationId: member.locationId,
                       compensationType: member.compensationType,
                       compensationAmountInCents: member.compensationAmountInCents,

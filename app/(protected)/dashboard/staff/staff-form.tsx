@@ -17,6 +17,7 @@ type StaffInput = {
   id: string;
   displayName: string;
   jobTitle: string | null;
+  imageUrl?: string | null;
   locationId: string;
   compensationType: CompensationType | null;
   compensationAmountInCents: number | null;
@@ -48,6 +49,26 @@ export function StaffForm({
   );
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"manager" | "professional" | "receptionist">("professional");
+  const [imageUrl, setImageUrl] = useState(staff?.imageUrl ?? "");
+  const [uploading, setUploading] = useState(false);
+
+  async function upload(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.set("file", file);
+      const response = await fetch("/api/media/upload", { method: "POST", body });
+      if (!response.ok) throw new Error();
+      const result = (await response.json()) as { url: string };
+      setImageUrl(result.url);
+    } catch {
+      toast.error(t("photoUploadError"));
+    } finally {
+      setUploading(false);
+    }
+  }
 
   const create = useAction(createStaff, {
     onSuccess: () => { toast.success(t("created")); onDone?.(); },
@@ -65,6 +86,7 @@ export function StaffForm({
     const shared = {
       displayName,
       jobTitle: jobTitle || undefined,
+      imageUrl: imageUrl || undefined,
       locationId,
       serviceIds,
       compensationType,
@@ -84,6 +106,24 @@ export function StaffForm({
       <div className="grid gap-1.5">
         <Label htmlFor="staff-job-title">{t("jobTitlePlaceholder")}</Label>
         <Input id="staff-job-title" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} />
+      </div>
+      <div className="grid gap-1.5 text-sm">
+        <Label htmlFor="staff-photo">{t("photoLabel")}</Label>
+        {imageUrl && (
+          <div className="relative w-fit">
+            {/* eslint-disable-next-line @next/next/no-img-element -- thumbnail vem do Cloudinary, fora dos remotePatterns de next/image */}
+            <img src={imageUrl} alt="" className="size-16 rounded-md border object-cover" />
+            <button
+              type="button"
+              onClick={() => setImageUrl("")}
+              className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
+              aria-label={t("removePhoto")}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        <Input id="staff-photo" type="file" accept="image/*" disabled={uploading} onChange={(e) => upload(e.target.files)} />
       </div>
       <div className="grid gap-1.5">
         <Label>{t("locationLabel")}</Label>
@@ -155,11 +195,14 @@ export function StaffForm({
           })}
           {services.length === 0 && <p className="text-xs text-muted-foreground">{t("noServicesAssociated")}</p>}
         </div>
-        {!staff && serviceIds.length === 0 && services.length > 0 && (
+        {!staff && services.length === 0 && (
+          <p className="text-xs text-destructive">{t("createServiceFirstHint")}</p>
+        )}
+        {!staff && services.length > 0 && serviceIds.length === 0 && (
           <p className="text-xs text-destructive">{t("servicesRequiredHint")}</p>
         )}
       </div>
-      <Button type="submit" disabled={pending || (!staff && serviceIds.length === 0)}>
+      <Button type="submit" disabled={pending || uploading || (!staff && serviceIds.length === 0)}>
         {pending ? "..." : staff ? t("saveChanges") : t("createSubmit")}
       </Button>
     </form>
