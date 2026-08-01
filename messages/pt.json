@@ -9,7 +9,7 @@
     "cta": "Voltar para o início"
   },
   "pricing": {
-    "title": "Agendamento online para sua barbearia",
+    "title": "Agendamento online para o seu negócio",
     "subtitle": "7 dias grátis, sem cartão de crédito. Cancele quando quiser.",
     "starterName": "Starter",
     "starterTagline": "Para quem está começando",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter sua barbearia depois dos 7 dias de teste.",
+    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter seu negócio depois dos 7 dias de teste.",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
@@ -100,7 +100,7 @@
     "goToSignIn": "Entrar",
     "alreadyHavePrefix": "Já tem conta?",
     "genericError": "Algo deu errado.",
-    "quote": "Dê à sua barbearia a experiência de agendamento que ela merece.",
+    "quote": "Dê ao seu negócio a experiência de agendamento que ele merece.",
     "quoteAuthor": "Bladiq"
   },
   "tenant": {
@@ -337,7 +337,7 @@
       "businessPulse": "Pulso do negócio",
       "operationsPulse": "Pulso da operação",
       "title": "Visão geral",
-      "ownerDescription": "O que está acontecendo na sua barbearia, com números claros para decidir o próximo passo.",
+      "ownerDescription": "O que está acontecendo no seu negócio, com números claros para decidir o próximo passo.",
       "managerDescription": "Acompanhe o ritmo da operação e mantenha a equipe alinhada.",
       "today": "Hoje",
       "days": "{count} dias",
@@ -804,10 +804,10 @@
       "signIn": "Entrar"
     },
     "hero": {
-      "badge": "Plataforma multi-tenant para barbearias",
+      "badge": "Plataforma multi-tenant para negócios locais",
       "titleLine1": "Agende, cobre",
       "titleLine2": "e cresça — tudo em um só lugar",
-      "subtitle": "Sua barbearia com página própria, agendamento online, pagamentos via Stripe e conformidade legal alemã — pronto em minutos, em 3 idiomas.",
+      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade legal alemã — pronto em minutos, em 3 idiomas.",
       "ctaPrimary": "Começar teste grátis",
       "ctaSecondary": "Ver como funciona",
       "trustGdpr": "Conforme GDPR",
@@ -837,10 +837,10 @@
       }
     },
     "features": {
-      "title": "Tudo que sua barbearia precisa",
+      "title": "Tudo que seu negócio precisa",
       "subtitle": "Uma plataforma completa, sem depender de planilhas, grupos de WhatsApp ou sistemas soltos.",
       "multiTenantTitle": "Sua própria página",
-      "multiTenantBody": "Cada barbearia recebe um subdomínio próprio com agendamento white-label — sem marca d'água, sem confusão de multi-tenant.",
+      "multiTenantBody": "Cada negócio recebe um subdomínio próprio com agendamento white-label — sem marca d'água, sem confusão de multi-tenant.",
       "bookingTitle": "Agendamento em poucos cliques",
       "bookingBody": "Clientes escolhem serviço, profissional e horário em tempo real, sem ligação nem troca de mensagens.",
       "paymentsTitle": "Pagamentos com Stripe",
@@ -848,7 +848,7 @@
       "teamTitle": "Equipe com permissões",
       "teamBody": "Convide gerentes, profissionais e recepcionistas com acesso controlado por função.",
       "securityTitle": "Segurança de verdade",
-      "securityBody": "Autenticação em dois fatores e isolamento de dados entre barbearias à prova de falhas.",
+      "securityBody": "Autenticação em dois fatores e isolamento de dados entre negócios à prova de falhas.",
       "complianceTitle": "Conformidade legal alemã",
       "complianceBody": "Impressum, DPA e exportação/apagamento de dados prontos para operar na Alemanha."
     },
@@ -856,7 +856,7 @@
       "title": "Como funciona",
       "step1Title": "1. Comece o teste grátis",
       "step1Body": "7 dias grátis, sem cartão de crédito necessário.",
-      "step2Title": "2. Configure sua barbearia",
+      "step2Title": "2. Configure seu negócio",
       "step2Body": "Adicione equipe, serviços e horários de funcionamento.",
       "step3Title": "3. Compartilhe seu link",
       "step3Body": "Divulgue sua página de agendamento e comece a receber reservas."
@@ -864,18 +864,18 @@
     "faq": {
       "title": "Perguntas frequentes",
       "q1": "Preciso de cartão de crédito para começar?",
-      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter sua barbearia no ar depois do teste.",
+      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter seu negócio no ar depois do teste.",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
-      "a3": "Sim. Isolamento de dados entre barbearias, autenticação em dois fatores e conformidade com GDPR, incluindo exportação e apagamento de dados a pedido.",
+      "a3": "Sim. Isolamento de dados entre negócios, autenticação em dois fatores e conformidade com GDPR, incluindo exportação e apagamento de dados a pedido.",
       "q4": "Meus clientes podem pagar online?",
       "a4": "Sim, via Stripe: depósito, pré-pagamento total ou pagamento no local, configurável por serviço.",
       "q5": "Funciona em outros idiomas?",
       "a5": "Sim, o painel e a página de agendamento estão disponíveis em alemão, inglês e português."
     },
     "mobileShowcase": {
-      "title": "Sua barbearia, no bolso de todo mundo",
+      "title": "Seu negócio, no bolso de todo mundo",
       "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular — veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.",
       "quickActions": "Ações rápidas",
       "features": {
@@ -888,12 +888,12 @@
       }
     },
     "finalCta": {
-      "title": "Pronto para modernizar sua barbearia?",
+      "title": "Pronto para modernizar seu negócio?",
       "subtitle": "Comece agora — 7 dias grátis, sem cartão necessário.",
       "cta": "Começar teste grátis"
     },
     "footer": {
-      "tagline": "Agendamento online para barbearias modernas.",
+      "tagline": "Agendamento online para negócios modernos.",
       "productTitle": "Produto",
       "legalTitle": "Legal",
       "featuresLink": "Funcionalidades",
@@ -913,11 +913,11 @@
     "signingIn": "Entrando...",
     "invalidCredentials": "E-mail ou senha incorretos.",
     "genericError": "Algo deu errado.",
-    "noOrgTitle": "Nenhuma barbearia encontrada",
-    "noOrgBody": "Sua conta não está vinculada a nenhuma barbearia ainda.",
+    "noOrgTitle": "Nenhum negócio encontrado",
+    "noOrgBody": "Sua conta não está vinculada a nenhum negócio ainda.",
     "seePricing": "Ver planos",
-    "startFree": "Criar minha barbearia grátis",
-    "pickShopTitle": "Escolha sua barbearia",
+    "startFree": "Criar meu negócio grátis",
+    "pickShopTitle": "Escolha seu negócio",
     "noAccountPrefix": "Não tem conta?",
     "noAccountLink": "Criar conta grátis",
     "quote": "Todo corte perfeito começa com uma agenda em dia.",

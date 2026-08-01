@@ -12,7 +12,7 @@ export default async function TermsPage() {
         <section>
           <h2>1. Service description</h2>
           <p>
-            Bladiq is a SaaS booking platform for barbershops and salons (&ldquo;tenants&rdquo;). Tenants subscribe
+            Bladiq is a SaaS booking platform for local businesses (&ldquo;tenants&rdquo;). Tenants subscribe
             to a plan (Starter, Growth, or Pro) to manage services, staff, and online bookings on their own
             subdomain.
           </p>
@@ -64,7 +64,7 @@ export default async function TermsPage() {
       <section>
         <h2>1. Leistungsbeschreibung</h2>
         <p>
-          Bladiq ist eine SaaS-Buchungsplattform für Barbershops und Salons (&ldquo;Mandanten&rdquo;). Mandanten
+          Bladiq ist eine SaaS-Buchungsplattform für lokale Unternehmen (&ldquo;Mandanten&rdquo;). Mandanten
           abonnieren einen Plan (Starter, Growth oder Pro), um Services, Personal und Online-Buchungen auf ihrer
           eigenen Subdomain zu verwalten.
         </p>
@@ -72,7 +72,7 @@ export default async function TermsPage() {
       <section>
         <h2>2. Abonnement und Abrechnung</h2>
         <p>
-          Abonnements beinhalten eine 14-tägige kostenlose Testphase und verlängern sich monatlich über Stripe. Sie
+          Abonnements beinhalten eine 7-tägige kostenlose Testphase und verlängern sich monatlich über Stripe. Sie
           können Ihren Plan jederzeit über das Kundenportal ändern oder kündigen. Bereits berechnete Gebühren sind,
           soweit gesetzlich nicht anders vorgeschrieben, nicht erstattungsfähig.
         </p>

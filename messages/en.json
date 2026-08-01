@@ -9,7 +9,7 @@
     "cta": "Back to home"
   },
   "pricing": {
-    "title": "Online booking for your barbershop",
+    "title": "Online booking for your business",
     "subtitle": "7 days free, no credit card required. Cancel anytime.",
     "starterName": "Starter",
     "starterTagline": "For getting started",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "No credit card required — add one only if you keep your shop after the 7-day trial.",
+    "trialNote": "No credit card required — add one only if you keep your business after the 7-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
@@ -100,7 +100,7 @@
     "goToSignIn": "Sign in",
     "alreadyHavePrefix": "Already have an account?",
     "genericError": "Something went wrong.",
-    "quote": "Give your barbershop the booking experience it deserves.",
+    "quote": "Give your business the booking experience it deserves.",
     "quoteAuthor": "Bladiq"
   },
   "tenant": {
@@ -337,7 +337,7 @@
       "businessPulse": "Business pulse",
       "operationsPulse": "Operations pulse",
       "title": "Overview",
-      "ownerDescription": "What is happening in your shop, with clear numbers for the next decision.",
+      "ownerDescription": "What is happening in your business, with clear numbers for the next decision.",
       "managerDescription": "Follow the operational pace and keep the team aligned.",
       "today": "Today",
       "days": "{count} days",
@@ -804,10 +804,10 @@
       "signIn": "Sign in"
     },
     "hero": {
-      "badge": "Multi-tenant platform for barbershops",
+      "badge": "Multi-tenant platform for local businesses",
       "titleLine1": "Book, get paid,",
       "titleLine2": "and grow — all in one place",
-      "subtitle": "Your barbershop with its own page, online booking, Stripe payments, and German legal compliance — ready in minutes, in 3 languages.",
+      "subtitle": "Your business with its own page, online booking, Stripe payments, and German legal compliance — ready in minutes, in 3 languages.",
       "ctaPrimary": "Start free trial",
       "ctaSecondary": "See how it works",
       "trustGdpr": "GDPR-compliant",
@@ -837,10 +837,10 @@
       }
     },
     "features": {
-      "title": "Everything your barbershop needs",
+      "title": "Everything your business needs",
       "subtitle": "One complete platform — no spreadsheets, WhatsApp groups, or disconnected tools.",
       "multiTenantTitle": "Your own page",
-      "multiTenantBody": "Every barbershop gets its own subdomain with white-label booking — no watermarks, no multi-tenant confusion.",
+      "multiTenantBody": "Every business gets its own subdomain with white-label booking — no watermarks, no multi-tenant confusion.",
       "bookingTitle": "Booking in a few clicks",
       "bookingBody": "Customers pick a service, staff member, and time slot in real time — no calls, no back-and-forth messages.",
       "paymentsTitle": "Payments via Stripe",
@@ -856,7 +856,7 @@
       "title": "How it works",
       "step1Title": "1. Start your free trial",
       "step1Body": "7 days free, no credit card required.",
-      "step2Title": "2. Set up your shop",
+      "step2Title": "2. Set up your business",
       "step2Body": "Add your team, services, and working hours.",
       "step3Title": "3. Share your link",
       "step3Body": "Share your booking page and start taking reservations."
@@ -864,18 +864,18 @@
     "faq": {
       "title": "Frequently asked questions",
       "q1": "Do I need a credit card to start?",
-      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your shop live after the trial ends.",
+      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your business live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
-      "a3": "Yes. Data isolation between barbershops, two-factor authentication, and GDPR compliance, including data export and erasure on request.",
+      "a3": "Yes. Data isolation between businesses, two-factor authentication, and GDPR compliance, including data export and erasure on request.",
       "q4": "Can my customers pay online?",
       "a4": "Yes, via Stripe: deposit, full prepayment, or pay-on-site, configurable per service.",
       "q5": "Does it work in other languages?",
       "a5": "Yes, the dashboard and booking page are available in German, English, and Portuguese."
     },
     "mobileShowcase": {
-      "title": "Your barbershop, in everyone's pocket",
+      "title": "Your business, in everyone's pocket",
       "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone — check the schedule, add a customer, or confirm a booking from anywhere.",
       "quickActions": "Quick actions",
       "features": {
@@ -888,12 +888,12 @@
       }
     },
     "finalCta": {
-      "title": "Ready to modernize your barbershop?",
+      "title": "Ready to modernize your business?",
       "subtitle": "Get started now — 7 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {
-      "tagline": "Online booking for modern barbershops.",
+      "tagline": "Online booking for modern local businesses.",
       "productTitle": "Product",
       "legalTitle": "Legal",
       "featuresLink": "Features",
@@ -913,11 +913,11 @@
     "signingIn": "Signing in...",
     "invalidCredentials": "Incorrect email or password.",
     "genericError": "Something went wrong.",
-    "noOrgTitle": "No barbershop found",
-    "noOrgBody": "Your account isn't linked to any barbershop yet.",
+    "noOrgTitle": "No business found",
+    "noOrgBody": "Your account isn't linked to any business yet.",
     "seePricing": "View plans",
-    "startFree": "Create my barbershop for free",
-    "pickShopTitle": "Choose your barbershop",
+    "startFree": "Create my business for free",
+    "pickShopTitle": "Choose your business",
     "noAccountPrefix": "No account yet?",
     "noAccountLink": "Create a free account",
     "quote": "Every great cut starts with a great appointment book.",

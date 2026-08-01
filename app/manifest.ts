@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Bladiq — Online booking for barbershops",
+    name: "Bladiq — Online booking for local businesses",
     short_name: "Bladiq",
-    description: "White-label online booking, Stripe payments, and team management for modern barbershops.",
+    description: "White-label online booking, Stripe payments, and team management for local businesses.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

@@ -9,7 +9,7 @@
     "cta": "Zurück zur Startseite"
   },
   "pricing": {
-    "title": "Online-Buchung für Ihren Barbershop",
+    "title": "Online-Buchung für Ihr Unternehmen",
     "subtitle": "7 Tage kostenlos, keine Kreditkarte nötig. Jederzeit kündbar.",
     "starterName": "Starter",
     "starterTagline": "Für den Einstieg",
@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# Mitarbeiter} other {# Mitarbeiter}}",
     "unlimitedStaff": "Unbegrenzte Mitarbeiter",
     "cta": "Kostenlos testen",
-    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihren Barbershop nach den 7 Testtagen weiter nutzen möchten.",
+    "trialNote": "Keine Kreditkarte nötig — nur erforderlich, wenn Sie Ihr Unternehmen nach den 7 Testtagen weiter nutzen möchten.",
     "popularBadge": "Am beliebtesten",
     "featureOnlineBooking": "Unbegrenzte Online-Buchungen",
     "featureStripePayments": "Zahlungen über Stripe",
@@ -100,7 +100,7 @@
     "goToSignIn": "Anmelden",
     "alreadyHavePrefix": "Bereits ein Konto?",
     "genericError": "Etwas ist schiefgelaufen.",
-    "quote": "Geben Sie Ihrem Barbershop das Buchungserlebnis, das er verdient.",
+    "quote": "Geben Sie Ihrem Unternehmen das Buchungserlebnis, das es verdient.",
     "quoteAuthor": "Bladiq"
   },
   "tenant": {
@@ -337,7 +337,7 @@
       "businessPulse": "Geschäftsüberblick",
       "operationsPulse": "Betriebsüberblick",
       "title": "Übersicht",
-      "ownerDescription": "Was in Ihrem Salon passiert, mit klaren Zahlen für die nächste Entscheidung.",
+      "ownerDescription": "Was in Ihrem Unternehmen passiert, mit klaren Zahlen für die nächste Entscheidung.",
       "managerDescription": "Behalten Sie den Betrieb im Blick und stimmen Sie das Team ab.",
       "today": "Heute",
       "days": "{count} Tage",
@@ -804,10 +804,10 @@
       "signIn": "Anmelden"
     },
     "hero": {
-      "badge": "Multi-Tenant-Plattform für Barbershops",
+      "badge": "Multi-Tenant-Plattform für lokale Unternehmen",
       "titleLine1": "Buchen, kassieren",
       "titleLine2": "und wachsen — an einem Ort",
-      "subtitle": "Ihr Barbershop mit eigener Seite, Online-Buchung, Zahlungen über Stripe und deutscher Rechtskonformität — startklar in Minuten, in 3 Sprachen.",
+      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und deutscher Rechtskonformität — startklar in Minuten, in 3 Sprachen.",
       "ctaPrimary": "Kostenlos testen",
       "ctaSecondary": "So funktioniert's",
       "trustGdpr": "DSGVO-konform",
@@ -837,10 +837,10 @@
       }
     },
     "features": {
-      "title": "Alles, was Ihr Barbershop braucht",
+      "title": "Alles, was Ihr Unternehmen braucht",
       "subtitle": "Eine komplette Plattform — ohne Excel-Tabellen, WhatsApp-Gruppen oder verstreute Systeme.",
       "multiTenantTitle": "Ihre eigene Seite",
-      "multiTenantBody": "Jeder Barbershop erhält eine eigene Subdomain mit White-Label-Buchung — ohne Wasserzeichen, ohne Multi-Tenant-Verwirrung.",
+      "multiTenantBody": "Jedes Unternehmen erhält eine eigene Subdomain mit White-Label-Buchung — ohne Wasserzeichen, ohne Multi-Tenant-Verwirrung.",
       "bookingTitle": "Buchung in wenigen Klicks",
       "bookingBody": "Kunden wählen Leistung, Fachkraft und Uhrzeit in Echtzeit — ohne Anruf oder Nachrichten hin und her.",
       "paymentsTitle": "Zahlungen über Stripe",
@@ -856,7 +856,7 @@
       "title": "So funktioniert's",
       "step1Title": "1. Kostenlose Testphase starten",
       "step1Body": "7 Tage kostenlos, keine Kreditkarte nötig.",
-      "step2Title": "2. Barbershop einrichten",
+      "step2Title": "2. Unternehmen einrichten",
       "step2Body": "Team, Leistungen und Öffnungszeiten hinzufügen.",
       "step3Title": "3. Ihren Link teilen",
       "step3Body": "Teilen Sie Ihre Buchungsseite und erhalten Sie Ihre ersten Reservierungen."
@@ -864,18 +864,18 @@
     "faq": {
       "title": "Häufige Fragen",
       "q1": "Brauche ich eine Kreditkarte, um zu starten?",
-      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihren Barbershop nach der Testphase weiter online halten möchten.",
+      "a1": "Nein — melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihr Unternehmen nach der Testphase weiter online halten möchten.",
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
-      "a3": "Ja. Datentrennung zwischen Barbershops, Zwei-Faktor-Authentifizierung und DSGVO-Konformität, einschließlich Datenexport und -löschung auf Anfrage.",
+      "a3": "Ja. Datentrennung zwischen Unternehmen, Zwei-Faktor-Authentifizierung und DSGVO-Konformität, einschließlich Datenexport und -löschung auf Anfrage.",
       "q4": "Können meine Kunden online bezahlen?",
       "a4": "Ja, über Stripe: Anzahlung, vollständige Vorauszahlung oder Zahlung vor Ort, konfigurierbar pro Leistung.",
       "q5": "Funktioniert es in anderen Sprachen?",
       "a5": "Ja, das Dashboard und die Buchungsseite sind auf Deutsch, Englisch und Portugiesisch verfügbar."
     },
     "mobileShowcase": {
-      "title": "Ihr Barbershop, in jeder Hosentasche",
+      "title": "Ihr Unternehmen, in jeder Hosentasche",
       "subtitle": "Dasselbe Dashboard, das Ihr Team am Desktop nutzt, einsatzbereit auf jedem Handy — Termine prüfen, Kunden anlegen oder Buchungen bestätigen, von überall.",
       "quickActions": "Schnellzugriff",
       "features": {
@@ -888,12 +888,12 @@
       }
     },
     "finalCta": {
-      "title": "Bereit, Ihren Barbershop zu modernisieren?",
+      "title": "Bereit, Ihr Unternehmen zu modernisieren?",
       "subtitle": "Jetzt starten — 7 Tage kostenlos, keine Kreditkarte nötig.",
       "cta": "Kostenlos testen"
     },
     "footer": {
-      "tagline": "Online-Buchung für moderne Barbershops.",
+      "tagline": "Online-Buchung für moderne lokale Unternehmen.",
       "productTitle": "Produkt",
       "legalTitle": "Rechtliches",
       "featuresLink": "Funktionen",
@@ -913,11 +913,11 @@
     "signingIn": "Wird angemeldet...",
     "invalidCredentials": "Falsche E-Mail oder falsches Passwort.",
     "genericError": "Etwas ist schiefgelaufen.",
-    "noOrgTitle": "Kein Barbershop gefunden",
-    "noOrgBody": "Ihr Konto ist noch keinem Barbershop zugeordnet.",
+    "noOrgTitle": "Kein Unternehmen gefunden",
+    "noOrgBody": "Ihr Konto ist noch keinem Unternehmen zugeordnet.",
     "seePricing": "Pläne ansehen",
-    "startFree": "Meinen Barbershop kostenlos erstellen",
-    "pickShopTitle": "Wählen Sie Ihren Barbershop",
+    "startFree": "Mein Unternehmen kostenlos erstellen",
+    "pickShopTitle": "Wählen Sie Ihr Unternehmen",
     "noAccountPrefix": "Noch kein Konto?",
     "noAccountLink": "Kostenloses Konto erstellen",
     "quote": "Jeder gute Haarschnitt beginnt mit einem guten Terminkalender.",
