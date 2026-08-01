@@ -46,7 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const readOnly = trialExpired;
   const needsMfaSetup = (membership.role === "owner" || session.user.role === "superadmin") && !session.user.twoFactorEnabled;
 
-  // Redirect obrigatório após o prazo (7 dias) — nunca em /dashboard/settings,
+  // Redirect obrigatório após o prazo (14 dias) — nunca em /dashboard/settings,
   // a única página que permite cumprir a exigência. Prazo é escrito na
   // primeira vez que é lido (contas criadas antes desta feature não têm
   // mfaGracePeriodEndsAt salvo ainda).
@@ -94,6 +94,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     name: session.user.name,
     email: session.user.email,
     roleLabel,
+    profileLabel: t("userMenu.profile"),
     signOutLabel: t("userMenu.signOut"),
     signingOutLabel: t("userMenu.signingOut"),
     themeLabel: t("userMenu.theme"),
@@ -116,7 +117,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur md:px-6">
-          <MobileNav organizationName={organization.name} navItems={navItems} userMenuProps={userMenuProps} />
+          <MobileNav organizationName={organization.name} navItems={navItems} userMenu={<UserMenu {...userMenuProps} />} />
           <Link href="/dashboard" className="truncate font-semibold tracking-tight md:hidden">
             {organization.name}
           </Link>

@@ -1,20 +1,19 @@
 "use client";
 
-import { useState, type ComponentProps } from "react";
+import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { SidebarNav, type NavItem } from "./sidebar-nav";
-import { UserMenu } from "./user-menu";
 
 export function MobileNav({
   organizationName,
   navItems,
-  userMenuProps,
+  userMenu,
 }: {
   organizationName: string;
   navItems: NavItem[];
-  userMenuProps: ComponentProps<typeof UserMenu>;
+  userMenu: ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -48,9 +47,7 @@ export function MobileNav({
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <SidebarNav items={navItems} />
         </div>
-        <div className="border-t border-sidebar-border p-3">
-          <UserMenu {...userMenuProps} />
-        </div>
+        <div className="border-t border-sidebar-border p-3">{userMenu}</div>
       </SheetContent>
     </Sheet>
   );

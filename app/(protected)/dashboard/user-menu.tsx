@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { LogOut, Moon, Sun } from "lucide-react";
+import Link from "next/link";
+import { LogOut, Moon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -37,6 +38,7 @@ export function UserMenu({
   name,
   email,
   roleLabel,
+  profileLabel,
   signOutLabel,
   signingOutLabel,
   themeLabel,
@@ -46,6 +48,7 @@ export function UserMenu({
   name: string;
   email: string;
   roleLabel: string;
+  profileLabel: string;
   signOutLabel: string;
   signingOutLabel: string;
   themeLabel: string;
@@ -94,6 +97,12 @@ export function UserMenu({
       <DropdownMenuContent align="start" side="top" className="w-56">
         <DropdownMenuLabel className="truncate font-normal text-muted-foreground">{email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/profile">
+            <User className="size-4" />
+            {profileLabel}
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem
           disabled={!mounted}
           onSelect={(event) => {

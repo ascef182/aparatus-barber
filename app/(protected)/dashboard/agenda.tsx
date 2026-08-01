@@ -24,7 +24,7 @@ function BookingActions({ booking, role }: { booking: Item; role: string }) {
   return <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/70 pt-2"><button type="button" onClick={() => complete.execute({ bookingId: booking.id })} disabled={complete.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-primary hover:bg-primary/10"><Check className="size-3" />{t("complete")}</button>{outstanding > 0 && <button type="button" onClick={() => pay.execute({ bookingId: booking.id })} disabled={pay.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"><CircleDollarSign className="size-3" />{t("recordPayment")}</button>}<button type="button" onClick={() => noShow.execute({ bookingId: booking.id })} disabled={noShow.isPending} className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"><UserRoundX className="size-3" />{t("noShow")}</button></div>;
 }
 
-type ServiceOption = { id: string; name: string; durationMinutes: number };
+type ServiceOption = { id: string; name: string; durationMinutes: number; priceInCents: number; currency: string };
 type StaffOption = { id: string; displayName: string; serviceIds: string[] };
 
 export function Agenda({ bookings: initialBookings, timezone, locale, nowISO, role, services, staff }: { bookings: Item[]; timezone: string; locale: string; nowISO: string; role: string; currency: string; services: ServiceOption[]; staff: StaffOption[] }) {

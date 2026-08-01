@@ -21,8 +21,8 @@ export default async function AgendaPage() {
     const ownStaff = membership.role === "professional" ? await db.staff.findFirst({ where: { memberId: membership.id }, select: { id: true } }) : null;
     return Promise.all([
       db.booking.findMany({ where: { startAt: { gte: from, lt: to }, ...(ownStaff ? { staffId: ownStaff.id } : {}) }, include: { customer: true, service: true, staff: true }, orderBy: { startAt: "asc" } }),
-      db.service.findMany({ where: { isActive: true }, select: { id: true, name: true, durationMinutes: true }, orderBy: { sortOrder: "asc" } }),
-      db.staff.findMany({ where: { isActive: true }, select: { id: true, displayName: true, services: { select: { serviceId: true } } } }),
+      db.service.findMany({ where: { isActive: true }, select: { id: true, name: true, durationMinutes: true, priceInCents: true, currency: true }, orderBy: { sortOrder: "asc" } }),
+      db.staff.findMany({ where: { isActive: true }, select: { id: true, displayName: true, color: true, services: { select: { serviceId: true } } } }),
     ]);
   });
   return (
@@ -32,9 +32,9 @@ export default async function AgendaPage() {
       nowISO={now.toISOString()}
       role={membership.role}
       currency={organization.currency}
-      bookings={bookings.map((booking) => ({ id: booking.id, startAt: booking.startAt.toISOString(), customer: booking.customer.name, service: booking.service.name, staff: booking.staff.displayName, status: booking.status, paymentReceivedInCents: booking.paymentReceivedInCents, priceInCents: booking.priceInCents, discountInCents: booking.discountInCents }))}
+      bookings={bookings.map((booking) => ({ id: booking.id, startAt: booking.startAt.toISOString(), endAt: booking.endAt.toISOString(), customer: booking.customer.name, service: booking.service.name, staffId: booking.staffId, staff: booking.staff.displayName, status: booking.status, paymentReceivedInCents: booking.paymentReceivedInCents, priceInCents: booking.priceInCents, discountInCents: booking.discountInCents }))}
       services={services}
-      staff={staffList.map((member) => ({ id: member.id, displayName: member.displayName, serviceIds: member.services.map((link) => link.serviceId) }))}
+      staff={staffList.map((member) => ({ id: member.id, displayName: member.displayName, color: member.color, serviceIds: member.services.map((link) => link.serviceId) }))}
     />
   );
 }

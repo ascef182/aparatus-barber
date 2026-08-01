@@ -16,16 +16,26 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/ap
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 import { getDashboardAvailability } from "@/app/_actions/get-dashboard-availability";
 import { createManualBooking } from "@/app/_actions/create-manual-booking";
+import { validateCouponAction } from "@/app/_actions/validate-coupon";
 import type { AvailableSlot } from "@/lib/scheduling/availability";
 
-type Service = { id: string; name: string; durationMinutes: number };
+type Service = { id: string; name: string; durationMinutes: number; priceInCents: number; currency: string };
 type Staff = { id: string; displayName: string; serviceIds: string[] };
+
+const COUPON_REASON_KEYS = {
+  invalid: "couponReasonInvalid",
+  not_yet_valid: "couponReasonNotYetValid",
+  expired: "couponReasonExpired",
+  exhausted: "couponReasonExhausted",
+  wrong_service: "couponReasonWrongService",
+} as const;
 
 /** Reserva manual/walk-in pelo staff — mesmo padrão de Sheet do wizard
  * público (app/t/[slug]/service-item.tsx), adaptado pra escolher serviço e
  * profissional em vez de já vir de um card fixo. */
 export function NewBookingSheet({ services, staff }: { services: Service[]; staff: Staff[] }) {
   const t = useTranslations("dashboard.agenda.newBooking");
+  const tCoupon = useTranslations("booking");
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"setup" | "details">("setup");
   const [serviceId, setServiceId] = useState("");
@@ -35,8 +45,12 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountInCents: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const availability = useAction(getDashboardAvailability);
+  const couponValidation = useAction(validateCouponAction);
   const booking = useAction(createManualBooking, {
     onSuccess: () => {
       toast.success(t("created"));
@@ -44,6 +58,24 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
     },
     onError: ({ error }) => toast.error(error.serverError ?? t("createError")),
   });
+
+  const selectedService = services.find((service) => service.id === serviceId);
+
+  async function handleApplyCoupon() {
+    if (!couponCode.trim() || !selectedService) return;
+    setCouponError(null);
+    const result = await couponValidation.executeAsync({ code: couponCode.trim(), serviceId: selectedService.id });
+    if (result.serverError || !result.data) {
+      setCouponError(tCoupon("couponGenericError"));
+      return;
+    }
+    if (!result.data.valid) {
+      setCouponError(tCoupon(COUPON_REASON_KEYS[result.data.reasonCode]));
+      setAppliedCoupon(null);
+      return;
+    }
+    setAppliedCoupon({ code: couponCode.trim(), discountInCents: result.data.discountInCents });
+  }
 
   const eligibleStaff = serviceId ? staff.filter((member) => member.serviceIds.includes(serviceId)) : [];
   const today = new Date();
@@ -75,6 +107,7 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
       staffId: resolvedStaffId,
       startAt: slot.startAt,
       customer: { name, email: email || undefined, phone: phone || undefined },
+      couponCode: appliedCoupon?.code,
     });
   }
 
@@ -89,6 +122,9 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
       setName("");
       setEmail("");
       setPhone("");
+      setCouponCode("");
+      setAppliedCoupon(null);
+      setCouponError(null);
     }
   }
 
@@ -238,6 +274,59 @@ export function NewBookingSheet({ services, staff }: { services: Service[]; staf
               </div>
               {!email && !phone && <p className="text-xs text-muted-foreground">{t("contactRequired")}</p>}
             </div>
+
+            <Separator />
+
+            <div className="px-5">
+              <Label htmlFor="walkin-coupon">{tCoupon("couponLabel")}</Label>
+              <div className="mt-1.5 flex gap-2">
+                <Input
+                  id="walkin-coupon"
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    setAppliedCoupon(null);
+                    setCouponError(null);
+                  }}
+                  placeholder={tCoupon("couponPlaceholder")}
+                  className="uppercase"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!couponCode.trim() || couponValidation.isPending || !!appliedCoupon}
+                  onClick={handleApplyCoupon}
+                >
+                  {couponValidation.isPending ? tCoupon("couponApplying") : tCoupon("couponApply")}
+                </Button>
+              </div>
+              {couponError && <p className="mt-1.5 text-xs text-destructive">{couponError}</p>}
+              {appliedCoupon && <p className="mt-1.5 text-xs text-primary">{tCoupon("couponApplied")}</p>}
+            </div>
+
+            {selectedService && (
+              <div className="px-5">
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <p className="text-sm font-medium">{selectedService.name}</p>
+                  {appliedCoupon ? (
+                    <span className="flex items-baseline gap-2">
+                      <span className="text-xs text-muted-foreground line-through">
+                        {new Intl.NumberFormat(undefined, { style: "currency", currency: selectedService.currency }).format(selectedService.priceInCents / 100)}
+                      </span>
+                      <span className="text-sm font-bold text-primary">
+                        {new Intl.NumberFormat(undefined, { style: "currency", currency: selectedService.currency }).format(
+                          Math.max(0, selectedService.priceInCents - appliedCoupon.discountInCents) / 100,
+                        )}
+                      </span>
+                    </span>
+                  ) : (
+                    <p className="text-sm font-bold">
+                      {new Intl.NumberFormat(undefined, { style: "currency", currency: selectedService.currency }).format(selectedService.priceInCents / 100)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="px-5 pb-6">
               <Button
