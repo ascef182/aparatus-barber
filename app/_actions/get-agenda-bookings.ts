@@ -25,8 +25,10 @@ export const getAgendaBookings = staffActionClient({ booking: ["read_own"] })
     return bookings.map((booking) => ({
       id: booking.id,
       startAt: booking.startAt.toISOString(),
+      endAt: booking.endAt.toISOString(),
       customer: booking.customer.name,
       service: booking.service.name,
+      staffId: booking.staffId,
       staff: booking.staff.displayName,
       status: booking.status,
       paymentReceivedInCents: booking.paymentReceivedInCents,

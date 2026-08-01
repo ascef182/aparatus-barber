@@ -14,6 +14,7 @@ const inputSchema = z
       email: z.string().trim().email().optional(),
       phone: z.string().trim().max(40).optional(),
     }),
+    couponCode: z.string().trim().min(1).max(32).optional(),
   })
   .refine((value) => Boolean(value.customer.email || value.customer.phone), {
     message: "Informe e-mail ou telefone do cliente.",
