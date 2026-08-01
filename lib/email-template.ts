@@ -29,15 +29,21 @@ export function renderBrandedEmail({
   ctaUrl,
   footerNote,
 }: BrandedEmailInput): { html: string; text: string } {
+  const safeHeading = escapeHtml(heading);
+  const safePreheader = preheader ? escapeHtml(preheader) : undefined;
+  const safeFooter = footerNote ? escapeHtml(footerNote) : "";
   const bodyHtml = paragraphs
-    .map((p) => `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:${INK}">${p}</p>`)
+    .map(
+      (p) =>
+        `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:${INK}">${escapeHtml(p).replace(/\n/g, "<br />")}</p>`,
+    )
     .join("");
 
   const ctaHtml =
     ctaLabel && ctaUrl
       ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 8px">
           <tr><td style="border-radius:8px;background:${BRAND_GREEN}">
-            <a href="${ctaUrl}" style="display:inline-block;padding:12px 24px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px">${ctaLabel}</a>
+            <a href="${escapeHtmlAttribute(safeCtaUrl(ctaUrl))}" style="display:inline-block;padding:12px 24px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px">${escapeHtml(ctaLabel)}</a>
           </td></tr>
         </table>`
       : "";
@@ -47,10 +53,10 @@ export function renderBrandedEmail({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${heading}</title>
+    <title>${safeHeading}</title>
   </head>
   <body style="margin:0;padding:32px 16px;background:${BG};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
-    ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0">${preheader}</div>` : ""}
+    ${safePreheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0">${safePreheader}</div>` : ""}
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px;margin:0 auto;background:#ffffff;border:1px solid ${BORDER};border-radius:12px;overflow:hidden">
       <tr>
         <td style="padding:24px 32px;border-bottom:1px solid ${BORDER}">
@@ -59,27 +65,50 @@ export function renderBrandedEmail({
       </tr>
       <tr>
         <td style="padding:32px">
-          <h1 style="margin:0 0 16px;font-size:20px;font-weight:600;color:${INK}">${heading}</h1>
+          <h1 style="margin:0 0 16px;font-size:20px;font-weight:600;color:${INK}">${safeHeading}</h1>
           ${bodyHtml}
           ${ctaHtml}
         </td>
       </tr>
       <tr>
         <td style="padding:20px 32px;background:${BG};border-top:1px solid ${BORDER}">
-          <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED}">${footerNote ?? ""}</p>
+          <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED}">${safeFooter}</p>
         </td>
       </tr>
     </table>
   </body>
 </html>`;
 
-  const text = [heading, "", ...paragraphs.map(stripTags), ctaLabel && ctaUrl ? `${ctaLabel}: ${ctaUrl}` : "", footerNote ? stripTags(footerNote) : ""]
+  const text = [
+    heading,
+    "",
+    ...paragraphs,
+    ctaLabel && ctaUrl ? `${ctaLabel}: ${safeCtaUrl(ctaUrl)}` : "",
+    footerNote ?? "",
+  ]
     .filter(Boolean)
     .join("\n\n");
 
   return { html, text };
 }
 
-function stripTags(value: string): string {
-  return value.replace(/<[^>]+>/g, "");
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeHtmlAttribute(value: string): string {
+  return escapeHtml(value).replace(/`/g, "&#96;");
+}
+
+function safeCtaUrl(value: string): string {
+  const url = new URL(value);
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new Error("CTA URL must use http or https");
+  }
+  return url.toString();
 }

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
 import { logger } from "@/lib/logger";
+import { getIpFromRequest } from "@/lib/rate-limit";
 
 const { GET: authGet, POST: authPost } = toNextJsHandler(auth.handler);
 
@@ -9,12 +10,6 @@ const { GET: authGet, POST: authPost } = toNextJsHandler(auth.handler);
 // e next/headers só funciona dentro do request-scope que o próprio Next.js
 // monta ao invocar este handler -- chamar a função exportada diretamente
 // (como um teste faz) lança "headers was called outside a request scope".
-function getIpFromRequest(request: Request): string {
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0]!.trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
-
 /**
  * O rate limit nativo do Better Auth (lib/auth.ts `rateLimit.customRules`,
  * cobre /sign-in/email, /sign-up/email, /request-password-reset) decide e
@@ -27,7 +22,10 @@ function getIpFromRequest(request: Request): string {
 function logIfRateLimited(request: Request, response: Response) {
   if (response.status === 429) {
     const { pathname } = new URL(request.url);
-    logger({ authPath: pathname, ip: getIpFromRequest(request) }).warn({}, "rate_limit.denied");
+    logger({ authPath: pathname, ip: getIpFromRequest(request) }).warn(
+      {},
+      "rate_limit.denied",
+    );
   }
 }
 

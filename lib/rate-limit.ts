@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { createHmac } from "node:crypto";
 import Redis from "ioredis";
 import { logger } from "@/lib/logger";
 
@@ -27,7 +28,10 @@ const redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379", {
 let loggedRedisError = false;
 redis.on("error", (err) => {
   if (!loggedRedisError) {
-    console.error("[redis] connection error (further errors suppressed until reconnected):", err.message);
+    console.error(
+      "[redis] connection error (further errors suppressed until reconnected):",
+      err.message,
+    );
     loggedRedisError = true;
   }
 });
@@ -52,9 +56,31 @@ export const authSecondaryStorage = {
 
 export async function getClientIp(): Promise<string> {
   const h = await headers();
+  return getIpFromHeaders(h);
+}
+
+export function getIpFromRequest(request: Request): string {
+  return getIpFromHeaders(request.headers);
+}
+
+export function hashIpAddress(ip: string): string {
+  const secret =
+    process.env.CONSENT_IP_HASH_SECRET ?? process.env.BETTER_AUTH_SECRET;
+  if (!secret) throw new Error("IP hashing secret is not configured");
+  return createHmac("sha256", secret).update(ip).digest("hex");
+}
+
+function getIpFromHeaders(h: Headers): string {
+  const trustedHeader = process.env.TRUSTED_PROXY_IP_HEADER?.toLowerCase();
+  if (trustedHeader === "cf-connecting-ip") {
+    return h.get("cf-connecting-ip")?.trim() || "unknown";
+  }
+  if (trustedHeader === "x-real-ip") {
+    return h.get("x-real-ip")?.trim() || "unknown";
+  }
+  if (process.env.NODE_ENV === "production") return "unknown";
   const forwardedFor = h.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0]!.trim();
-  return h.get("x-real-ip") ?? "unknown";
+  return forwardedFor?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 
 /**
