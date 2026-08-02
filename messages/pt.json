@@ -392,6 +392,8 @@
       "customerPaymentsDesc": "Conecte sua conta Stripe Express para aceitar depósitos e pré-pagamentos.",
       "connectStripe": "Conectar Stripe",
       "continueOnboarding": "Continuar onboarding Stripe",
+      "connectActive": "Conectado — pronto para receber pagamentos",
+      "connectPending": "Onboarding iniciado, mas ainda não concluído no Stripe",
       "subscriptionSuccessBanner": "Assinatura confirmada! Seu plano já está ativo.",
       "subscriptionCanceledBanner": "Assinatura cancelada. Você pode tentar novamente quando quiser.",
       "genericError": "Não foi possível completar a ação. Tente novamente."
