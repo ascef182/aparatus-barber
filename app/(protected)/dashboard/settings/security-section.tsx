@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -34,11 +34,26 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const [isPending, setIsPending] = useState(false);
+  // null enquanto carrega. Contas criadas via Google (socialProviders.google
+  // em lib/auth.ts) não têm account "credential" — pedir senha pra elas é
+  // impossível de satisfazer. lib/auth.ts habilita allowPasswordless no
+  // plugin two-factor para essas contas; aqui decidimos se mostramos o passo
+  // de senha ou pulamos direto pra ativação.
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
 
-  async function startEnable(event: React.FormEvent) {
-    event.preventDefault();
+  useEffect(() => {
+    authClient.listAccounts().then((result) => {
+      setHasPassword(
+        result.data?.some((account) => account.providerId === "credential") ?? true,
+      );
+    });
+  }, []);
+
+  async function enableTwoFactor(passwordValue?: string) {
     setIsPending(true);
-    const result = await authClient.twoFactor.enable({ password });
+    const result = await authClient.twoFactor.enable(
+      passwordValue ? { password: passwordValue } : {},
+    );
     setIsPending(false);
     if (result.error) {
       toast.error(result.error.message ?? t("wrongPassword"));
@@ -47,6 +62,19 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
     setSecret(extractSecret(result.data.totpURI));
     setBackupCodes(result.data.backupCodes);
     setStep("verify");
+  }
+
+  function startEnableClick() {
+    if (hasPassword === false) {
+      void enableTwoFactor();
+      return;
+    }
+    setStep("password");
+  }
+
+  async function startEnable(event: React.FormEvent) {
+    event.preventDefault();
+    await enableTwoFactor(password);
   }
 
   async function confirmVerify(event: React.FormEvent) {
@@ -65,9 +93,12 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   }
 
   async function disable() {
-    const pwd = window.prompt(t("disablePrompt"));
-    if (!pwd) return;
-    const result = await authClient.twoFactor.disable({ password: pwd });
+    let pwd: string | undefined;
+    if (hasPassword !== false) {
+      pwd = window.prompt(t("disablePrompt")) ?? undefined;
+      if (!pwd) return;
+    }
+    const result = await authClient.twoFactor.disable(pwd ? { password: pwd } : {});
     if (result.error) {
       toast.error(result.error.message ?? t("wrongPassword"));
       return;
@@ -97,7 +128,9 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
         )}
 
         {!enabled && step === "idle" && (
-          <Button onClick={() => setStep("password")}>{t("enable2fa")}</Button>
+          <Button onClick={startEnableClick} disabled={hasPassword === null || isPending}>
+            {isPending ? "..." : t("enable2fa")}
+          </Button>
         )}
 
         {!enabled && step === "password" && (

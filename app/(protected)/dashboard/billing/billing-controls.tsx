@@ -1,6 +1,7 @@
 "use client";
 import { useAction } from "next-safe-action/hooks";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { createSubscriptionCheckout } from "@/app/_actions/create-subscription-checkout";
 import { createConnectOnboarding } from "@/app/_actions/create-connect-onboarding";
 import { createBillingPortal } from "@/app/_actions/create-billing-portal";
@@ -16,7 +17,15 @@ export function BillingControls({
   intendedPlan?: "STARTER" | "GROWTH" | "PRO" | null;
 }) {
   const t = useTranslations("dashboard.billing");
-  const checkout = useAction(createSubscriptionCheckout); const connect = useAction(createConnectOnboarding); const portal = useAction(createBillingPortal);
+  // Sem onError, uma action bloqueada (trial vencido, 2FA vencido, erro do
+  // Stripe...) falha em silêncio total: result.data fica undefined e nada
+  // acontece na tela, sem toast nem log — foi assim que "conectar Stripe"
+  // parou de funcionar sem nenhuma mensagem visível.
+  const onActionError = ({ error }: { error: { serverError?: string } }) =>
+    toast.error(error.serverError ?? t("genericError"));
+  const checkout = useAction(createSubscriptionCheckout, { onError: onActionError });
+  const connect = useAction(createConnectOnboarding, { onError: onActionError });
+  const portal = useAction(createBillingPortal, { onError: onActionError });
   async function subscribe(plan: "STARTER" | "GROWTH" | "PRO") { const visitorId = await getVisitorId(); const result = await checkout.executeAsync({ plan, visitorId: visitorId ?? undefined }); if (result.data?.url) window.location.assign(result.data.url); }
   async function openPortal() { const result = await portal.executeAsync(); if (result.data?.url) window.location.assign(result.data.url); }
   async function onboard() { const result = await connect.executeAsync(); if (result.data?.url) window.location.assign(result.data.url); }

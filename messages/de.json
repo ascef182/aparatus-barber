@@ -393,7 +393,8 @@
       "connectStripe": "Stripe verbinden",
       "continueOnboarding": "Stripe-Onboarding fortsetzen",
       "subscriptionSuccessBanner": "Abonnement bestätigt! Ihr Plan ist jetzt aktiv.",
-      "subscriptionCanceledBanner": "Abonnement abgebrochen. Sie können es jederzeit erneut versuchen."
+      "subscriptionCanceledBanner": "Abonnement abgebrochen. Sie können es jederzeit erneut versuchen.",
+      "genericError": "Aktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
     },
     "customers": {
       "title": "Kunden",

@@ -393,7 +393,8 @@
       "connectStripe": "Conectar Stripe",
       "continueOnboarding": "Continuar onboarding Stripe",
       "subscriptionSuccessBanner": "Assinatura confirmada! Seu plano já está ativo.",
-      "subscriptionCanceledBanner": "Assinatura cancelada. Você pode tentar novamente quando quiser."
+      "subscriptionCanceledBanner": "Assinatura cancelada. Você pode tentar novamente quando quiser.",
+      "genericError": "Não foi possível completar a ação. Tente novamente."
     },
     "customers": {
       "title": "Clientes",

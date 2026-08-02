@@ -393,7 +393,8 @@
       "connectStripe": "Connect Stripe",
       "continueOnboarding": "Continue Stripe onboarding",
       "subscriptionSuccessBanner": "Subscription confirmed! Your plan is now active.",
-      "subscriptionCanceledBanner": "Subscription canceled. You can try again anytime."
+      "subscriptionCanceledBanner": "Subscription canceled. You can try again anytime.",
+      "genericError": "Couldn't complete the action. Please try again."
     },
     "customers": {
       "title": "Customers",

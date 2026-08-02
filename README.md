@@ -39,6 +39,15 @@ pnpm dev
 
 `pnpm db:up` starts only PostgreSQL and Redis, so it can be used with the host Next.js process without a port conflict. Use `pnpm stack:up` instead when you want web, worker, migrations, PostgreSQL, and Redis entirely in Docker; do not run `pnpm dev` at the same time.
 
+Stripe webhooks (billing subscriptions, Connect onboarding) only update the database
+through `app/api/stripe/billing/webhook/route.ts` and `app/api/stripe/connect/webhook/route.ts`
+— there is no other sync path. Locally, those events only reach your machine through the
+Stripe CLI: run `stripe listen --forward-to localhost:3000/api/stripe/billing/webhook`
+(a second `stripe listen` instance for `/api/stripe/connect/webhook` if you're testing
+Connect) and put the printed `whsec_...` into `STRIPE_BILLING_WEBHOOK_SECRET`/
+`STRIPE_CONNECT_WEBHOOK_SECRET` in `.env`. Without it running, a subscription or Connect
+onboarding can complete on Stripe's side and the local database will never reflect it.
+
 Use `lvh.me:3000` for cross-subdomain development. Run `pnpm worker` in a second terminal when testing reminders and transactional notifications; it loads the same `.env` as the web process. The production runtime uses `RUNTIME_DATABASE_URL` with the restricted `app_runtime` role; `DATABASE_URL` is reserved for migrations.
 
 ## Commands

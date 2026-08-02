@@ -67,7 +67,7 @@ export const createSubscriptionCheckout = staffActionClient({ billing: ["manage"
     // Bug corrigido (mesmo de create-booking-payment-checkout.ts): o
     // retorno ia pro domínio raiz — /dashboard/billing só existe sob o
     // subdomínio do tenant, então o dono nunca via a confirmação.
-    return createTaxAwareSubscriptionCheckout({
+    const session = await createTaxAwareSubscriptionCheckout({
       customer, line_items: [{ price: plan.priceId, quantity: 1 }],
       subscription_data: { metadata: { organizationId: ctx.organization.id, plan: parsedInput.plan } },
       metadata: {
@@ -79,4 +79,7 @@ export const createSubscriptionCheckout = staffActionClient({ billing: ["manage"
       success_url: getTenantUrl(ctx.organization.slug, "/dashboard/billing?success=1"),
       cancel_url: getTenantUrl(ctx.organization.slug, "/dashboard/billing?canceled=1"),
     });
+    // Retorna só o campo usado pelo cliente — objeto do SDK do Stripe não é
+    // plain object, gerava aviso de serialização no console.
+    return { url: session.url };
   });
