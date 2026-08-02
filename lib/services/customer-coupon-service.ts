@@ -58,11 +58,10 @@ export async function claimCoupon(customerId: string, code: string) {
       claimedAt: claim.claimedAt,
     };
   } catch (error) {
-    // P2002 = unique constraint violation (customer already claimed this coupon)
-    if (
-      error instanceof Error &&
-      error.message.includes("Unique constraint failed")
-    ) {
+    // Checagem estrutural do código, não do texto da mensagem — mais
+    // robusta que `error.message.includes(...)` (mesma classe de fix
+    // aplicada em lib/services/stripe-event-service.ts).
+    if ((error as { code?: string } | null)?.code === "P2002") {
       return {
         success: false as const,
         error: "already_claimed",
