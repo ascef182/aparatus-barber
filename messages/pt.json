@@ -646,6 +646,7 @@
       "disable2fa": "Desativar 2FA",
       "enable2fa": "Ativar 2FA",
       "yourPassword": "Sua senha",
+      "passwordOptionalHint": "Deixe em branco se você entrou com o Google.",
       "continueLabel": "Continuar",
       "addManually": "Adicione manualmente no seu app autenticador (Google Authenticator, Authy...):",
       "backupCodesHint": "Códigos de backup — guarde em local seguro, cada um só funciona uma vez:",
