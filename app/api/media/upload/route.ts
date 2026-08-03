@@ -7,6 +7,7 @@ import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { hasPermission } from "@/lib/auth/permissions";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { badRequest, forbidden, tooManyRequests, unauthorized } from "@/lib/http-errors";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -30,8 +31,7 @@ export async function POST(request: Request) {
   const requestHeaders = await headers();
   const session = await auth.api.getSession({ headers: requestHeaders });
   const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug)
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  if (!session?.user || !slug) return unauthorized();
   const organization = await getOrganizationBySlug(slug);
   const membership = organization
     ? await getMembership(organization.id, session.user.id)
@@ -44,11 +44,7 @@ export async function POST(request: Request) {
       max: 20,
     },
   );
-  if (!allowed)
-    return NextResponse.json(
-      { error: "Muitos uploads. Tente novamente mais tarde." },
-      { status: 429 },
-    );
+  if (!allowed) return tooManyRequests("Muitos uploads. Tente novamente mais tarde.");
   const form = await request.formData();
   const file = form.get("file");
   const kind = form.get("kind") === "cover" ? "cover" : "service";
@@ -59,7 +55,7 @@ export async function POST(request: Request) {
     !membership ||
     !hasPermission(membership.role, requiredPermission)
   )
-    return NextResponse.json({ error: "Sem permissão." }, { status: 403 });
+    return forbidden();
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -74,10 +70,7 @@ export async function POST(request: Request) {
     file.size > MAX_BYTES ||
     !(await hasValidImageSignature(file))
   )
-    return NextResponse.json(
-      { error: "Envie uma imagem JPEG, PNG ou WebP válida de até 5 MB." },
-      { status: 400 },
-    );
+    return badRequest("Envie uma imagem JPEG, PNG ou WebP válida de até 5 MB.");
   const folder = `aparatus/${organization.id}/${kind === "cover" ? "branding" : "services"}`;
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = createHash("sha1")

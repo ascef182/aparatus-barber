@@ -6,6 +6,12 @@ import { db } from "@/lib/db";
 import { getTenantUrl } from "@/lib/tenant-host";
 import { z } from "zod";
 
+// Continuação de checkout de convidado (sem login): autorizado pelo tenant
+// (via publicTenantActionClient's runWithTenant) + status PENDING_PAYMENT +
+// janela de expiresAt, não por identidade do cliente — fluxo público
+// deliberado. bookingId é um UUID v4 inadivinhável e a janela é curta (30
+// min); pior caso é pagar a reserva de outra pessoa (griefing), não
+// vazamento de dado ou tomada de conta. Ver auditoria de IDOR, 2026-08-03.
 export const createBookingPaymentCheckout = publicTenantActionClient
   .inputSchema(z.object({ bookingId: z.uuid() }))
   .action(async ({ parsedInput, ctx }) => {

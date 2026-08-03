@@ -13,6 +13,10 @@ import {
   getLocationById,
   listLocations,
 } from "@/lib/services/location-service";
+import {
+  createStaffReply,
+  getConversationForStaff,
+} from "@/lib/services/conversation-service";
 
 /**
  * Suites 1 e 2 do plano (seção 8.3): isolamento de tenant na camada de dados.
@@ -1168,6 +1172,21 @@ describe("Suite 2 — extension fail-closed", () => {
     );
     const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
     expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+
+    // getConversationForStaff/createStaffReply usam a chave composta
+    // id_organizationId — uma conversa de outro tenant deve se comportar
+    // como "não encontrada", nunca lançar um erro genérico de Unauthorized
+    // que vazaria pro cliente como "Erro interno".
+    const foundByB = await runWithTenant(orgB.id, () =>
+      getConversationForStaff(conversationA.id),
+    );
+    expect(foundByB).toBeNull();
+
+    await expect(
+      runWithTenant(orgB.id, () =>
+        createStaffReply(conversationA.id, "user-b", "intruso"),
+      ),
+    ).rejects.toThrow("Conversa não encontrada.");
   });
 
   test("Message: fail-closed sem contexto, escopado sob tenant (mesmo via conversationId de outro tenant)", async () => {

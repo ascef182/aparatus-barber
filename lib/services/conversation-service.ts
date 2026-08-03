@@ -128,7 +128,7 @@ export async function listConversationsForStaff() {
 export async function getConversationForStaff(conversationId: string) {
   const organizationId = requireTenantId();
   const conversation = await db.conversation.findUnique({
-    where: { id: conversationId },
+    where: { id_organizationId: { id: conversationId, organizationId } },
     include: {
       customer: {
         select: { id: true, name: true, email: true },
@@ -138,9 +138,6 @@ export async function getConversationForStaff(conversationId: string) {
       },
     },
   });
-  if (conversation && conversation.organizationId !== organizationId) {
-    throw new Error("Unauthorized");
-  }
   if (conversation) {
     await db.conversation.update({
       where: { id: conversationId },
@@ -159,10 +156,10 @@ export async function createStaffReply(
 ) {
   const organizationId = requireTenantId();
   const conversation = await db.conversation.findUnique({
-    where: { id: conversationId },
+    where: { id_organizationId: { id: conversationId, organizationId } },
   });
-  if (!conversation || conversation.organizationId !== organizationId) {
-    throw new Error("Unauthorized");
+  if (!conversation) {
+    throw new Error("Conversa não encontrada.");
   }
   const message = await db.message.create({
     data: {
