@@ -18,7 +18,7 @@ Bladiq serves owner-operated barbershops, hair salons, nail studios, and beauty 
 ## Commercial model
 
 - Assisted beta: 30-day pilot, then Founder Plan at €29/month for 12 months for the first 20 partners.
-- General availability: 14-day self-service trial; Starter €39, Growth €79, Pro €149.
+- General availability: 7-day self-service trial; Starter €39, Growth €79, Pro €149. (7 days is the value implemented in code — `TRIAL_DAYS` in `lib/services/organization-service.ts` — and the one the published Terms commit to. This document said 14 until 2026-08-21; do not quote 14 in sales material.)
 - No directory commission during validation. The directory is a free SEO/discovery surface, not a guaranteed lead source.
 - Stripe processing fees remain transparent and separate.
 
