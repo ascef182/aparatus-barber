@@ -13,6 +13,7 @@ import { enqueueBookingNotification } from "@/lib/notifications";
 import { checkCancellation } from "@/lib/rules/policies/cancellation";
 import { logger } from "@/lib/logger";
 import { logAuditEvent } from "@/lib/services/audit-service";
+import { assertOwned } from "@/lib/authz";
 
 export type CreateBookingInput = {
   serviceId: string;
@@ -193,7 +194,12 @@ export async function createBooking(input: CreateBookingInput) {
 
 /** Aplica a política de cancelamento (lib/rules/policies/cancellation.ts):
  * rejeita se fora da janela permitida, senão calcula a taxa (se houver) e
- * grava junto com o cancelamento — não é um simples update de status. */
+ * grava junto com o cancelamento — não é um simples update de status.
+ *
+ * PRIMITIVA INTERNA — assume que quem chama já autorizou este cancelamento
+ * (checagem de posse do cliente, ou RBAC de staff + assertOwnBookingAccess).
+ * Não chame direto a partir de uma nova action voltada ao cliente final; use
+ * cancelBookingForCustomer, que faz a checagem de posse aqui mesmo. */
 export async function cancelBooking(id: string, cancelledBy?: string) {
   const [existing, rules] = await Promise.all([
     db.booking.findUniqueOrThrow({ where: { id } }),
@@ -229,6 +235,19 @@ export async function cancelBooking(id: string, cancelledBy?: string) {
     actorId: cancelledBy,
   });
   return booking;
+}
+
+/** Único ponto sancionado para um cliente cancelar sua própria reserva — a
+ * posse é revalidada aqui (não só na action que chama), pra que um futuro
+ * caller não reintroduza IDOR ao pular a pré-checagem. */
+export async function cancelBookingForCustomer(
+  bookingId: string,
+  expectedCustomerId: string,
+  cancelledByUserId?: string,
+) {
+  const booking = await db.booking.findUnique({ where: { id: bookingId } });
+  assertOwned(booking, "customerId", expectedCustomerId, "Reserva não encontrada.");
+  return cancelBooking(bookingId, cancelledByUserId);
 }
 
 export function listBookings(range?: { from: Date; to: Date }) {

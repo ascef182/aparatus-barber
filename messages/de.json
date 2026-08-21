@@ -392,8 +392,11 @@
       "customerPaymentsDesc": "Verbinden Sie Ihr Stripe-Express-Konto, um Anzahlungen und Vorauszahlungen zu akzeptieren.",
       "connectStripe": "Stripe verbinden",
       "continueOnboarding": "Stripe-Onboarding fortsetzen",
+      "connectActive": "Verbunden — bereit, Zahlungen zu empfangen",
+      "connectPending": "Onboarding gestartet, aber bei Stripe noch nicht abgeschlossen",
       "subscriptionSuccessBanner": "Abonnement bestätigt! Ihr Plan ist jetzt aktiv.",
-      "subscriptionCanceledBanner": "Abonnement abgebrochen. Sie können es jederzeit erneut versuchen."
+      "subscriptionCanceledBanner": "Abonnement abgebrochen. Sie können es jederzeit erneut versuchen.",
+      "genericError": "Aktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
     },
     "customers": {
       "title": "Kunden",
@@ -643,6 +646,7 @@
       "disable2fa": "2FA deaktivieren",
       "enable2fa": "2FA aktivieren",
       "yourPassword": "Ihr Passwort",
+      "passwordOptionalHint": "Leer lassen, wenn Sie sich mit Google angemeldet haben.",
       "continueLabel": "Weiter",
       "addManually": "Manuell in Ihrer Authenticator-App hinzufügen (Google Authenticator, Authy...):",
       "backupCodesHint": "Backup-Codes — sicher aufbewahren, jeder funktioniert nur einmal:",

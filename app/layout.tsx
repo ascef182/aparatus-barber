@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
@@ -9,16 +10,6 @@ import { TooltipProvider } from "./_components/ui/tooltip";
 import QueryProvider from "./_providers/query-provider";
 import { ThemeProvider } from "./_providers/theme-provider";
 import { CookieConsentBanner } from "./_components/cookie-consent-banner";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Bladiq — The complete booking platform for local businesses",
@@ -47,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
         <NextIntlClientProvider>
           <ThemeProvider>

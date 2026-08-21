@@ -1,4 +1,3 @@
-import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 const PROCESSING_TIMEOUT_MS = 5 * 60 * 1000;
@@ -26,10 +25,14 @@ export async function claimStripeEvent(event: {
     });
     return "claimed";
   } catch (error) {
-    if (
-      !(error instanceof Prisma.PrismaClientKnownRequestError) ||
-      error.code !== "P2002"
-    ) {
+    // Checagem estrutural, não `instanceof Prisma.PrismaClientKnownRequestError`:
+    // em produção esse `instanceof` falhava mesmo para um P2002 genuíno — o
+    // chunking do Turbopack pode carregar o client gerado em módulos
+    // diferentes, então o erro lançado em runtime e a classe importada aqui
+    // não são a mesma referência, e o catch nunca pegava (entregas
+    // duplicadas de webhook, que essa tabela existe justamente pra
+    // absorver, quebravam com 500 em vez de virar no-op).
+    if ((error as { code?: string } | null)?.code !== "P2002") {
       throw error;
     }
   }

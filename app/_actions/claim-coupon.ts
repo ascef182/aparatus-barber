@@ -1,6 +1,6 @@
 "use server";
 
-import { customerActionClient } from "@/lib/safe-action";
+import { customerActionClient, ActionError } from "@/lib/safe-action";
 import { claimCoupon } from "@/lib/services/customer-coupon-service";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
@@ -16,12 +16,12 @@ export const claimCouponAction = customerActionClient
       },
     );
     if (!allowed) {
-      throw new Error("Muitas tentativas. Aguarde uma hora e tente novamente.");
+      throw new ActionError("Muitas tentativas. Aguarde uma hora e tente novamente.");
     }
 
     const result = await claimCoupon(ctx.customer.id, parsedInput.code);
     if (!result.success) {
-      throw new Error(result.message);
+      throw new ActionError(result.message);
     }
     return result;
   });

@@ -25,5 +25,5 @@ export const updateProfileAction = customerActionClient
       throw new Error("Aguarde alguns segundos antes de atualizar novamente.");
     }
 
-    return updateCustomerProfile(ctx.customer.id, parsedInput);
+    return updateCustomerProfile(ctx.customer.id, ctx.user.id, parsedInput);
   });

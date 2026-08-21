@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
 import { createBooking } from "@/lib/services/booking-service";
 import { createCoupon, updateCoupon, validateCoupon } from "@/lib/services/coupon-service";
+import { futureMondayAt, futureMondayISO } from "../helpers/future-date";
 
 /**
  * Fecha o gap descoberto durante a varredura de Phase B: cupons podiam ser
@@ -65,10 +66,12 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-const MONDAY = "2026-08-10";
+// Ver tests/helpers/future-date.ts: data literal aqui vence e derruba todo
+// teste que passa por createBooking.
+const MONDAY = futureMondayISO();
 let slotHour = 8; // cada teste usa um horário diferente pra não colidir com o exclusion constraint
 function nextSlot() {
-  return new Date(`${MONDAY}T${String(slotHour++).padStart(2, "0")}:00:00.000Z`);
+  return futureMondayAt(slotHour++, MONDAY);
 }
 
 describe("validateCoupon", () => {
@@ -167,7 +170,7 @@ describe("createBooking com couponCode", () => {
           couponCode: "NAOEXISTE2",
         }),
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Cupom inválido.");
   });
 
   test("sem couponCode, discountInCents fica zero e couponId nulo", async () => {

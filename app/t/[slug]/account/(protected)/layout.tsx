@@ -1,10 +1,9 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, CalendarDays, LayoutDashboard, User, Ticket, MessageCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
+import { getRootUrl, resolveTenantSlug } from "@/lib/tenant-host";
 import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { SidebarNav, type NavItem } from "@/app/(protected)/dashboard/sidebar-nav";
 import { MobileNav } from "@/app/(protected)/dashboard/mobile-nav";
@@ -34,13 +33,16 @@ export default async function AccountLayout({ children }: { children: React.Reac
   ];
   const userMenu = (
     <div className="flex flex-col gap-2">
-      <Link
-        href="/"
+      {/* <a> normal, não next/link: navegação cross-origin (subdomínio do
+      tenant -> domínio raiz), href="/" relativo ficava preso no mesmo
+      tenant (proxy.ts reescreve "/" para /t/{slug}). */}
+      <a
+        href={getRootUrl()}
         className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
       >
         <ArrowLeft className="size-3.5" />
         {t("backToSite")}
-      </Link>
+      </a>
       <AccountUserMenu
         name={session.user.name}
         email={session.user.email}

@@ -102,12 +102,7 @@ export function CouponsList({
       </Sheet>
 
       {coupons.length === 0 && (
-        <EmptyState
-          icon={Ticket}
-          title={t("noCoupons")}
-          description={t("noCouponsDescription")}
-          action={<Button onClick={() => setCreating(true)}>{t("newCoupon")}</Button>}
-        />
+        <EmptyState icon={Ticket} title={t("noCoupons")} description={t("noCouponsDescription")} />
       )}
 
       <div className="grid gap-3 md:grid-cols-2">

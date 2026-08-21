@@ -8,6 +8,7 @@ import {
   createBooking,
   expireStaleHolds,
 } from "@/lib/services/booking-service";
+import { futureMondayAt, futureMondayISO } from "../helpers/future-date";
 
 const org = { id: randomUUID(), slug: `bkflow-${randomUUID().slice(0, 8)}` };
 let locationId: string;
@@ -70,10 +71,11 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-// Segunda-feira (weekday=1) bem no futuro, dentro da janela de antecedência.
-const MONDAY = "2026-08-10";
+// Segunda-feira (weekday=1) dentro da janela de antecedência, calculada em
+// runtime — ver tests/helpers/future-date.ts para por que não pode ser literal.
+const MONDAY = futureMondayISO();
 function at(hour: number) {
-  return new Date(`${MONDAY}T${String(hour).padStart(2, "0")}:00:00.000Z`);
+  return futureMondayAt(hour, MONDAY);
 }
 
 describe("fluxo de booking", () => {

@@ -6,6 +6,7 @@ import { countMembershipsForUser, deleteUserAccount } from "@/lib/services/membe
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { logAuditEvent } from "@/lib/services/audit-service";
+import { tooManyRequests, unauthorized } from "@/lib/http-errors";
 
 /**
  * Direito ao esquecimento (GDPR Art. 17). Anonimiza Customer em todos os
@@ -15,10 +16,10 @@ import { logAuditEvent } from "@/lib/services/audit-service";
  */
 export async function POST() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user) return unauthorized("Unauthorized");
 
   const { allowed } = await checkRateLimit(`gdpr-erase:${session.user.id}`, { windowSeconds: 86400, max: 3 });
-  if (!allowed) return NextResponse.json({ error: "Muitas solicitações. Tente novamente em 24h." }, { status: 429 });
+  if (!allowed) return tooManyRequests("Muitas solicitações. Tente novamente em 24h.");
 
   const { organizationIds } = await eraseCustomersForUser(session.user.id);
   for (const organizationId of organizationIds) {

@@ -6,12 +6,37 @@ import { PrismaPg } from "@prisma/adapter-pg";
 // DATABASE_URL continua sendo a role owner, usada só por
 // `prisma migrate dev`/`deploy` (precisa de DDL/CREATE POLICY), nunca pelo
 // client em runtime. Ver prisma/migrations/20260720120000_add_rls_policies.
-const connectionString = `${process.env.RUNTIME_DATABASE_URL}`;
+// Não validar aqui de propósito. Este módulo é importado durante
+// `next build` (coleta de rotas) em ambientes que legitimamente não têm o
+// segredo de runtime -- CI e build de imagem --, então um throw no topo
+// quebraria o build em vez de proteger alguém. O gate de verdade roda no
+// boot, com a lista completa do que falta: assertRuntimeEnv("web") via
+// scripts/check-runtime-env.ts (`pnpm start`) e assertRuntimeEnv("worker")
+// em worker/index.ts.
+const connectionString = process.env.RUNTIME_DATABASE_URL;
 
-const adapter = new PrismaPg({ connectionString });
+// max acima do default do driver (10): o scoping de tenant (lib/db.ts) abre
+// uma mini-transação por operação tenant-scoped (set_config + query, mesma
+// conexão, exigido pelas políticas de RLS) — uma página como /dashboard
+// dispara facilmente 10+ dessas concorrentemente, e com o pool default
+// baixo isso já foi visto estourando o timeout de 5s do $transaction
+// batch (P2028) por contenção de conexão, não por query lenta.
+const adapter = new PrismaPg({ connectionString, max: 20 });
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
+// Default do Prisma é maxWait=2000ms/timeout=5000ms, aplicado a toda
+// $transaction (inclusive a forma em array usada por lib/db.ts pro scoping
+// de tenant) — baixo demais quando várias dessas mini-transações disparam
+// concorrentemente (ex.: /dashboard chega a 10+ de uma vez, ver
+// getDashboardMetrics) e competem por conexão do pool acima. Cada uma
+// continua rápida isoladamente; a folga aqui é pra contenção de conexão sob
+// carga, não pra query lenta.
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    adapter,
+    transactionOptions: { maxWait: 10_000, timeout: 10_000 },
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

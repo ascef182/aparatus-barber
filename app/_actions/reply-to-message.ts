@@ -1,6 +1,6 @@
 "use server";
 
-import { staffActionClient } from "@/lib/safe-action";
+import { ActionError, staffActionClient } from "@/lib/safe-action";
 import { createStaffReply } from "@/lib/services/conversation-service";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
@@ -26,9 +26,14 @@ export const replyToMessageAction = staffActionClient({ messages: ["reply"] })
       );
     }
 
-    return createStaffReply(
-      parsedInput.conversationId,
-      ctx.user.id,
-      parsedInput.body,
-    );
+    try {
+      return await createStaffReply(
+        parsedInput.conversationId,
+        ctx.user.id,
+        parsedInput.body,
+      );
+    } catch (error) {
+      if (error instanceof Error) throw new ActionError(error.message);
+      throw error;
+    }
   });

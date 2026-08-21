@@ -6,6 +6,12 @@ import { db } from "@/lib/db";
 import { getTenantUrl } from "@/lib/tenant-host";
 import { z } from "zod";
 
+// Continuação de checkout de convidado (sem login): autorizado pelo tenant
+// (via publicTenantActionClient's runWithTenant) + status PENDING_PAYMENT +
+// janela de expiresAt, não por identidade do cliente — fluxo público
+// deliberado. bookingId é um UUID v4 inadivinhável e a janela é curta (30
+// min); pior caso é pagar a reserva de outra pessoa (griefing), não
+// vazamento de dado ou tomada de conta. Ver auditoria de IDOR, 2026-08-03.
 export const createBookingPaymentCheckout = publicTenantActionClient
   .inputSchema(z.object({ bookingId: z.uuid() }))
   .action(async ({ parsedInput, ctx }) => {
@@ -25,7 +31,14 @@ export const createBookingPaymentCheckout = publicTenantActionClient
     // app/t/[slug]/page.tsx). getTenantUrl mantém o cliente no tenant certo.
     const successUrl = getTenantUrl(ctx.organization.slug, "/?booking=success");
     const cancelUrl = getTenantUrl(ctx.organization.slug, "/?booking=canceled");
-    const session = await getStripe().checkout.sessions.create({ mode: "payment", line_items: [{ price_data: { currency: booking.currency.toLowerCase(), unit_amount: amount, product_data: { name: booking.service.name } }, quantity: 1 }], metadata: { kind: "booking", bookingId: booking.id, organizationId: ctx.organization.id }, success_url: successUrl, cancel_url: cancelUrl }, { stripeAccount: ctx.organization.stripeConnectAccountId });
+    // Taxa da plataforma: 2,4% sobre o valor pago pelo cliente. Direct charge
+    // (via header stripeAccount) já debita a taxa de processamento do
+    // próprio Stripe da conta conectada do barbeiro — o application_fee_amount
+    // é cobrado por cima disso, então o repasse líquido do barbeiro absorve
+    // as duas taxas, como decidido com o owner.
+    const PLATFORM_FEE_RATE = 0.024;
+    const applicationFeeAmount = Math.round(amount * PLATFORM_FEE_RATE);
+    const session = await getStripe().checkout.sessions.create({ mode: "payment", line_items: [{ price_data: { currency: booking.currency.toLowerCase(), unit_amount: amount, product_data: { name: booking.service.name } }, quantity: 1 }], payment_intent_data: { application_fee_amount: applicationFeeAmount }, metadata: { kind: "booking", bookingId: booking.id, organizationId: ctx.organization.id }, success_url: successUrl, cancel_url: cancelUrl }, { stripeAccount: ctx.organization.stripeConnectAccountId });
     await db.booking.update({ where: { id: booking.id }, data: { stripeCheckoutSessionId: session.id } });
     return { id: session.id, url: session.url };
   });

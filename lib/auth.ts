@@ -170,6 +170,14 @@ export const auth = betterAuth({
     }),
     // MFA (TOTP + backup codes) — obrigatório p/ owners e superadmin
     // (enforcement na Fase 5, ver plano seção 8.1).
-    twoFactor(),
+    //
+    // allowPasswordless: contas criadas via Google (socialProviders.google
+    // acima) não têm credential account (senha) no banco. Sem esta opção,
+    // shouldRequirePassword() sempre exige senha para habilitar/desabilitar
+    // 2FA (lib/plugins/two-factor/index.mjs) — um owner só-Google nunca
+    // consegue satisfazer isso, e como o dashboard bloqueia toda escrita
+    // após o prazo de graça do MFA (staffActionClient em lib/safe-action.ts)
+    // sem 2FA ativo, isso travava essas contas permanentemente sem saída.
+    twoFactor({ allowPasswordless: true }),
   ],
 });

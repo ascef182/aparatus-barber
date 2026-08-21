@@ -36,6 +36,15 @@ export async function getOwnerEmail(organizationId: string): Promise<string | nu
   return owner?.user.email ?? null;
 }
 
+/** Checagem redundante de posse antes de delegar remove/updateRole ao Better
+ * Auth — hoje não é explorável (o próprio better-auth já rejeita um memberId
+ * de outra organização), mas guarda contra uma futura mudança de
+ * comportamento e mantém a mensagem de erro consistente com a convenção do
+ * projeto. */
+export function getMemberById(organizationId: string, memberId: string) {
+  return prisma.member.findFirst({ where: { id: memberId, organizationId } });
+}
+
 export function listMembers(organizationId: string) {
   return prisma.member.findMany({
     where: { organizationId },

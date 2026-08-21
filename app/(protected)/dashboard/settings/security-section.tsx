@@ -24,6 +24,17 @@ function extractSecret(totpURI: string): string {
  * scan. Enforcement é hoje só um banner (ver dashboard/layout.tsx) — um
  * redirect obrigatório sem esse fluxo já validado em produção arriscaria
  * trancar owners fora do próprio dashboard.
+ *
+ * Senha é sempre pedida aqui, mas o campo é opcional: contas criadas via
+ * Google (socialProviders.google em lib/auth.ts) não têm credential
+ * account, então não têm senha pra digitar. lib/auth.ts habilita
+ * allowPasswordless no plugin two-factor, que só exige senha quando a
+ * conta realmente tem uma pra validar — é o próprio servidor quem decide,
+ * não o cliente. Antes disso tentávamos adivinhar aqui via
+ * authClient.listAccounts() + checar providerId === "credential", mas
+ * esse nome de provider não bate nesta versão do Better Auth: a detecção
+ * errava pra contas COM senha, pulava o campo, e batia direto no erro de
+ * senha incorreta sem nunca mostrar onde digitá-la.
  */
 export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolean }) {
   const t = useTranslations("dashboard.settings");
@@ -38,7 +49,9 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   async function startEnable(event: React.FormEvent) {
     event.preventDefault();
     setIsPending(true);
-    const result = await authClient.twoFactor.enable({ password });
+    const result = await authClient.twoFactor.enable(
+      password ? { password } : {},
+    );
     setIsPending(false);
     if (result.error) {
       toast.error(result.error.message ?? t("wrongPassword"));
@@ -65,9 +78,12 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   }
 
   async function disable() {
+    // window.prompt retorna null só no Cancelar — string vazia (OK sem
+    // digitar nada) é uma escolha válida pra quem não tem senha (conta
+    // Google), então só null aborta o fluxo.
     const pwd = window.prompt(t("disablePrompt"));
-    if (!pwd) return;
-    const result = await authClient.twoFactor.disable({ password: pwd });
+    if (pwd === null) return;
+    const result = await authClient.twoFactor.disable(pwd ? { password: pwd } : {});
     if (result.error) {
       toast.error(result.error.message ?? t("wrongPassword"));
       return;
@@ -97,7 +113,9 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
         )}
 
         {!enabled && step === "idle" && (
-          <Button onClick={() => setStep("password")}>{t("enable2fa")}</Button>
+          <Button onClick={() => setStep("password")} disabled={isPending}>
+            {isPending ? "..." : t("enable2fa")}
+          </Button>
         )}
 
         {!enabled && step === "password" && (
@@ -107,8 +125,8 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
               placeholder={t("yourPassword")}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              required
             />
+            <p className="text-xs text-muted-foreground">{t("passwordOptionalHint")}</p>
             <Button type="submit" disabled={isPending}>
               {isPending ? "..." : t("continueLabel")}
             </Button>

@@ -9,6 +9,7 @@ import {
   createBooking,
   listBookingsForCustomer,
 } from "@/lib/services/booking-service";
+import { futureMondayAt, futureMondayISO } from "../helpers/future-date";
 
 /**
  * Cobre a área de conta do cliente final (app/t/[slug]/account): o Customer
@@ -119,9 +120,11 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-const MONDAY = "2026-08-17";
+// Ver tests/helpers/future-date.ts: data literal aqui vence e derruba todo
+// teste que passa por createBooking.
+const MONDAY = futureMondayISO();
 function at(hour: number) {
-  return new Date(`${MONDAY}T${String(hour).padStart(2, "0")}:00:00.000Z`);
+  return futureMondayAt(hour, MONDAY);
 }
 
 describe("conta do cliente final", () => {

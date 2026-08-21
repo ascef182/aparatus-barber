@@ -1,5 +1,6 @@
 import { db, runInTenantTransaction } from "@/lib/db";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
+import { assertOwned } from "@/lib/authz";
 
 export function getCustomerById(id: string) {
   return db.customer.findUnique({ where: { id } });
@@ -276,11 +277,17 @@ export async function findOrCreateCustomerForUser(user: {
   });
 }
 
-/** Update customer profile (contact info for this organization). */
+/** Update customer profile (contact info for this organization) — SÓ para o
+ * próprio cliente (área de conta): a posse é revalidada aqui contra
+ * expectedUserId, nunca assumida do caller. Edição de CRM pelo staff (RBAC
+ * org-wide) é um caminho separado, ver manage-operations.ts's updateCustomer. */
 export async function updateCustomerProfile(
   customerId: string,
+  expectedUserId: string,
   data: { name?: string; email?: string | null; phone?: string | null },
 ) {
+  const existing = await db.customer.findUnique({ where: { id: customerId } });
+  assertOwned(existing, "userId", expectedUserId, "Cliente não encontrado.");
   return db.customer.update({
     where: { id: customerId },
     data,

@@ -2,6 +2,7 @@
 
 import { staffActionClient } from "@/lib/safe-action";
 import { db } from "@/lib/db";
+import { getOwnStaffId } from "@/lib/authz";
 import { z } from "zod";
 
 /** Reservas da janela visível da agenda — com filtro de data (a query antiga
@@ -11,13 +12,18 @@ import { z } from "zod";
 export const getAgendaBookings = staffActionClient({ booking: ["read_own"] })
   .inputSchema(z.object({ fromISO: z.string().datetime(), toISO: z.string().datetime() }))
   .action(async ({ parsedInput, ctx }) => {
-    const ownStaff = ctx.membership.role === "professional"
-      ? await db.staff.findFirst({ where: { memberId: ctx.membership.id }, select: { id: true } })
-      : null;
+    let staffIdFilter: { staffId: string } | undefined;
+    if (ctx.membership.role === "professional") {
+      const ownStaffId = await getOwnStaffId(ctx.membership.id);
+      // Professional sem Staff vinculado não é dono de nada — fail-closed,
+      // nunca retorna a agenda inteira do tenant.
+      if (!ownStaffId) return [];
+      staffIdFilter = { staffId: ownStaffId };
+    }
     const bookings = await db.booking.findMany({
       where: {
         startAt: { gte: new Date(parsedInput.fromISO), lt: new Date(parsedInput.toISO) },
-        ...(ownStaff ? { staffId: ownStaff.id } : {}),
+        ...staffIdFilter,
       },
       include: { customer: true, service: true, staff: true },
       orderBy: { startAt: "asc" },

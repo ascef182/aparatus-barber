@@ -17,7 +17,11 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://utfs.io https://res.cloudinary.com",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  // *.ingest.us.sentry.io: sem isso o instrumentation-client.ts manda os
+  // erros do navegador pro Sentry, mas a própria CSP de produção bloqueia
+  // a requisição (connect-src 'self' não cobre origem cross-site) — mesmo
+  // tipo de bloqueio visto no CSP report de terceiros do Stripe Checkout.
+  "connect-src 'self' https://*.ingest.us.sentry.io",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

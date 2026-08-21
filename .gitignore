@@ -66,3 +66,8 @@ public/window.svg
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# skills de marketing: .agents/skills/ é a fonte de verdade (versionada, com
+# skills-lock.json). .claude/skills/ é só symlinks derivados que qualquer
+# clone recria -- versionar links quebraria em outra máquina.
+.claude/skills/

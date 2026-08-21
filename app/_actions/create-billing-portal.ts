@@ -8,8 +8,12 @@ export const createBillingPortal = staffActionClient({ billing: ["manage"] }).ac
   if (!process.env.NEXT_PUBLIC_APP_URL) throw new ActionError("NEXT_PUBLIC_APP_URL não configurada.");
   // Mesmo bug de create-booking-payment-checkout.ts: /dashboard/billing só
   // existe sob o subdomínio do tenant, não no domínio raiz.
-  return getStripe().billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: ctx.organization.stripeCustomerId,
     return_url: getTenantUrl(ctx.organization.slug, "/dashboard/billing"),
   });
+  // Retorna só o campo usado pelo cliente — o objeto do SDK do Stripe não é
+  // plain object (React/Next recusa passar isso de Server pra Client
+  // Component), gerava aviso de serialização no console a cada chamada.
+  return { url: session.url };
 });

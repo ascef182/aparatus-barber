@@ -25,7 +25,9 @@ export type AuditAction =
   | "IMPRESSUM_UPDATED"
   | "ONBOARDING_FAILED"
   | "QUOTE_REQUEST_CREATED"
-  | "QUOTE_REQUEST_STATUS_UPDATED";
+  | "QUOTE_REQUEST_STATUS_UPDATED"
+  | "SIGNUP_DEVICE_REUSE_DETECTED"
+  | "CHECKOUT_DEVICE_REUSE_DETECTED";
 
 /**
  * Trilha de auditoria — append-only, sem update/delete pela aplicação.

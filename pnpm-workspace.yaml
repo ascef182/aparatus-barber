@@ -12,18 +12,24 @@ overrides:
   "picomatch@>=4.0.0 <4.0.4": "4.0.4"
   "brace-expansion@<1.1.13": "1.1.13"
   "brace-expansion@>=2.0.0 <2.0.3": "2.0.3"
-  "brace-expansion@>=5.0.0 <5.0.8": "5.0.8"
+  "brace-expansion@>=5.0.0 <5.0.9": "5.0.9"
   "js-yaml@>=4.0.0 <4.1.1": "4.1.1"
   "ajv@<6.14.0": "6.14.0"
   "mdast-util-to-hast@>=13.0.0 <13.2.1": "13.2.1"
-  "postcss@<8.5.18": "8.5.18"
+  "postcss@<8.5.23": "8.5.23"
   "minimatch@<3.1.4": "3.1.4"
   "minimatch@>=9.0.0 <9.0.7": "9.0.7"
   "flatted@<=3.4.1": "3.4.2"
   "effect@<3.20.0": "3.20.0"
-  "fast-uri@<3.1.4": "3.1.4"
+  "fast-uri@<3.1.5": "3.1.5"
+  "nanoid@<3.3.18": "3.3.18"
   "sharp@<0.35.0": "0.35.0"
   "@babel/core@<7.29.6": "7.29.7"
+  # GHSA-ggr8-5vv4-36mx (high): stack exhaustion ao mesclar grafos recursivos.
+  # Chega via @prisma/client > prisma > @prisma/config -- dependência de
+  # toolchain (carregamento de prisma.config.ts), não exposta a input de
+  # atacante em runtime, mas derruba o gate `pnpm audit --prod` do CI.
+  "deepmerge-ts@<8.0.0": "8.0.1"
 
 allowBuilds:
   "@parcel/watcher": true
