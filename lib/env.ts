@@ -19,7 +19,17 @@ const loggingEnvSchema = z
   });
 
 const commonEnvShape = {
-  RUNTIME_DATABASE_URL: z.string().url().startsWith("postgresql://"),
+  // Aceita os dois esquemas: `postgresql://` e `postgres://` são
+  // equivalentes para libpq, e provedores gerenciados (Railway, Neon,
+  // Supabase) entregam ora um, ora outro -- exigir só o primeiro derrubaria
+  // o boot com uma URL perfeitamente válida.
+  RUNTIME_DATABASE_URL: z
+    .string()
+    .url()
+    .refine(
+      (url) => url.startsWith("postgresql://") || url.startsWith("postgres://"),
+      { message: "must start with postgresql:// or postgres://" },
+    ),
   REDIS_URL: z.string().url(),
 };
 
@@ -33,6 +43,10 @@ const webEnvSchema = loggingEnvSchema.and(
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     STRIPE_SECRET_KEY: z.string().min(1),
+    // Sem esta o Stripe do lado do cliente quebra em silêncio: o build
+    // inlineia `undefined` e o Checkout/Elements falha só no navegador do
+    // cliente final, depois do deploy passar em toda a validação.
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
     STRIPE_BILLING_WEBHOOK_SECRET: z.string().min(1),
     STRIPE_CONNECT_WEBHOOK_SECRET: z.string().min(1),
     STRIPE_PRICE_STARTER_MONTHLY: z.string().min(1),
