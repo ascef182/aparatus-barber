@@ -3,17 +3,12 @@ WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts ./
 COPY prisma ./prisma
-# Placeholders só de build, no estágio `base` que é descartado -- nenhum deles
-# chega ao runner nem abre conexão com banco algum.
-#  DATABASE_URL: o postinstall roda `prisma generate`, que carrega
-#    prisma.config.ts, que exige a variável só pra parsear a config (generate
-#    é offline). A URL de owner real só existe no job de migration.
-#  RUNTIME_DATABASE_URL: `next build` importa lib/prisma.ts ao coletar as
-#    rotas (ex. /sitemap.xml), e esse módulo se recusa a carregar sem a
-#    variável -- de propósito, pra falhar com mensagem clara em vez de um
-#    parse error do pg. O valor real entra no runtime de web e worker.
-ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build" \
-    RUNTIME_DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
+# Placeholder só de build, no estágio `base` que é descartado -- não chega ao
+# runner nem abre conexão com banco algum. O postinstall roda `prisma
+# generate`, que carrega prisma.config.ts, e este exige a variável só pra
+# parsear a config (generate é offline). A URL de owner real só existe no
+# job de migration.
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
 RUN pnpm install --frozen-lockfile
 COPY . .
 # `pnpm build` é `tsx scripts/check-runtime-env.ts && next build`, e esse check

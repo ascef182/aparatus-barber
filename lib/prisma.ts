@@ -6,15 +6,14 @@ import { PrismaPg } from "@prisma/adapter-pg";
 // DATABASE_URL continua sendo a role owner, usada só por
 // `prisma migrate dev`/`deploy` (precisa de DDL/CREATE POLICY), nunca pelo
 // client em runtime. Ver prisma/migrations/20260720120000_add_rls_policies.
-// Sem a guarda, um template literal aqui transforma `undefined` na string
-// literal "undefined" e o erro que chega é um parse error obscuro do pg, não
-// "faltou configurar a variável".
+// Não validar aqui de propósito. Este módulo é importado durante
+// `next build` (coleta de rotas) em ambientes que legitimamente não têm o
+// segredo de runtime -- CI e build de imagem --, então um throw no topo
+// quebraria o build em vez de proteger alguém. O gate de verdade roda no
+// boot, com a lista completa do que falta: assertRuntimeEnv("web") via
+// scripts/check-runtime-env.ts (`pnpm start`) e assertRuntimeEnv("worker")
+// em worker/index.ts.
 const connectionString = process.env.RUNTIME_DATABASE_URL;
-if (!connectionString) {
-  throw new Error(
-    "RUNTIME_DATABASE_URL is not set — web and worker connect as the restricted `app_runtime` role and cannot start without it.",
-  );
-}
 
 // max acima do default do driver (10): o scoping de tenant (lib/db.ts) abre
 // uma mini-transação por operação tenant-scoped (set_config + query, mesma

@@ -73,7 +73,13 @@ export async function POST(request: Request) {
     return badRequest("Envie uma imagem JPEG, PNG ou WebP válida de até 5 MB.");
   const folder = `aparatus/${organization.id}/${kind === "cover" ? "branding" : "services"}`;
   const timestamp = Math.floor(Date.now() / 1000);
-  const signature = createHash("sha1")
+  // SHA-256, não o SHA-1 que é o default dos SDKs do Cloudinary: a assinatura
+  // é uma construção secret-suffix (H(mensagem || segredo)), e colisão em
+  // SHA-1 é prática hoje -- CodeQL sinaliza como js/weak-cryptographic-algorithm
+  // high. A conta do Cloudinary aceita SHA-1 e SHA-256 por padrão, então a
+  // troca não exige mudança no painel; só quebraria numa conta que tenha
+  // pedido explicitamente SHA-1 exclusivo.
+  const signature = createHash("sha256")
     .update(`folder=${folder}&timestamp=${timestamp}${apiSecret}`)
     .digest("hex");
   const upload = new FormData();
