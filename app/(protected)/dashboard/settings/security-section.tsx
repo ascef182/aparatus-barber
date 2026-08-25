@@ -57,6 +57,14 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
       toast.error(result.error.message ?? t("wrongPassword"));
       return;
     }
+    if (result.data.method !== "totp") {
+      // twoFactor() em lib/auth.ts não configura otpOptions — o servidor
+      // nunca retorna method:"otp" pra esta chamada; guarda aqui só pro
+      // narrowing de tipo (better-auth 1.7.x passou a discriminar por
+      // method o retorno de twoFactor.enable()).
+      toast.error(t("wrongPassword"));
+      return;
+    }
     setSecret(extractSecret(result.data.totpURI));
     setBackupCodes(result.data.backupCodes);
     setStep("verify");

@@ -47,6 +47,15 @@ redis.on("ready", () => {
  */
 export const authSecondaryStorage = {
   get: (key: string) => redis.get(key),
+  // GETDEL: leitura + apagamento atômicos (comando padrão desde Redis 6.2).
+  getAndDelete: (key: string) => redis.getdel(key),
+  // INCR+EXPIRE atômico o suficiente pra rate limiting distribuído — mesmo
+  // padrão de checkRateLimit abaixo (expire só na criação da chave).
+  increment: async (key: string, ttl: number) => {
+    const count = await redis.incr(key);
+    if (count === 1) await redis.expire(key, ttl);
+    return count;
+  },
   set: (key: string, value: string, ttl?: number) =>
     ttl ? redis.set(key, value, "EX", ttl) : redis.set(key, value),
   delete: async (key: string) => {
