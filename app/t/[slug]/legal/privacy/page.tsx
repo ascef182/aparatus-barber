@@ -5,10 +5,11 @@ import { getRootDomain } from "@/lib/tenant-host";
 
 /**
  * Privacy da barbearia (tenant) — Bladiq é o processor dos dados de
- * agendamento; referencia a política da plataforma. Impressum por-tenant
- * (dados configuráveis pelo dono) fica para uma fase seguinte — cada
- * barbearia que opera na Alemanha precisa do próprio Impressum com dados
- * reais, que ainda não há UI para preencher.
+ * agendamento; referencia a política da plataforma. Dados legais
+ * por-tenant (app/t/[slug]/legal/impressum) ficam disponíveis via
+ * dashboard/settings; preenchimento continua obrigatório para bloquear o
+ * agendamento público só de filiais alemãs legadas (countryCode "DE"),
+ * não mais o default a partir do pivô de mercado pro Brasil.
  */
 export default async function TenantPrivacyPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;

@@ -832,12 +832,12 @@
       "badge": "Multi-Tenant-Plattform für lokale Unternehmen",
       "titleLine1": "Buchen, kassieren",
       "titleLine2": "und wachsen — an einem Ort",
-      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und deutscher Rechtskonformität — startklar in Minuten, in 3 Sprachen.",
+      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und LGPD-Konformität — startklar in Minuten, in 3 Sprachen.",
       "ctaPrimary": "Kostenlos testen",
       "ctaSecondary": "So funktioniert's",
-      "trustGdpr": "DSGVO-konform",
+      "trustGdpr": "LGPD-konform",
       "trustStripe": "Zahlungen über Stripe",
-      "trustLanguages": "Deutsch · Englisch · Portugiesisch",
+      "trustLanguages": "Portugiesisch · Englisch · Deutsch",
       "tabs": {
         "booking": {
           "label": "Buchung",
@@ -874,8 +874,8 @@
       "teamBody": "Laden Sie Manager, Fachkräfte und Rezeption mit rollenbasiertem Zugriff ein.",
       "securityTitle": "Echte Sicherheit",
       "securityBody": "Zwei-Faktor-Authentifizierung und ausfallsichere Datentrennung zwischen Mandanten.",
-      "complianceTitle": "Deutsche Rechtskonformität",
-      "complianceBody": "Impressum, AVV und Datenexport/-löschung — startklar für den Betrieb in Deutschland."
+      "complianceTitle": "LGPD-Konformität",
+      "complianceBody": "Rechtsgrundlage der Datenverarbeitung, Datenexport und -löschung — startklar für den Betrieb in Brasilien."
     },
     "howItWorks": {
       "title": "So funktioniert's",
@@ -893,7 +893,7 @@
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
-      "a3": "Ja. Datentrennung zwischen Unternehmen, Zwei-Faktor-Authentifizierung und DSGVO-Konformität, einschließlich Datenexport und -löschung auf Anfrage.",
+      "a3": "Ja. Datentrennung zwischen Unternehmen, Zwei-Faktor-Authentifizierung und LGPD-Konformität (brasilianisches Datenschutzrecht), einschließlich Datenexport und -löschung auf Anfrage.",
       "q4": "Können meine Kunden online bezahlen?",
       "a4": "Ja, über Stripe: Anzahlung, vollständige Vorauszahlung oder Zahlung vor Ort, konfigurierbar pro Leistung.",
       "q5": "Funktioniert es in anderen Sprachen?",

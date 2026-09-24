@@ -1,13 +1,25 @@
 import { getLocale } from "next-intl/server";
 import { LegalPage } from "../legal-page";
 
+/**
+ * Até 2026-09-24 esta política citava só GDPR (Art. 6/27) e retenção GoBD
+ * de 10 anos, porque o mercado então-alvo era a Alemanha. Com o pivô para
+ * o Brasil (ver PRODUCT.md), a base legal citada passa a ser a LGPD (Lei
+ * 13.709/2018) e a exigência de representante na UE (Art. 27 GDPR) deixa
+ * de se aplicar — a CazaTech é brasileira, sem a lacuna que esse artigo
+ * endereçava. ATENÇÃO: conteúdo legal, revisar com advogado antes de
+ * tratar como definitivo (ver docs/marketing/plan.md §13) — em especial o
+ * prazo de retenção de registros de agendamento/pagamento abaixo, que não
+ * assume mais o prazo fiscal alemão e ainda não tem prazo brasileiro
+ * confirmado por um profissional.
+ */
 export default async function PrivacyPage() {
   const locale = await getLocale();
 
   if (locale === "en") {
     return (
       <LegalPage title="Privacy Policy">
-        <p>Last updated: 2026-08-03.</p>
+        <p>Last updated: 2026-09-24.</p>
         <section>
           <h2>1. Who we are</h2>
           <p>
@@ -15,7 +27,7 @@ export default async function PrivacyPage() {
             (&ldquo;we&rdquo;, &ldquo;us&rdquo;). We operate a booking platform used by local businesses
             (&ldquo;tenants&rdquo;) to manage appointments. This policy explains how we process personal data when
             you visit our platform, sign up as a tenant, or book an appointment through a tenant&apos;s page. Full
-            company and contact details are listed in our <a href="/impressum">Legal Notice (Impressum)</a>.
+            company and contact details are listed in our <a href="/impressum">Company Information</a>.
           </p>
         </section>
         <section>
@@ -33,18 +45,18 @@ export default async function PrivacyPage() {
           </ul>
         </section>
         <section>
-          <h2>3. How we use your data and our legal basis (Art. 6 GDPR)</h2>
+          <h2>3. How we use your data and our legal basis (LGPD, Art. 7)</h2>
           <ul>
-            <li>To create and manage your booking or subscription — contract performance, Art. 6(1)(b).</li>
+            <li>To create and manage your booking or subscription — contract performance, Art. 7(V).</li>
             <li>
-              To prevent fraud, apply rate limits, and keep the service secure — legitimate interest, Art. 6(1)(f).
+              To prevent fraud, apply rate limits, and keep the service secure — legitimate interest, Art. 7(IX).
             </li>
             <li>
-              To keep tax and payment records — legal obligation, Art. 6(1)(c) (GoBD, 10 years for booking and
-              payment records).
+              To keep tax and payment records — legal/regulatory obligation, Art. 7(II). The exact retention period
+              required under Brazilian tax and consumer law is being confirmed with legal counsel; see §4 below.
             </li>
             <li>
-              To send marketing emails or set non-essential cookies — consent, Art. 6(1)(a), only where you&apos;ve
+              To send marketing emails or set non-essential cookies — consent, Art. 7(I), only where you&apos;ve
               opted in.
             </li>
           </ul>
@@ -57,9 +69,11 @@ export default async function PrivacyPage() {
               active; anonymized on request or account erasure.
             </li>
             <li>
-              Booking and payment records: kept for 10 years regardless of erasure requests, because German tax law
-              (GoBD, §147 AO) requires it — only directly identifying fields are anonymized after an erasure
-              request, the underlying records are not deleted.
+              Booking and payment records: kept for as long as applicable Brazilian tax and consumer-protection
+              obligations require, even after an erasure request — only directly identifying fields are anonymized,
+              the underlying records are not deleted. The exact retention period is under legal review; this
+              section will be updated once confirmed (previously stated as 10 years under German tax law, which no
+              longer applies to this product).
             </li>
             <li>Security and audit logs: kept only as long as needed for the purpose they were collected for.</li>
           </ul>
@@ -79,10 +93,10 @@ export default async function PrivacyPage() {
         <section>
           <h2>6. International transfers</h2>
           <p>
-            Some of our subprocessors may process data outside the European Economic Area. Where that happens, we
-            rely on the safeguards those providers offer, such as the EU Standard Contractual Clauses. We are
-            working to confirm and document the hosting region for each subprocessor; this section will be updated
-            once that review is complete.
+            Some of our subprocessors may process data outside Brazil. Where that happens, we rely on the
+            safeguards those providers offer and on the international-transfer mechanisms recognized by the LGPD
+            (e.g. standard contractual clauses). We are working to confirm and document the hosting region for each
+            subprocessor; this section will be updated once that review is complete.
           </p>
         </section>
         <section>
@@ -101,25 +115,22 @@ export default async function PrivacyPage() {
           </p>
         </section>
         <section>
-          <h2>9. Your rights</h2>
+          <h2>9. Your rights (LGPD, Art. 18)</h2>
           <p>
-            You may request access, correction, erasure, or export of your personal data. Erasure and export
-            requests can be made via <code>POST /api/gdpr/erase</code> and <code>GET /api/gdpr/export</code> while
-            signed in, or by contacting us directly. Booking and payment records are retained for 10 years where
-            legally required (GoBD §147 AO) even after an erasure request — only directly identifying fields are
-            anonymized. You also have the right to lodge a complaint with your local data protection supervisory
-            authority.
+            You may request access, correction, anonymization, or export (portability) of your personal data.
+            Erasure and export requests can be made via <code>POST /api/gdpr/erase</code> and{" "}
+            <code>GET /api/gdpr/export</code> while signed in (route names kept from before the market pivot, same
+            underlying rights under the LGPD), or by contacting us directly. Booking and payment records are
+            retained where legally required (see §4) even after an erasure request — only directly identifying
+            fields are anonymized. You also have the right to lodge a complaint with the ANPD (Autoridade Nacional
+            de Proteção de Dados), Brazil&apos;s data protection authority.
           </p>
         </section>
         <section>
           <h2>10. Contact for data protection matters</h2>
           <p>
-            Email: privacy@bladiq.com.
-            <br />
-            Because CazaTech has no establishment in the European Union, Article 27 GDPR ordinarily requires us to
-            appoint a representative in the EU/EEA for data subjects there. We have not yet appointed one — we are
-            flagging this openly rather than claiming otherwise, and will update this section once a representative
-            is in place.
+            Email: privacy@bladiq.com. CazaTech is established in Brazil (São Paulo), so no foreign-representative
+            appointment is required under the LGPD.
           </p>
         </section>
         <section>
@@ -133,7 +144,7 @@ export default async function PrivacyPage() {
   if (locale === "pt") {
     return (
       <LegalPage title="Política de Privacidade">
-        <p>Última atualização: 03.08.2026.</p>
+        <p>Última atualização: 24.09.2026.</p>
         <section>
           <h2>1. Quem somos</h2>
           <p>
@@ -141,7 +152,7 @@ export default async function PrivacyPage() {
             (&ldquo;nós&rdquo;). Operamos uma plataforma de agendamento usada por negócios locais
             (&ldquo;tenants&rdquo;) para gerenciar compromissos. Esta política explica como tratamos dados pessoais
             quando você visita nossa plataforma, se cadastra como tenant, ou agenda um horário pela página de um
-            tenant. Os dados completos da empresa estão no nosso <a href="/impressum">Aviso Legal (Impressum)</a>.
+            tenant. Os dados completos da empresa estão nos nossos <a href="/impressum">Dados da Empresa</a>.
           </p>
         </section>
         <section>
@@ -159,20 +170,21 @@ export default async function PrivacyPage() {
           </ul>
         </section>
         <section>
-          <h2>3. Como usamos seus dados e nossa base legal (Art. 6 GDPR)</h2>
+          <h2>3. Como usamos seus dados e nossa base legal (LGPD, Art. 7º)</h2>
           <ul>
-            <li>Para criar e gerenciar seu agendamento ou assinatura — execução de contrato, Art. 6(1)(b).</li>
+            <li>Para criar e gerenciar seu agendamento ou assinatura — execução de contrato, Art. 7º, V.</li>
             <li>
-              Para prevenir fraude, aplicar limitação de taxa e manter o serviço seguro — interesse legítimo, Art.
-              6(1)(f).
+              Para prevenir fraude, aplicar limitação de taxa e manter o serviço seguro — legítimo interesse, Art.
+              7º, IX.
             </li>
             <li>
-              Para manter registros fiscais e de pagamento — obrigação legal, Art. 6(1)(c) (GoBD, 10 anos para
-              registros de agendamento e pagamento).
+              Para manter registros fiscais e de pagamento — cumprimento de obrigação legal/regulatória, Art. 7º,
+              II. O prazo exato exigido pela legislação fiscal e consumerista brasileira está em confirmação com
+              assessoria jurídica; ver §4 abaixo.
             </li>
             <li>
-              Para enviar e-mails de marketing ou definir cookies não essenciais — consentimento, Art. 6(1)(a),
-              apenas quando você autorizar.
+              Para enviar e-mails de marketing ou definir cookies não essenciais — consentimento, Art. 7º, I, apenas
+              quando você autorizar.
             </li>
           </ul>
         </section>
@@ -184,9 +196,11 @@ export default async function PrivacyPage() {
               estiver ativa; anonimizados mediante solicitação ou apagamento de conta.
             </li>
             <li>
-              Registros de agendamento e pagamento: mantidos por 10 anos independentemente de pedidos de apagamento,
-              porque a lei fiscal alemã (GoBD, §147 AO) exige isso — após um pedido de apagamento, apenas os campos
-              diretamente identificáveis são anonimizados; os registros em si não são apagados.
+              Registros de agendamento e pagamento: mantidos pelo prazo exigido pelas obrigações fiscais e de defesa
+              do consumidor aplicáveis no Brasil, mesmo após um pedido de apagamento — apenas os campos diretamente
+              identificáveis são anonimizados, os registros em si não são apagados. O prazo exato está em revisão
+              jurídica; esta seção será atualizada assim que confirmado (a versão anterior indicava 10 anos pela lei
+              fiscal alemã, que não se aplica mais a este produto).
             </li>
             <li>Logs de segurança e auditoria: mantidos apenas pelo tempo necessário à finalidade para a qual foram coletados.</li>
           </ul>
@@ -206,10 +220,11 @@ export default async function PrivacyPage() {
         <section>
           <h2>6. Transferência internacional de dados</h2>
           <p>
-            Alguns dos nossos subprocessadores podem processar dados fora do Espaço Econômico Europeu. Quando isso
-            ocorre, contamos com as garantias oferecidas por esses provedores, como as Cláusulas Contratuais Padrão
-            da UE. Estamos trabalhando para confirmar e documentar a região de hospedagem de cada subprocessador;
-            esta seção será atualizada assim que essa revisão for concluída.
+            Alguns dos nossos subprocessadores podem processar dados fora do Brasil. Quando isso ocorre, contamos
+            com as garantias oferecidas por esses provedores e com os mecanismos de transferência internacional
+            reconhecidos pela LGPD (ex.: cláusulas contratuais padrão). Estamos trabalhando para confirmar e
+            documentar a região de hospedagem de cada subprocessador; esta seção será atualizada assim que essa
+            revisão for concluída.
           </p>
         </section>
         <section>
@@ -228,26 +243,22 @@ export default async function PrivacyPage() {
           </p>
         </section>
         <section>
-          <h2>9. Seus direitos</h2>
+          <h2>9. Seus direitos (LGPD, Art. 18)</h2>
           <p>
-            Você pode solicitar acesso, correção, apagamento ou exportação dos seus dados pessoais. Pedidos de
-            apagamento e exportação podem ser feitos via <code>POST /api/gdpr/erase</code> e{" "}
-            <code>GET /api/gdpr/export</code> enquanto estiver autenticado, ou entrando em contato diretamente
-            conosco. Registros de agendamento e pagamento são mantidos por 10 anos quando legalmente exigido (GoBD
-            §147 AO) mesmo após um pedido de apagamento — apenas os campos diretamente identificáveis são
-            anonimizados. Você também tem o direito de apresentar reclamação à autoridade de proteção de dados
-            competente.
+            Você pode solicitar acesso, correção, anonimização ou exportação (portabilidade) dos seus dados
+            pessoais. Pedidos de apagamento e exportação podem ser feitos via <code>POST /api/gdpr/erase</code> e{" "}
+            <code>GET /api/gdpr/export</code> enquanto estiver autenticado (nomes de rota mantidos de antes do
+            pivô de mercado, mesmos direitos garantidos agora pela LGPD), ou entrando em contato diretamente
+            conosco. Registros de agendamento e pagamento são mantidos quando legalmente exigido (ver §4) mesmo
+            após um pedido de apagamento — apenas os campos diretamente identificáveis são anonimizados. Você
+            também tem o direito de apresentar reclamação à ANPD (Autoridade Nacional de Proteção de Dados).
           </p>
         </section>
         <section>
           <h2>10. Contato para questões de proteção de dados</h2>
           <p>
-            E-mail: privacy@bladiq.com.
-            <br />
-            Como a CazaTech não possui estabelecimento na União Europeia, o Art. 27 do GDPR normalmente exige a
-            designação de um representante na UE/EEE para titulares de dados lá. Ainda não designamos um
-            representante — estamos sinalizando isso abertamente em vez de afirmar o contrário, e atualizaremos
-            esta seção assim que um representante for designado.
+            E-mail: privacy@bladiq.com. A CazaTech é estabelecida no Brasil (São Paulo), então não há exigência de
+            representante estrangeiro sob a LGPD.
           </p>
         </section>
         <section>
@@ -260,7 +271,7 @@ export default async function PrivacyPage() {
 
   return (
     <LegalPage title="Datenschutzerklärung">
-      <p>Stand: 03.08.2026.</p>
+      <p>Stand: 24.09.2026.</p>
       <section>
         <h2>1. Verantwortlicher</h2>
         <p>
@@ -268,8 +279,14 @@ export default async function PrivacyPage() {
           Brasilien (&ldquo;wir&rdquo;). Wir betreiben eine Buchungsplattform für lokale Unternehmen
           (&ldquo;Mandanten&rdquo;). Diese Erklärung beschreibt, wie wir personenbezogene Daten verarbeiten, wenn
           Sie unsere Plattform besuchen, sich als Mandant registrieren oder über die Seite eines Mandanten einen
-          Termin buchen. Vollständige Unternehmens- und Kontaktdaten finden Sie in unserem{" "}
-          <a href="/impressum">Impressum</a>.
+          Termin buchen. Vollständige Unternehmens- und Kontaktdaten finden Sie in unseren{" "}
+          <a href="/impressum">Firmendaten</a>.
+        </p>
+        <p>
+          Hinweis: Der Zielmarkt dieses Produkts hat sich zu Brasilien verschoben (siehe PRODUCT.md). Die
+          rechtliche Grundlage dieser Erklärung ist entsprechend die brasilianische LGPD (Gesetz 13.709/2018), nicht
+          mehr primär die DSGVO — diese deutsche Fassung wird als Referenz gepflegt, ist aber nicht mehr die
+          führende Sprachversion für rechtliche Zwecke.
         </p>
       </section>
       <section>
@@ -287,18 +304,15 @@ export default async function PrivacyPage() {
         </ul>
       </section>
       <section>
-        <h2>3. Wie wir Ihre Daten nutzen und unsere Rechtsgrundlage (Art. 6 DSGVO)</h2>
+        <h2>3. Wie wir Ihre Daten nutzen und unsere Rechtsgrundlage (LGPD, Art. 7)</h2>
         <ul>
-          <li>Zur Erstellung und Verwaltung Ihrer Buchung oder Ihres Abonnements — Vertragserfüllung, Art. 6 Abs. 1 lit. b.</li>
-          <li>Zur Betrugsprävention, für Rate-Limiting und Systemsicherheit — berechtigtes Interesse, Art. 6 Abs. 1 lit. f.</li>
+          <li>Zur Erstellung und Verwaltung Ihrer Buchung oder Ihres Abonnements — Vertragserfüllung.</li>
+          <li>Zur Betrugsprävention, für Rate-Limiting und Systemsicherheit — berechtigtes Interesse.</li>
           <li>
-            Zur Aufbewahrung steuerlich relevanter Unterlagen — rechtliche Verpflichtung, Art. 6 Abs. 1 lit. c
-            (GoBD, 10 Jahre für Buchungs- und Zahlungsdaten).
+            Zur Aufbewahrung steuerlich relevanter Unterlagen — rechtliche Verpflichtung. Die genaue
+            Aufbewahrungsfrist nach brasilianischem Recht wird derzeit rechtlich geprüft (siehe Abschnitt 4).
           </li>
-          <li>
-            Für Marketing-E-Mails oder nicht-essenzielle Cookies — Einwilligung, Art. 6 Abs. 1 lit. a, nur mit Ihrer
-            Zustimmung.
-          </li>
+          <li>Für Marketing-E-Mails oder nicht-essenzielle Cookies — Einwilligung, nur mit Ihrer Zustimmung.</li>
         </ul>
       </section>
       <section>
@@ -309,9 +323,10 @@ export default async function PrivacyPage() {
             aktiv ist; auf Anfrage oder bei Kontolöschung anonymisiert.
           </li>
           <li>
-            Buchungs- und Zahlungsdaten: 10 Jahre, unabhängig von Löschanfragen, da das deutsche Steuerrecht (GoBD,
-            §147 AO) dies vorschreibt — nach einer Löschanfrage werden nur direkt identifizierende Felder
-            anonymisiert, die zugrunde liegenden Datensätze werden nicht gelöscht.
+            Buchungs- und Zahlungsdaten: so lange aufbewahrt, wie es die anwendbaren brasilianischen Steuer- und
+            Verbraucherschutzpflichten erfordern, auch nach einer Löschanfrage — nur direkt identifizierende Felder
+            werden anonymisiert. Die genaue Frist wird derzeit rechtlich geprüft (frühere Fassung: 10 Jahre nach
+            deutschem Steuerrecht, gilt für dieses Produkt nicht mehr).
           </li>
           <li>Sicherheits- und Audit-Logs: nur so lange gespeichert, wie es für den Erhebungszweck erforderlich ist.</li>
         </ul>
@@ -331,10 +346,11 @@ export default async function PrivacyPage() {
       <section>
         <h2>6. Internationale Datenübermittlung</h2>
         <p>
-          Einige unserer Auftragsverarbeiter können Daten außerhalb des Europäischen Wirtschaftsraums verarbeiten.
-          In diesem Fall verlassen wir uns auf die von diesen Anbietern bereitgestellten Garantien, etwa die
-          EU-Standardvertragsklauseln. Wir arbeiten daran, die Hosting-Region jedes Auftragsverarbeiters zu
-          bestätigen und zu dokumentieren; dieser Abschnitt wird nach Abschluss dieser Prüfung aktualisiert.
+          Einige unserer Auftragsverarbeiter können Daten außerhalb Brasiliens verarbeiten. In diesem Fall
+          verlassen wir uns auf die von diesen Anbietern bereitgestellten Garantien und auf die international
+          anerkannten Übermittlungsmechanismen der LGPD. Wir arbeiten daran, die Hosting-Region jedes
+          Auftragsverarbeiters zu bestätigen und zu dokumentieren; dieser Abschnitt wird nach Abschluss dieser
+          Prüfung aktualisiert.
         </p>
       </section>
       <section>
@@ -355,23 +371,20 @@ export default async function PrivacyPage() {
       <section>
         <h2>9. Ihre Rechte</h2>
         <p>
-          Sie können Auskunft, Berichtigung, Löschung oder Export Ihrer personenbezogenen Daten verlangen.
-          Löschungs- und Exportanfragen können über <code>POST /api/gdpr/erase</code> bzw.{" "}
-          <code>GET /api/gdpr/export</code> im eingeloggten Zustand gestellt werden, oder direkt per Kontakt.
-          Buchungs- und Zahlungsdaten werden bei gesetzlicher Pflicht 10 Jahre aufbewahrt (GoBD §147 AO), auch nach
-          einer Löschanfrage — nur direkt identifizierende Felder werden anonymisiert. Sie haben zudem das Recht,
-          sich bei der für Sie zuständigen Datenschutzaufsichtsbehörde zu beschweren.
+          Sie können Auskunft, Berichtigung, Anonymisierung oder Export (Portabilität) Ihrer personenbezogenen
+          Daten verlangen. Löschungs- und Exportanfragen können über <code>POST /api/gdpr/erase</code> bzw.{" "}
+          <code>GET /api/gdpr/export</code> im eingeloggten Zustand gestellt werden (Routennamen aus der Zeit vor
+          dem Marktwechsel beibehalten, gleiche Rechte jetzt nach LGPD), oder direkt per Kontakt. Buchungs- und
+          Zahlungsdaten werden bei gesetzlicher Pflicht aufbewahrt (siehe Abschnitt 4), auch nach einer
+          Löschanfrage — nur direkt identifizierende Felder werden anonymisiert. Sie haben zudem das Recht, sich
+          bei der ANPD (brasilianische Datenschutzbehörde) zu beschweren.
         </p>
       </section>
       <section>
         <h2>10. Kontakt in Datenschutzfragen</h2>
         <p>
-          E-Mail: privacy@bladiq.com.
-          <br />
-          Da CazaTech keine Niederlassung in der Europäischen Union hat, verlangt Art. 27 DSGVO grundsätzlich die
-          Benennung eines Vertreters in der EU/im EWR für dortige betroffene Personen. Wir haben noch keinen
-          benannt — wir weisen offen darauf hin, statt etwas anderes zu behaupten, und aktualisieren diesen
-          Abschnitt, sobald ein Vertreter bestellt ist.
+          E-Mail: privacy@bladiq.com. CazaTech ist in Brasilien (São Paulo) niedergelassen, daher ist nach der LGPD
+          keine Benennung eines ausländischen Vertreters erforderlich.
         </p>
       </section>
       <section>

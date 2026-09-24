@@ -128,11 +128,12 @@ export async function findOrCreateGuestCustomer(data: {
 }
 
 /**
- * Direito ao esquecimento (GDPR): anonimiza os registros Customer do
- * usuário em TODOS os tenants onde reservou — cross-tenant por natureza
+ * Direito ao esquecimento (LGPD, Art. 18): anonimiza os registros Customer
+ * do usuário em TODOS os tenants onde reservou — cross-tenant por natureza
  * (a solicitação é do usuário, não de um tenant específico), daí o
  * platform scope. Booking/pagamento NÃO são tocados (retenção fiscal —
- * GoBD §147 AO, 10 anos).
+ * prazo exato em revisão jurídica pro mercado brasileiro, ver
+ * docs/marketing/plan.md §13; antes do pivô citava GoBD §147 AO/10 anos).
  */
 export async function eraseCustomersForUser(
   userId: string,

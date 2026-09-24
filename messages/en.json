@@ -114,7 +114,7 @@
       "representedBy": "Represented by:",
       "phone": "Phone:",
       "email": "Email:",
-      "vatId": "VAT ID:"
+      "vatId": "Tax ID:"
     },
     "nav": {
       "signIn": "Sign in"
@@ -832,12 +832,12 @@
       "badge": "Multi-tenant platform for local businesses",
       "titleLine1": "Book, get paid,",
       "titleLine2": "and grow — all in one place",
-      "subtitle": "Your business with its own page, online booking, Stripe payments, and German legal compliance — ready in minutes, in 3 languages.",
+      "subtitle": "Your business with its own page, online booking, Stripe payments, and LGPD compliance — ready in minutes, in 3 languages.",
       "ctaPrimary": "Start free trial",
       "ctaSecondary": "See how it works",
-      "trustGdpr": "GDPR-compliant",
+      "trustGdpr": "LGPD-compliant",
       "trustStripe": "Payments via Stripe",
-      "trustLanguages": "German · English · Portuguese",
+      "trustLanguages": "Portuguese · English · German",
       "tabs": {
         "booking": {
           "label": "Booking",
@@ -874,8 +874,8 @@
       "teamBody": "Invite managers, professionals, and receptionists with role-based access.",
       "securityTitle": "Real security",
       "securityBody": "Two-factor authentication and fail-closed data isolation between tenants.",
-      "complianceTitle": "German legal compliance",
-      "complianceBody": "Impressum, DPA, and data export/erasure — ready to operate in Germany."
+      "complianceTitle": "LGPD compliance",
+      "complianceBody": "Data processing basis, export, and erasure — ready to operate in Brazil."
     },
     "howItWorks": {
       "title": "How it works",
@@ -893,7 +893,7 @@
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
-      "a3": "Yes. Data isolation between businesses, two-factor authentication, and GDPR compliance, including data export and erasure on request.",
+      "a3": "Yes. Data isolation between businesses, two-factor authentication, and LGPD compliance, including data export and erasure on request.",
       "q4": "Can my customers pay online?",
       "a4": "Yes, via Stripe: deposit, full prepayment, or pay-on-site, configurable per service.",
       "q5": "Does it work in other languages?",
@@ -923,7 +923,7 @@
       "legalTitle": "Legal",
       "featuresLink": "Features",
       "pricingLink": "Pricing",
-      "impressumLink": "Impressum",
+      "impressumLink": "Company Info",
       "privacyLink": "Privacy",
       "termsLink": "Terms",
       "dpaLink": "DPA",
