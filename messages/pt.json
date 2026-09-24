@@ -196,7 +196,11 @@
       "sendError": "Não foi possível enviar sua mensagem.",
       "empty": "Nenhuma mensagem ainda. Envie a primeira!",
       "you": "Você",
-      "staffLabel": "Equipe de suporte"
+      "staffLabel": "Equipe de suporte",
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "sentStatus": "Enviada",
+      "readStatus": "Lida"
     },
     "signIn": {
       "title": "Entrar",
@@ -208,6 +212,7 @@
       "nameLabel": "Nome",
       "emailLabel": "E-mail",
       "passwordLabel": "Senha",
+      "forgotPasswordLink": "Esqueci minha senha",
       "emailInUse": "Este e-mail já está cadastrado.",
       "submit": "Entrar",
       "submitSignUp": "Criar conta",
@@ -262,7 +267,11 @@
       "reply": "Responder",
       "replying": "Enviando…",
       "replyError": "Não foi possível enviar sua resposta.",
-      "customerLabel": "Cliente"
+      "customerLabel": "Cliente",
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "sentStatus": "Enviada",
+      "readStatus": "Lida"
     },
     "userMenu": {
       "signOut": "Sair",
@@ -639,6 +648,14 @@
       "coverImageSaveError": "Erro ao salvar a foto de capa.",
       "coverImageUploadError": "Não foi possível enviar a imagem.",
       "removeCoverImage": "Remover foto de capa",
+      "setPasswordTitle": "Definir senha",
+      "setPasswordHint": "Sua conta foi criada com o Google e ainda não tem senha. Defina uma para também poder entrar com e-mail e senha.",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar senha",
+      "setPasswordCta": "Definir senha",
+      "passwordSet": "Senha definida.",
+      "passwordSetError": "Não foi possível definir a senha.",
+      "passwordMismatch": "As senhas não coincidem.",
       "securityTitle": "Segurança",
       "twoFactorLabel": "Autenticação de dois fatores (TOTP):",
       "twoFactorActive": "ativa",
@@ -917,6 +934,7 @@
     "title": "Entrar",
     "emailLabel": "E-mail",
     "passwordLabel": "Senha",
+    "forgotPasswordLink": "Esqueci minha senha",
     "submit": "Entrar",
     "signingIn": "Entrando...",
     "invalidCredentials": "E-mail ou senha incorretos.",
@@ -1021,6 +1039,7 @@
       "nameLabel": "Nome",
       "emailLabel": "E-mail",
       "passwordLabel": "Senha",
+      "forgotPasswordLink": "Esqueci minha senha",
       "emailInUse": "Este e-mail já está cadastrado.",
       "submit": "Entrar",
       "submitSignUp": "Criar conta",
@@ -1107,5 +1126,16 @@
     "submit": "Redefinir senha",
     "done": "Senha redefinida",
     "signInLink": "Entrar"
+  },
+  "twoFactorVerify": {
+    "title": "Autenticação de dois fatores",
+    "subtitle": "Digite o código de 6 dígitos do seu app autenticador.",
+    "codeLabel": "Código",
+    "backupCodeLabel": "Código de backup",
+    "submit": "Verificar",
+    "verifying": "Verificando...",
+    "invalidCode": "Código inválido. Tente novamente.",
+    "useBackupCode": "Usar um código de backup",
+    "backToCode": "Usar o código do autenticador"
   }
 }

@@ -196,7 +196,11 @@
       "sendError": "Nachricht konnte nicht gesendet werden.",
       "empty": "Noch keine Nachrichten. Schreib die erste!",
       "you": "Du",
-      "staffLabel": "Support-Team"
+      "staffLabel": "Support-Team",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "sentStatus": "Gesendet",
+      "readStatus": "Gelesen"
     },
     "signIn": {
       "title": "Anmelden",
@@ -208,6 +212,7 @@
       "nameLabel": "Name",
       "emailLabel": "E-Mail",
       "passwordLabel": "Passwort",
+      "forgotPasswordLink": "Passwort vergessen",
       "emailInUse": "Diese E-Mail ist bereits registriert.",
       "submit": "Anmelden",
       "submitSignUp": "Konto erstellen",
@@ -262,7 +267,11 @@
       "reply": "Antworten",
       "replying": "Wird gesendet…",
       "replyError": "Antwort konnte nicht gesendet werden.",
-      "customerLabel": "Kunde"
+      "customerLabel": "Kunde",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "sentStatus": "Gesendet",
+      "readStatus": "Gelesen"
     },
     "userMenu": {
       "signOut": "Abmelden",
@@ -639,6 +648,14 @@
       "coverImageSaveError": "Titelbild konnte nicht gespeichert werden.",
       "coverImageUploadError": "Das Bild konnte nicht hochgeladen werden.",
       "removeCoverImage": "Titelbild entfernen",
+      "setPasswordTitle": "Passwort festlegen",
+      "setPasswordHint": "Ihr Konto wurde mit Google erstellt und hat noch kein Passwort. Legen Sie eines fest, um sich auch mit E-Mail und Passwort anmelden zu können.",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "setPasswordCta": "Passwort festlegen",
+      "passwordSet": "Passwort festgelegt.",
+      "passwordSetError": "Das Passwort konnte nicht festgelegt werden.",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
       "securityTitle": "Sicherheit",
       "twoFactorLabel": "Zwei-Faktor-Authentifizierung (TOTP):",
       "twoFactorActive": "aktiv",
@@ -917,6 +934,7 @@
     "title": "Anmelden",
     "emailLabel": "E-Mail",
     "passwordLabel": "Passwort",
+    "forgotPasswordLink": "Passwort vergessen",
     "submit": "Anmelden",
     "signingIn": "Wird angemeldet...",
     "invalidCredentials": "Falsche E-Mail oder falsches Passwort.",
@@ -1021,6 +1039,7 @@
       "nameLabel": "Name",
       "emailLabel": "E-Mail",
       "passwordLabel": "Passwort",
+      "forgotPasswordLink": "Passwort vergessen",
       "emailInUse": "Diese E-Mail ist bereits registriert.",
       "submit": "Anmelden",
       "submitSignUp": "Konto erstellen",
@@ -1107,5 +1126,16 @@
     "submit": "Passwort zurücksetzen",
     "done": "Passwort zurückgesetzt",
     "signInLink": "Anmelden"
+  },
+  "twoFactorVerify": {
+    "title": "Zwei-Faktor-Authentifizierung",
+    "subtitle": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
+    "codeLabel": "Code",
+    "backupCodeLabel": "Backup-Code",
+    "submit": "Bestätigen",
+    "verifying": "Wird geprüft...",
+    "invalidCode": "Ungültiger Code. Bitte versuchen Sie es erneut.",
+    "useBackupCode": "Stattdessen einen Backup-Code verwenden",
+    "backToCode": "Stattdessen den Authenticator-Code verwenden"
   }
 }

@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
+import { authClient, isTwoFactorRedirect } from "@/lib/auth-client";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
 import { PasswordInput } from "@/app/_components/ui/password-input";
 import { GoogleIcon } from "@/app/_components/ui/google-icon";
+import { TwoFactorVerifyForm } from "@/app/_components/two-factor-verify-form";
 
 /**
  * Depois de signIn bem-sucedido, recarrega — o server component
@@ -25,6 +26,7 @@ export function SignInForm() {
   const [password, setPassword] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
+  const [needsTwoFactor, setNeedsTwoFactor] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -33,6 +35,15 @@ export function SignInForm() {
     setIsPending(false);
     if (result.error) {
       toast.error(result.error.status === 401 ? t("invalidCredentials") : t("genericError"));
+      return;
+    }
+    // signIn.email() não retorna erro quando a conta tem 2FA ativo — ele
+    // devolve twoFactorRedirect: true sem nunca criar a sessão completa
+    // (só um cookie temporário de verificação). Sem esse check, o reload()
+    // abaixo rodava direto e a página seguinte mandava de volta pro login
+    // (sessão inexistente), num loop silencioso.
+    if (isTwoFactorRedirect(result.data)) {
+      setNeedsTwoFactor(true);
       return;
     }
     window.location.reload();
@@ -61,48 +72,54 @@ export function SignInForm() {
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Button type="button" variant="outline" disabled={isGooglePending} onClick={onGoogleClick}>
-          <GoogleIcon className="size-4" />
-          {tSignUp("googleCta")}
-        </Button>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          {tSignUp("orDivider")}
-          <div className="h-px flex-1 bg-border" />
-        </div>
-        <form className="flex flex-col gap-3" onSubmit={onSubmit}>
-          <div className="grid gap-2">
-            <Label htmlFor="signin-email">{t("emailLabel")}</Label>
-            <Input
-              id="signin-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div>
-            <PasswordInput
-              id="signin-password"
-              label={t("passwordLabel")}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-            />
-            <Link href="/forgot-password" className="mt-1 block text-right text-xs text-muted-foreground underline">Esqueci minha senha</Link>
-          </div>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? t("signingIn") : t("submit")}
-          </Button>
-        </form>
-        <p className="text-center text-xs text-muted-foreground">
-          {t("noAccountPrefix")}{" "}
-          <Link href="/sign-up" className="underline">
-            {t("noAccountLink")}
-          </Link>
-        </p>
+        {needsTwoFactor ? (
+          <TwoFactorVerifyForm onVerified={() => window.location.reload()} />
+        ) : (
+          <>
+            <Button type="button" variant="outline" disabled={isGooglePending} onClick={onGoogleClick}>
+              <GoogleIcon className="size-4" />
+              {tSignUp("googleCta")}
+            </Button>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              {tSignUp("orDivider")}
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+              <div className="grid gap-2">
+                <Label htmlFor="signin-email">{t("emailLabel")}</Label>
+                <Input
+                  id="signin-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              <div>
+                <PasswordInput
+                  id="signin-password"
+                  label={t("passwordLabel")}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+                <Link href="/forgot-password" className="mt-1 block text-right text-xs text-muted-foreground underline">{t("forgotPasswordLink")}</Link>
+              </div>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? t("signingIn") : t("submit")}
+              </Button>
+            </form>
+            <p className="text-center text-xs text-muted-foreground">
+              {t("noAccountPrefix")}{" "}
+              <Link href="/sign-up" className="underline">
+                {t("noAccountLink")}
+              </Link>
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );

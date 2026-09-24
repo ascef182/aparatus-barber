@@ -196,7 +196,11 @@
       "sendError": "Could not send your message.",
       "empty": "No messages yet. Send one to get started!",
       "you": "You",
-      "staffLabel": "Support team"
+      "staffLabel": "Support team",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "sentStatus": "Sent",
+      "readStatus": "Read"
     },
     "signIn": {
       "title": "Sign in",
@@ -208,6 +212,7 @@
       "nameLabel": "Name",
       "emailLabel": "Email",
       "passwordLabel": "Password",
+      "forgotPasswordLink": "Forgot my password",
       "emailInUse": "This email is already registered.",
       "submit": "Sign in",
       "submitSignUp": "Create account",
@@ -262,7 +267,11 @@
       "reply": "Reply",
       "replying": "Sending…",
       "replyError": "Could not send your reply.",
-      "customerLabel": "Customer"
+      "customerLabel": "Customer",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "sentStatus": "Sent",
+      "readStatus": "Read"
     },
     "userMenu": {
       "signOut": "Sign out",
@@ -639,6 +648,14 @@
       "coverImageSaveError": "Failed to save cover photo.",
       "coverImageUploadError": "The image could not be uploaded.",
       "removeCoverImage": "Remove cover photo",
+      "setPasswordTitle": "Set a password",
+      "setPasswordHint": "Your account was created with Google and has no password yet. Set one so you can also sign in with email and password.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "setPasswordCta": "Set password",
+      "passwordSet": "Password set.",
+      "passwordSetError": "Could not set the password.",
+      "passwordMismatch": "Passwords don't match.",
       "securityTitle": "Security",
       "twoFactorLabel": "Two-factor authentication (TOTP):",
       "twoFactorActive": "active",
@@ -917,6 +934,7 @@
     "title": "Sign in",
     "emailLabel": "Email",
     "passwordLabel": "Password",
+    "forgotPasswordLink": "Forgot my password",
     "submit": "Sign in",
     "signingIn": "Signing in...",
     "invalidCredentials": "Incorrect email or password.",
@@ -1021,6 +1039,7 @@
       "nameLabel": "Name",
       "emailLabel": "Email",
       "passwordLabel": "Password",
+      "forgotPasswordLink": "Forgot my password",
       "emailInUse": "This email is already registered.",
       "submit": "Sign in",
       "submitSignUp": "Create account",
@@ -1107,5 +1126,16 @@
     "submit": "Reset password",
     "done": "Password reset",
     "signInLink": "Sign in"
+  },
+  "twoFactorVerify": {
+    "title": "Two-factor authentication",
+    "subtitle": "Enter the 6-digit code from your authenticator app.",
+    "codeLabel": "Code",
+    "backupCodeLabel": "Backup code",
+    "submit": "Verify",
+    "verifying": "Verifying...",
+    "invalidCode": "Invalid code. Please try again.",
+    "useBackupCode": "Use a backup code instead",
+    "backToCode": "Use authenticator code instead"
   }
 }

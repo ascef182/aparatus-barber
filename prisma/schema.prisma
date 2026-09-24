@@ -622,6 +622,13 @@ model TwoFactor {
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   verified    Boolean @default(false)
+  // Lockout de tentativas do plugin twoFactor do Better Auth (login-time
+  // verify-totp): incrementado a cada código errado, zerado em sucesso.
+  // Colunas exigidas pelo schema do plugin (node_modules/better-auth/dist/
+  // plugins/two-factor/schema.mjs) — sem elas o verify-totp pós-login
+  // (isSignIn) quebra com "Unknown argument `failedVerificationCount`".
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
 
   @@index([userId])
   @@map("twoFactor")
