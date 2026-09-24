@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { SecuritySection } from "@/app/(protected)/dashboard/settings/security-section";
+import { hasCredentialAccount } from "@/lib/services/account-service";
 import { requireSuperadmin } from "./_lib/require-superadmin";
 
 // Área interna do dono da plataforma — single-locale (pt), sem next-intl,
@@ -16,6 +17,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   // aqui. Bloqueia a UI em vez de redirect: reaproveita o SecuritySection
   // já usado por owners (mesmo fluxo testado), sem risco de redirect loop.
   if (!session.user.twoFactorEnabled) {
+    const hasPassword = await hasCredentialAccount(session.user.id);
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-4 p-6 pt-16 text-center">
         <ShieldAlert className="size-8 text-amber-600" />
@@ -23,7 +25,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
         <p className="text-sm text-muted-foreground">
           Contas superadmin exigem 2FA ativado antes de acessar a área administrativa da plataforma.
         </p>
-        <SecuritySection twoFactorEnabled={false} />
+        <SecuritySection twoFactorEnabled={false} hasPassword={hasPassword} />
         <Link href="/superadmin" className="text-sm underline">
           Já ativei — continuar
         </Link>

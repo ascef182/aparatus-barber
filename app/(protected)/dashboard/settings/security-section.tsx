@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { logMfaChange } from "@/app/_actions/log-mfa-change";
+import { setPasswordAction } from "@/app/_actions/set-password";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { Input } from "@/app/_components/ui/input";
+import { PasswordInput } from "@/app/_components/ui/password-input";
 
 function extractSecret(totpURI: string): string {
   try {
@@ -36,7 +39,13 @@ function extractSecret(totpURI: string): string {
  * errava pra contas COM senha, pulava o campo, e batia direto no erro de
  * senha incorreta sem nunca mostrar onde digitá-la.
  */
-export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolean }) {
+export function SecuritySection({
+  twoFactorEnabled,
+  hasPassword,
+}: {
+  twoFactorEnabled: boolean;
+  hasPassword: boolean;
+}) {
   const t = useTranslations("dashboard.settings");
   const [step, setStep] = useState<"idle" | "password" | "verify">("idle");
   const [password, setPassword] = useState("");
@@ -45,6 +54,28 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const [isPending, setIsPending] = useState(false);
+  const [passwordSet, setPasswordSet] = useState(hasPassword);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const setPasswordActionState = useAction(setPasswordAction, {
+    onSuccess: () => {
+      setPasswordSet(true);
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success(t("passwordSet"));
+    },
+    onError: ({ error }) => toast.error(error.serverError ?? t("passwordSetError")),
+  });
+
+  function submitSetPassword(event: React.FormEvent) {
+    event.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error(t("passwordMismatch"));
+      return;
+    }
+    setPasswordActionState.execute({ newPassword });
+  }
 
   async function startEnable(event: React.FormEvent) {
     event.preventDefault();
@@ -94,74 +125,107 @@ export function SecuritySection({ twoFactorEnabled }: { twoFactorEnabled: boolea
   }
 
   return (
-    <Card className="max-w-md">
-      <CardHeader>
-        <CardTitle>{t("securityTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <p className="text-sm text-muted-foreground">
-          {t("twoFactorLabel")}{" "}
-          <span className={enabled ? "text-green-600" : "text-amber-600"}>
-            {enabled ? t("twoFactorActive") : t("twoFactorInactive")}
-          </span>
-        </p>
+    <div className="flex max-w-md flex-col gap-6">
+      {!passwordSet && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("setPasswordTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">{t("setPasswordHint")}</p>
+            <form className="flex flex-col gap-3" onSubmit={submitSetPassword}>
+              <PasswordInput
+                label={t("newPassword")}
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+              <PasswordInput
+                label={t("confirmPassword")}
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+              <Button type="submit" disabled={setPasswordActionState.isPending}>
+                {setPasswordActionState.isPending ? "..." : t("setPasswordCta")}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("securityTitle")}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <p className="text-sm text-muted-foreground">
+            {t("twoFactorLabel")}{" "}
+            <span className={enabled ? "text-green-600" : "text-amber-600"}>
+              {enabled ? t("twoFactorActive") : t("twoFactorInactive")}
+            </span>
+          </p>
 
-        {enabled && (
-          <Button variant="outline" onClick={disable}>
-            {t("disable2fa")}
-          </Button>
-        )}
-
-        {!enabled && step === "idle" && (
-          <Button onClick={() => setStep("password")} disabled={isPending}>
-            {isPending ? "..." : t("enable2fa")}
-          </Button>
-        )}
-
-        {!enabled && step === "password" && (
-          <form className="flex flex-col gap-2" onSubmit={startEnable}>
-            <Input
-              type="password"
-              placeholder={t("yourPassword")}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">{t("passwordOptionalHint")}</p>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "..." : t("continueLabel")}
+          {enabled && (
+            <Button variant="outline" onClick={disable}>
+              {t("disable2fa")}
             </Button>
-          </form>
-        )}
+          )}
 
-        {!enabled && step === "verify" && secret && (
-          <form className="flex flex-col gap-3" onSubmit={confirmVerify}>
-            <div className="rounded-md border bg-muted/40 p-3 text-xs">
-              <p className="mb-1 text-muted-foreground">
-                {t("addManually")}
-              </p>
-              <p className="font-mono break-all">{secret}</p>
-            </div>
-            {backupCodes && (
+          {!enabled && step === "idle" && (
+            <Button onClick={() => setStep("password")} disabled={isPending}>
+              {isPending ? "..." : t("enable2fa")}
+            </Button>
+          )}
+
+          {!enabled && step === "password" && (
+            <form className="flex flex-col gap-2" onSubmit={startEnable}>
+              <Input
+                type="password"
+                placeholder={t("yourPassword")}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">{t("passwordOptionalHint")}</p>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "..." : t("continueLabel")}
+              </Button>
+            </form>
+          )}
+
+          {!enabled && step === "verify" && secret && (
+            <form className="flex flex-col gap-3" onSubmit={confirmVerify}>
               <div className="rounded-md border bg-muted/40 p-3 text-xs">
                 <p className="mb-1 text-muted-foreground">
-                  {t("backupCodesHint")}
+                  {t("addManually")}
                 </p>
-                <p className="font-mono break-all">{backupCodes.join(" · ")}</p>
+                <p className="font-mono break-all">{secret}</p>
               </div>
-            )}
-            <Input
-              placeholder={t("sixDigitCode")}
-              value={code}
-              onChange={(event) => setCode(event.target.value)}
-              maxLength={6}
-              required
-            />
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "..." : t("confirm")}
-            </Button>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+              {backupCodes && (
+                <div className="rounded-md border bg-muted/40 p-3 text-xs">
+                  <p className="mb-1 text-muted-foreground">
+                    {t("backupCodesHint")}
+                  </p>
+                  <p className="font-mono break-all">{backupCodes.join(" · ")}</p>
+                </div>
+              )}
+              <Input
+                placeholder={t("sixDigitCode")}
+                value={code}
+                onChange={(event) => setCode(event.target.value)}
+                maxLength={6}
+                required
+              />
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "..." : t("confirm")}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
