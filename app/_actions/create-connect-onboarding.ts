@@ -20,13 +20,22 @@ export const createConnectOnboarding = staffWriteActionClient({ billing: ["manag
         orderBy: { createdAt: "asc" },
         select: { countryCode: true },
       });
-      const country = primaryLocation?.countryCode ?? "DE";
+      const country = primaryLocation?.countryCode ?? "BR";
       let account: Stripe.Account;
       try {
         account = await stripe.accounts.create({
           type: "express",
           country,
-          capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+          capabilities: {
+            card_payments: { requested: true },
+            transfers: { requested: true },
+            // Pix só existe pra contas BR; pedir pra outros países é
+            // rejeitado pela Stripe. Contas Express (usado por todo tenant
+            // aqui) exigem que a plataforma solicite a capability -- o
+            // dono não tem como ativar isso sozinho no dashboard próprio
+            // dele, ao contrário de contas com Dashboard completo.
+            ...(country === "BR" ? { pix_payments: { requested: true } } : {}),
+          },
           metadata: { organizationId: ctx.organization.id },
         });
       } catch (error) {
