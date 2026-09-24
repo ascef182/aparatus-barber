@@ -1,6 +1,6 @@
 # Product Marketing Context
 
-**Document version:** v3
+**Document version:** v4
 **Last updated:** 2026-09-24
 
 > Este arquivo é lido automaticamente por todas as skills de marketing em
@@ -22,8 +22,8 @@
 **Product type:** B2B SaaS multi-tenant, self-service com onboarding assistido no estágio atual.
 
 **Business model:**
-- Assisted beta: piloto gratuito de 30 dias → Founder Plan R$149/mês por 12 meses (primeiros 20 parceiros).
-- GA: trial self-service de **7 dias** (`lib/services/organization-service.ts:43`, `TRIAL_DAYS = 7`), depois Starter R$199 / Growth R$399 / Pro R$699 (`lib/billing/plan-limits.ts:3-11`). **Valores BRL são placeholders convertidos proporcionalmente do pricing em EUR — não validados contra o mercado brasileiro** (ver `docs/marketing/plan.md` §13, decisão aberta #4).
+- Assisted beta: piloto gratuito de 30 dias → Founder Plan R$59/mês por 12 meses (primeiros 20 parceiros).
+- GA: trial self-service de **7 dias** (`lib/services/organization-service.ts:43`, `TRIAL_DAYS = 7`), depois Starter R$79 / Growth R$149 / Pro R$249 (`lib/billing/plan-limits.ts:3-11`). **Recalibrados 2026-09-24 contra o pricing real da Trinks (R$76-110/mês) — ainda não é pesquisa de willingness-to-pay brasileira** (ver `docs/marketing/plan.md` §13, decisão aberta #4).
 - Limites por plano: Starter 1 local / 5 profissionais · Growth 3 / 20 · Pro ilimitado.
 - Taxa do Stripe é separada e transparente — a Bladiq não lucra em cima dela.
 - Sem comissão de diretório durante a validação.
@@ -58,7 +58,7 @@
 **Core problem:** O dono agenda por DM/WhatsApp/caderno, perde horas por dia nisso, e quando tenta resolver com um marketplace descobre que passa a pagar comissão sobre reservas — inclusive de clientes que ele mesmo trouxe.
 
 **Why alternatives fall short:**
-- Marketplace (Trinks e similares): monetiza por comissão e/ou visibilidade paga dentro do próprio app deles. O cliente final vira do marketplace, não do salão.
+- Marketplace (Fresha e similares, ~8% do faturamento): monetiza por comissão e/ou visibilidade paga dentro do próprio app deles. O cliente final vira do marketplace, não do salão. (A Trinks, citada antes aqui, na verdade cobra assinatura fixa como a Bladiq — corrigido 2026-09-24, ver changelog.)
 - SaaS genérico de agendamento sem foco no Brasil: não trata bem casos de uso locais do dia a dia (ex. Pix, ainda não confirmado no produto — ver decisão aberta em `docs/marketing/plan.md` §13) e não tem português como idioma de verdade, só tradução de última hora.
 - Caderno/DM: grátis e funciona "mais ou menos" — é o concorrente real, não os outros softwares.
 
@@ -68,8 +68,8 @@
 
 ## Competitive Landscape
 
-**Direct:** Trinks — referência mais conhecida do nicho no Brasil; falha porque monetiza como marketplace, comissão sobre reserva inclusive de cliente trazido pelo dono.
-**Direct (internacional, penetração no Brasil a confirmar):** Fresha, Booksy — modelo similar de comissão/marketplace; presença real no mercado brasileiro ainda não validada por este documento, não citar como concorrente confirmado em copy pública sem checar antes.
+**Direct (mesmo modelo, concorrente de preço/features, não de comissão):** Trinks — referência mais conhecida do nicho no Brasil (R$76-110/mês). Cobra assinatura fixa, igual à Bladiq — não citar como exemplo de marketplace/comissão (correção 2026-09-24, ver changelog).
+**Direct (marketplace de comissão, confirmado no Brasil):** Fresha — ~8% do faturamento sobre reserva, inclusive de cliente trazido pelo dono; presença confirmada no mercado brasileiro (pesquisa 2026-09-24). Booksy também é citada como concorrente de comissão internacionalmente, mas a penetração dela no Brasil especificamente ainda não foi validada — não citar como confirmada em copy pública sem checar antes.
 **Secondary:** Agendar por Instagram DM / WhatsApp — falha porque consome o dia do dono e não cobra depósito.
 **Indirect:** Caderno de papel / não fazer nada — falha porque não existe registro, nem lembrete, nem proteção contra no-show. **É o concorrente mais forte e o que mais se subestima.**
 
@@ -92,7 +92,8 @@
 
 | Objection | Response |
 |---|---|
-| "Qual a diferença pra Trinks?" | Eles cobram por reserva, inclusive as suas. Aqui é mensalidade fixa e a relação com o cliente continua sua. → linkar a página de comparação |
+| "Qual a diferença pra Fresha?" | Eles cobram por reserva, inclusive as suas. Aqui é mensalidade fixa e a relação com o cliente continua sua. → linkar a página de comparação |
+| "Qual a diferença pra Trinks?" | Modelo de cobrança parecido (assinatura fixa, sem comissão) — a diferença é preço/features, não comissão. Vale comparar diretamente sem usar o argumento de "sem comissão" contra ela especificamente. |
 | "Sou pequeno demais / não preciso disso" | Não é sobre tamanho, é sobre no-show: uma cadeira vazia custa o valor cheio do serviço. Depósito resolve com 1 configuração |
 | "Meus clientes não vão usar" | Não tem app pra baixar — é um link, em português (ou inglês/alemão, se preferir). Você continua marcando por DM pra quem preferir |
 | "Não tenho tempo pra configurar" | Eu configuro com você numa chamada; a promessa do produto é página no ar em menos de 15 minutos |
@@ -119,7 +120,7 @@ Preencher com verbatim das primeiras conversas de prospecção e dos pilotos (é
 
 **Words to avoid (regra dura, ver `docs/marketing/plan.md` §2):**
 - **IA / recepcionista automática / automação inteligente** — a promessa foi deliberadamente removida do produto até haver desenho operacional seguro (`PRODUCT.md`, Boundaries). Reintroduzir na comunicação quebra a disciplina do produto. **Nenhuma skill deve gerar copy com esse ângulo.**
-- Qualquer framing de marketplace ("mais clientes pra você", "apareça na frente do concorrente") — é o jogo da Trinks, não o nosso.
+- Qualquer framing de marketplace ("mais clientes pra você", "apareça na frente do concorrente") — é o jogo da Fresha, não o nosso (a Trinks não joga esse jogo, é assinatura fixa como a gente).
 - Urgência falsa / pressão de vendas — o ICP já é cético com vendedor de software.
 - Falar de roadmap como se já existisse. Só o que está no ar hoje.
 
@@ -127,7 +128,7 @@ Preencher com verbatim das primeiras conversas de prospecção e dos pilotos (é
 | Term | Meaning |
 |---|---|
 | Tenant | Um negócio/organização no sistema; tem subdomínio próprio `{slug}.bladiq.com` |
-| Founder Plan | R$149/mês por 12 meses, só os 20 primeiros parceiros |
+| Founder Plan | R$59/mês por 12 meses, só os 20 primeiros parceiros |
 | Payment attachment | % de reservas com pagamento/depósito anexado — métrica-chave de ativação de valor |
 | Hold / PENDING_PAYMENT | Reserva segurando o horário até o pagamento confirmar (expira em 30min) |
 | LGPD | Lei Geral de Proteção de Dados (Lei 13.709/2018) — base legal brasileira de tratamento de dados pessoais que substitui a referência a GDPR/GoBD alemã usada até a v2 deste documento |
@@ -163,6 +164,7 @@ Preencher com verbatim das primeiras conversas de prospecção e dos pilotos (é
 
 ## Changelog
 *Newest first. One line per revision: what changed and why.*
+- v4 (2026-09-24) — **Correção factual: Trinks não cobra comissão.** Pesquisei `negocios.trinks.com/planos` — a Trinks cobra assinatura fixa (R$76-110/mês), mesmo modelo da Bladiq, não marketplace. Todo texto anterior usando a Trinks como exemplo de comissão foi corrigido pra Fresha (~8% do faturamento, presença confirmada no Brasil). Pricing recalibrado contra o valor real da Trinks: Founder Plan R$59, Starter R$79, Growth R$149, Pro R$249 (antes R$149/199/399/699 — conversão arbitrária de EUR).
 - v3 (2026-09-24) — **Pivô de mercado: lusófono-Europa → Brasil.** Reverte a decisão da v2 (que era explicitamente "não é pivô Brasil"): a fundadora está no Brasil e hoje não tem ninguém disponível na Europa pra imprensa/PR lá, o que fragilizava a aposta europeia. Moeda EUR→BRL (placeholder, não validado). Compliance alemão (Impressum/GoBD/DPA) sai, entra LGPD (rascunho, pendente revisão jurídica). Framing de "negócio liderado por imigrante" sai do ICP (não se aplica dentro do próprio país). Cidade-base no Brasil fica como decisão em aberto, não presumida.
 - v2 (2026-08-24) — Alvo geográfico estreitado: de "Berlim, depois DACH" para **lusófono-Europa**, com **Lisboa/Porto como mercado direto** e comunidade lusófona da Alemanha como segunda frente. Não é pivô Brasil — venda continua remota, para clientes na Europa. Decisão registrada em memória do fundador (`project-gtm-market-position`, 2026-08-24); ainda **não validada** — segue o mesmo portão (50 mapeados / 20 conversas / ≥5 pilotos) já definido no `docs/marketing/plan.md`.
 - v1 (2026-08-21) — Contexto inicial, auto-draft do repo. Corrige dois pontos onde `docs/marketing/plan.md` v1 está desatualizado: o fundador opera **remoto do Brasil** (não presencial em Berlim), e o trial de GA é de **7 dias** no código, não 14 como diz o `PRODUCT.md`.

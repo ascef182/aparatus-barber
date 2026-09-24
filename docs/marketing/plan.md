@@ -57,11 +57,29 @@
 > **O que fica em aberto, de propósito, em vez de inventado:** cidade-base
 > específica de prospecção, comunidades/associações locais equivalentes às
 > mapeadas para Portugal em `community-channels.md`, e comparação direta com
-> concorrentes brasileiros validada além do nome mais óbvio (Trinks). Ver
-> decisões em aberto, §13.
+> concorrentes brasileiros validada. Ver decisões em aberto, §13.
 > **Status: recomendação aceita, ainda não validada** — o portão de
 > validação (50 negócios mapeados → 20 conversas → ≥5 pilotos aceitos)
 > segue o mesmo, agora aplicado ao mercado brasileiro.
+
+> ### ⚠️ Aviso de revisão (2026-09-24, correção factual) — Trinks não cobra comissão
+>
+> Pesquisei o site oficial da Trinks (`negocios.trinks.com/planos`) e a
+> afirmação usada em todo este documento até agora — "Trinks cobra
+> comissão sobre reserva" — está **errada**. A Trinks cobra assinatura
+> mensal fixa (R$76/mês pra 1-2 profissionais, R$110/mês pra 3-4, sob
+> consulta acima disso), sem comissão sobre agendamento. O modelo dela é
+> igual ao da Bladiq (SaaS de assinatura), não um marketplace. Quem cobra
+> comissão de verdade (~8% do faturamento) e já opera no Brasil é a
+> **Fresha**. Toda menção a "Trinks" como exemplo de comissão abaixo foi
+> corrigida pra Fresha — a Trinks continua citada como concorrente de
+> preço/features, com modelo de cobrança igual ao nosso.
+>
+> Isso também expôs que o pricing placeholder deste plano (herdado
+> proporcionalmente do EUR, R$149/199/399/699) ficava bem mais caro que a
+> Trinks pro mesmo porte de negócio. Recalibrado pra **Founder Plan R$59 ·
+> Starter R$79 · Growth R$149 · Pro R$249** — mais próximo da faixa real
+> de mercado, ainda não é pesquisa de willingness-to-pay (ver §13).
 
 ---
 
@@ -71,14 +89,14 @@
 
 **Três apostas, em ordem de alavancagem:**
 
-1. **Prospecção remota bate qualquer canal pago neste estágio.** Com R$0-2.500/mês de orçamento e um ICP hiperlocal (1-5 profissionais por negócio), nenhuma verba de mídia paga produz volume suficiente pra validar nada — e o CAC de tráfego pago sobre um ticket de R$149-399/mês provavelmente não fecha a conta. A aposta é: a fundadora usa o navegador (Google Maps, Instagram, busca por nome) pra montar uma lista qualificada de 50-100 barbearias/salões/estúdios de unha no Brasil e faz contato remoto — Instagram DM como canal primário, WhatsApp quando a conversa avança, mensagem curta e específica. Isso é o que qualquer operador bem-sucedido faz antes de existir orçamento de marketing.
+1. **Prospecção remota bate qualquer canal pago neste estágio.** Com R$0-2.500/mês de orçamento e um ICP hiperlocal (1-5 profissionais por negócio), nenhuma verba de mídia paga produz volume suficiente pra validar nada — e o CAC de tráfego pago sobre um ticket de R$79-149/mês provavelmente não fecha a conta. A aposta é: a fundadora usa o navegador (Google Maps, Instagram, busca por nome) pra montar uma lista qualificada de 50-100 barbearias/salões/estúdios de unha no Brasil e faz contato remoto — Instagram DM como canal primário, WhatsApp quando a conversa avança, mensagem curta e específica. Isso é o que qualquer operador bem-sucedido faz antes de existir orçamento de marketing.
 2. **Estar no mesmo país e fuso horário do cliente é vantagem real, não só conveniência.** A operação já era remota antes (vendendo pra Europa do Brasil); vender dentro do próprio país remove a fricção de fuso horário, idioma sem tradução alguma e contexto cultural do dia a dia de um salão brasileiro — inclusive nuances de forma de pagamento (Pix é esperado, não opcional) que o produto ainda não trata explicitamente e que vale investigar cedo (ver §13, decisões em aberto).
-3. **O diferencial "sem comissão de marketplace sobre o cliente que você mesmo trouxe" precisa virar uma página específica e um argumento repetível, não ficar só no README.** Plataformas de agendamento com comissão sobre reserva — a mais conhecida no nicho brasileiro é a Trinks — cobram do dono do salão mesmo sobre clientes que ele mesmo trouxe. Essa é a objeção mais fácil de vencer com um dono cético, e hoje ela não existe em lugar nenhum do site público da Bladiq.
+3. **O diferencial "sem comissão de marketplace sobre o cliente que você mesmo trouxe" precisa virar uma página específica e um argumento repetível, não ficar só no README.** Plataformas de agendamento com comissão sobre reserva — a Fresha é a mais conhecida operando no Brasil, ~8% do faturamento — cobram do dono do salão mesmo sobre clientes que ele mesmo trouxe. Essa é a objeção mais fácil de vencer com um dono cético, e hoje ela não existe em lugar nenhum do site público da Bladiq. (Correção 2026-09-24: a Trinks, citada aqui até então, **não** cobra comissão — é assinatura fixa, mesmo modelo da Bladiq. Ver aviso de revisão no topo do documento.)
 
 **O que doze meses parecem, de forma plausível:**
 - 3-5 parceiros ativos no Brasil até o fim do Q1 (piloto gratuito de 30 dias).
-- Willingness to pay validada — pelo menos 3 desses convertendo pro Founder Plan (R$149/mês) até o fim do Q2.
-- Abertura de GA self-service (trial de **7 dias** — é o valor no código e no Terms —, planos R$199/R$399/R$699) só depois de validar isso, não antes — abrir cedo demais sem prova de retenção desperdiçaria a primeira impressão dos parceiros mais importantes.
+- Willingness to pay validada — pelo menos 3 desses convertendo pro Founder Plan (R$59/mês) até o fim do Q2.
+- Abertura de GA self-service (trial de **7 dias** — é o valor no código e no Terms —, planos R$79/R$149/R$249) só depois de validar isso, não antes — abrir cedo demais sem prova de retenção desperdiçaria a primeira impressão dos parceiros mais importantes.
 - 8-15 negócios ativos no Brasil até o fim do ano, ainda sem verba de mídia paga relevante — crescimento é manual e remoto neste horizonte, não de canal escalável.
 
 **Prioridades dos primeiros 90 dias:**
@@ -106,13 +124,13 @@ A Bladiq não está criando uma categoria nova (agendamento online para negócio
 - O que estão comprando de verdade: controle sobre o próprio fluxo de caixa (depósito, cobrança de no-show) e dignidade profissional (não depender de agenda de caderno nem de aparecer "no meio da lista" de um app de terceiros).
 
 ### A lógica do modelo de negócio
-Assinatura mensal fixa (SaaS clássico), sem comissão sobre reservas trazidas pelo próprio dono — a monetização é a mensalidade, não uma fatia de cada agendamento. Piloto gratuito de 30 dias reduz o risco de decisão pro dono cético; Founder Plan (R$149/mês por 12 meses, só pros 20 primeiros parceiros) cria urgência real e recompensa quem chega cedo; GA (Starter R$199 / Growth R$399 / Pro R$699) segmenta por número de locais/profissionais — valores de placeholder herdados proporcionalmente dos tiers em EUR, não validados contra willingness-to-pay brasileira (ver §13). Taxa do Stripe fica separada e transparente — a Bladiq não lucra em cima da taxa de processamento. Tese de canal composto: hoje é 100% prospecção manual + comunidade; a médio prazo, o diretório `/find/[city]` vira ativo de SEO orgânico à medida que parceiros são adicionados — cada parceiro fechado manualmente também melhora o canal orgânico futuro (efeito composto, não é só "mais um cliente").
+Assinatura mensal fixa (SaaS clássico), sem comissão sobre reservas trazidas pelo próprio dono — a monetização é a mensalidade, não uma fatia de cada agendamento. Piloto gratuito de 30 dias reduz o risco de decisão pro dono cético; Founder Plan (R$59/mês por 12 meses, só pros 20 primeiros parceiros) cria urgência real e recompensa quem chega cedo; GA (Starter R$79 / Growth R$149 / Pro R$249) segmenta por número de locais/profissionais — recalibrados 2026-09-24 contra o pricing real da Trinks (R$76-110), ainda não é pesquisa de willingness-to-pay brasileira (ver §13). Taxa do Stripe fica separada e transparente — a Bladiq não lucra em cima da taxa de processamento. Tese de canal composto: hoje é 100% prospecção manual + comunidade; a médio prazo, o diretório `/find/[city]` vira ativo de SEO orgânico à medida que parceiros são adicionados — cada parceiro fechado manualmente também melhora o canal orgânico futuro (efeito composto, não é só "mais um cliente").
 
 ### Voz de marca (não-negociável)
 Não há um documento de voz formal ainda (gap real, ver rubrica §3) — mas os princípios já estão implícitos no próprio código e nos documentos do produto, e devem virar regra explícita a partir deste plano:
 
 - **SIM**: falar só do que está no ar hoje, não do roadmap como se já existisse. Nomear restrições reais (isolamento de dados por tenant, RLS no banco, tratamento de dados alinhado à LGPD) como sinal de confiança, não como jargão técnico assustador. Linguagem direta, sem jargão de startup.
-- **NÃO**: nenhuma promessa de IA/recepcionista automática — o próprio README documenta que essa promessa foi removida até haver demanda e desenho operacional seguro; reintroduzir isso na comunicação pública quebraria a própria disciplina do produto. Nenhum framing de "marketplace"/"roube o cliente do concorrente" — não é esse o jogo da Bladiq, é o jogo da Trinks/Fresha/Booksy. Nenhuma tática de urgência falsa/pressão de vendas com donos de negócio que já são céticos com vendedor de software.
+- **NÃO**: nenhuma promessa de IA/recepcionista automática — o próprio README documenta que essa promessa foi removida até haver demanda e desenho operacional seguro; reintroduzir isso na comunicação pública quebraria a própria disciplina do produto. Nenhum framing de "marketplace"/"roube o cliente do concorrente" — não é esse o jogo da Bladiq, é o jogo da Fresha/Booksy (a Trinks é assinatura fixa, como a Bladiq — não citar como exemplo de marketplace). Nenhuma tática de urgência falsa/pressão de vendas com donos de negócio que já são céticos com vendedor de software.
 
 Se alguma peça de copy violar essas regras (especialmente qualquer menção a IA/automação que não existe hoje), ela deve ser reescrita antes de publicar — isso vale para toda copy gerada a partir das Seções 4-8 deste plano.
 
@@ -163,7 +181,7 @@ Não há hire de marketing, contractor ou agência hoje. Não é tactical-only n
 | Problema | Custo de não agir | Ação |
 |---|---|---|
 | Zero contato feito com prospects reais até hoje | Cada semana sem contato é uma semana sem sinal de mercado — o maior risco do produto neste momento não é técnico, é de distribuição | Iniciar prospecção manual na Semana 1 (§9) |
-| Nenhuma página "vs. marketplace de comissão" | Perde o argumento mais forte de vendas toda vez que um prospect pergunta "qual a diferença pra Trinks" | Publicar na Semana 3-4 (§4, Move 4) |
+| Nenhuma página "vs. marketplace de comissão" | Perde o argumento mais forte de vendas toda vez que um prospect pergunta "qual a diferença pra Fresha" | Publicar na Semana 3-4 (§4, Move 4) |
 | Nenhum canal de comunidade brasileiro mapeado | O canal de maior confiança do plano de Europa (comunidade lusófona local) não tem equivalente ainda documentado para o Brasil | Mapear na Semana 1-2 (§4, Move 2) |
 
 ### Retrato da rubrica de auditoria (17 seções)
@@ -185,11 +203,11 @@ Nenhum canal ativo. Zero tráfego medido, zero contato feito com prospects.
 
 **Move 3 — Contato direto do fundador (Instagram DM/WhatsApp).** Pitch curto, específico, sem jargão: "você paga comissão hoje sobre cliente que já é seu? Isso não devia acontecer." Oferta: piloto gratuito de 30 dias, sem cartão de crédito, com o próprio fundador ajudando a configurar (concierge setup — ver §5). Meta: 10-15 contatos qualificados por semana a partir da Semana 3.
 
-**Move 4 — Página "Bladiq vs. comissão de marketplace".** Uma página direta comparando o modelo de assinatura fixa da Bladiq contra o modelo de comissão de plataformas como a Trinks (referência mais conhecida do nicho no Brasil) sobre reservas — inclusive as trazidas pelo próprio dono. `docs/marketing/comparison-page-draft.md` já tem um rascunho desse argumento montado pro contexto europeu (Fresha/Treatwell/Booksy) — o argumento central ("comissão mesmo sobre cliente que você trouxe") é market-agnostic, então o rascunho é ponto de partida, não trabalho do zero; precisa validar quais concorrentes citar (Trinks confirmado; confirmar penetração de Fresha/Booksy no Brasil antes de citá-los por nome). Serve dois papéis: argumento de vendas linkável durante o contato direto, e página de intenção alta pra quando SEO começar a importar (Q2+).
+**Move 4 — Página "Bladiq vs. comissão de marketplace".** Uma página direta comparando o modelo de assinatura fixa da Bladiq contra o modelo de comissão de plataformas como a Fresha (~8% do faturamento, confirmado operando no Brasil) sobre reservas — inclusive as trazidas pelo próprio dono. `docs/marketing/comparison-page-draft.md` já tem um rascunho desse argumento montado pro contexto europeu (Fresha/Treatwell/Booksy) — o argumento central ("comissão mesmo sobre cliente que você trouxe") é market-agnostic, então o rascunho é ponto de partida, não trabalho do zero; adaptar pra citar Fresha como exemplo de comissão e Trinks como comparação de preço/features (modelo de cobrança igual ao nosso, não comissão — correção 2026-09-24). Serve dois papéis: argumento de vendas linkável durante o contato direto, e página de intenção alta pra quando SEO começar a importar (Q2+).
 
 **Move 5 — Diretório `/find/[city]` como ativo composto.** Cada parceiro fechado manualmente entra no diretório da cidade correspondente — não é canal de aquisição por si só ainda (sem tráfego), mas cada adição de hoje é o que faz o diretório valer algo como SEO local em 6-12 meses. Tratar como investimento de longo prazo embutido em cada fechamento manual, não como iniciativa separada.
 
-**Move 6 — Camada paga: explicitamente retida.** Nenhum orçamento de mídia paga neste trimestre — o ticket médio (R$149-399/mês) e o volume necessário (3-5 clientes) não justificam o CAC de aprendizado de um canal pago do zero. Revisitar só depois que o Move 1-3 provar CAC baixo o suficiente via canal manual (ver §10, Q3).
+**Move 6 — Camada paga: explicitamente retida.** Nenhum orçamento de mídia paga neste trimestre — o ticket médio (R$79-149/mês) e o volume necessário (3-5 clientes) não justificam o CAC de aprendizado de um canal pago do zero. Revisitar só depois que o Move 1-3 provar CAC baixo o suficiente via canal manual (ver §10, Q3).
 
 ### Movimentos de 90 dias
 - Semanas 1-2: montar a lista de 50-100 prospects; mapear comunidades/associações de barbeiros e cabeleireiros no Brasil (Move 2); escrever o script de contato (Instagram DM/WhatsApp) e o pitch de uma frase.
@@ -270,13 +288,13 @@ Não aplicável — sem clientes ainda.
 ## 8. Revenue (Receita)
 
 ### Estado atual
-Estrutura de preço já definida e implementada em código (`lib/billing/plan-limits.ts`): Founder Plan R$149/mês por 12 meses (só os 20 primeiros parceiros, após piloto gratuito de 30 dias), depois GA com trial de **7 dias** (`TRIAL_DAYS` em `lib/services/organization-service.ts`) e planos Starter R$199 / Growth R$399 / Pro R$699. Nunca pressure-testado com cliente real, e os valores em BRL são placeholders convertidos proporcionalmente dos tiers em EUR — não são pesquisa de willingness-to-pay brasileira (ver §13).
+Estrutura de preço já definida e implementada em código (`lib/billing/plan-limits.ts`): Founder Plan R$59/mês por 12 meses (só os 20 primeiros parceiros, após piloto gratuito de 30 dias), depois GA com trial de **7 dias** (`TRIAL_DAYS` em `lib/services/organization-service.ts`) e planos Starter R$79 / Growth R$149 / Pro R$249. Nunca pressure-testado com cliente real; recalibrados 2026-09-24 contra o pricing real da Trinks (R$76-110/mês) — ainda não é pesquisa de willingness-to-pay brasileira (ver §13).
 
 ### O plano
 
-**Move 1 — Não mexer no preço antes de validar com os primeiros 3-5 parceiros.** O preço já está desenhado com uma lógica clara (Founder Plan recompensa quem chega cedo, planos GA segmentam por tamanho). O trabalho da Seção 8 neste trimestre não é redesenhar pricing — é confirmar, via as conversas da Seção 6, se R$149/mês é uma barreira real ou não para o piloto converter, e se os valores fazem sentido pro mercado brasileiro (não só uma conversão de EUR).
+**Move 1 — Não mexer no preço antes de validar com os primeiros 3-5 parceiros.** O preço já está desenhado com uma lógica clara (Founder Plan recompensa quem chega cedo, planos GA segmentam por tamanho). O trabalho da Seção 8 neste trimestre não é redesenhar pricing — é confirmar, via as conversas da Seção 6, se R$59/mês é uma barreira real ou não para o piloto converter, e se os valores fazem sentido pro mercado brasileiro (já recalibrados contra a Trinks, mas ainda não testados com cliente real).
 
-**Move 2 — Página de comparação de preço vs. comissão de marketplace (junto com Move 4 da Seção 4).** O maior argumento de revenue não é o valor absoluto de R$149-699/mês — é mostrar que uma comissão de marketplace sobre reservas ao longo de um ano custa mais do que a assinatura fixa pra um salão com volume razoável.
+**Move 2 — Página de comparação de preço vs. comissão de marketplace (junto com Move 4 da Seção 4).** O maior argumento de revenue não é o valor absoluto de R$59-249/mês — é mostrar que uma comissão de marketplace sobre reservas ao longo de um ano custa mais do que a assinatura fixa pra um salão com volume razoável.
 
 **Move 3 — Upsell Starter→Growth→Pro: fora de escopo deste trimestre.** Não há base suficiente ainda; volta a ser relevante em Q3+ quando o GA abrir (§10).
 
@@ -284,7 +302,7 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 
 | Métrica | Valor | Nota |
 |---|---|---|
-| ARPC (receita média mensal por cliente) | R$149 (Founder Plan) até validação; R$199-699 em GA | Baseline do próprio pricing, não medido ainda; valores BRL não validados (ver acima) |
+| ARPC (receita média mensal por cliente) | R$59 (Founder Plan) até validação; R$79-249 em GA | Baseline do próprio pricing, recalibrado contra Trinks 2026-09-24, não medido com cliente real ainda |
 | CAC blended | **Desconhecido — TBD** | Maior decisão em aberto do plano (§13); hoje o custo real é tempo do fundador, não dinheiro, o que dificulta o cálculo tradicional |
 | Retenção anual | **Desconhecido — TBD** | Sem histórico; medir a partir dos primeiros 3-5 pilotos |
 | LTV (aprox.) | Não calculável ainda | Depende de retenção, que depende dos primeiros meses reais |
@@ -363,7 +381,7 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 **Estado de funding:** Tier 1, ainda sem verba paga.
 **Foco:** validar willingness to pay — os pilotos convertem pro Founder Plan de verdade?
 **Resultados até o fim do Q2:**
-- Pelo menos 3 dos 3-5 pilotos convertidos pro Founder Plan (R$149/mês).
+- Pelo menos 3 dos 3-5 pilotos convertidos pro Founder Plan (R$59/mês).
 - Conteúdo leve no ar (comparação + 2-3 posts sobre no-show/depósito).
 - Diretório com os primeiros parceiros reais listados.
 - Expansão da lista de prospects dentro do Brasil (mais 50-100).
@@ -602,8 +620,8 @@ Com time de uma pessoa, o RACI é trivial hoje — o valor de deixá-lo explíci
 1. **CAC e retenção são completamente desconhecidos.** Toda a Seção 10 depende de medir isso nos primeiros pilotos reais — é a decisão de maior impacto do plano inteiro, porque decide se o canal manual escala ou não.
 2. **Cidade-base/recorte regional de prospecção não está definido.** Diferente do plano anterior (Lisboa/Porto vs. Alemanha, com lógica explícita de mercado direto vs. diáspora), este plano não recorta por cidade porque a operação já nasce remota. Vale decidir se faz sentido concentrar os primeiros 50-100 prospects numa região onde o fundador já tem alguma rede/contexto, em vez de espalhar por todo o Brasil desde o início.
 3. **Comunidades/associações de barbeiros e cabeleireiros no Brasil ainda não foram mapeadas.** `community-channels.md` tem o modelo pronto pra Portugal; o equivalente brasileiro é trabalho pendente, não feito neste plano por não haver base de pesquisa local confiável sem o fundador confirmar rede/região.
-4. **Os valores em BRL (R$149/199/399/699) são conversão proporcional do pricing em EUR, não pesquisa de mercado brasileira.** Vale validar contra concorrentes locais (Trinks, e outros que surgirem na pesquisa de prospecção) antes de tratá-los como definitivos.
-5. **Suporte a Pix no fluxo de pagamento/depósito não foi confirmado.** O produto foi desenhado em cima do Stripe com cartão como meio principal; no Brasil, Pix é esperado por muitos donos de salão pra cobrança de depósito e do dia a dia. Vale confirmar com o time de produto se/quando isso entra, antes de prometer isso a um prospect.
+4. **[Parcialmente resolvido 2026-09-24]** Os valores em BRL foram recalibrados contra o pricing real da Trinks (R$76-110/mês) — Founder Plan R$59, Starter R$79, Growth R$149, Pro R$249. Ainda não é pesquisa de willingness-to-pay, só deixou de ser conversão arbitrária de EUR.
+5. **[Em andamento 2026-09-24]** Pix habilitado no depósito de reserva via Stripe Connect (capability `pix_payments` na conta do tenant, `country === "BR"`). A cobrança da própria assinatura SaaS (dono do salão pagando a Bladiq) continua só cartão — Pix recorrente não está disponível no Brasil via Stripe (Pix Automático é só por convite). Avaliar migração/complemento com **Asaas** (fintech nativa brasileira, sem essa limitação de Pix recorrente) como próximo projeto — não escopado ainda, decisão do fundador de tratar como rodada separada.
 6. **Não há decisão tomada sobre quando abrir GA self-service.** Este plano recomenda condicionar a Q3 e a willingness-to-pay validada — mas é uma escolha do fundador, não uma certeza.
 7. **O worker BullMQ precisa estar no ar antes de qualquer prospecção.** Hoje tudo roda na Vercel, que não executa processo longo — então nenhum e-mail transacional sai e holds `PENDING_PAYMENT` nunca expiram. O primeiro prospect que se cadastrar não recebe e-mail nenhum. Migração para Railway em andamento.
 8. **Não existe decisão sobre expansão além do recorte inicial dentro do Brasil antes do fim do ano** — este plano trata isso como Q4+/2027, mas é uma escolha explícita, não um default.

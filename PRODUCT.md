@@ -17,8 +17,8 @@ Bladiq serves owner-operated barbershops, hair salons, nail studios, and beauty 
 
 ## Commercial model
 
-- Assisted beta: 30-day pilot, then Founder Plan at R$149/month for 12 months for the first 20 partners.
-- General availability: 7-day self-service trial; Starter R$199, Growth R$399, Pro R$699. (7 days is the value implemented in code — `TRIAL_DAYS` in `lib/services/organization-service.ts` — and the one the published Terms commit to. This document said 14 until 2026-08-21; do not quote 14 in sales material.) BRL figures are placeholders sized off the prior EUR tiers, not local willingness-to-pay research — validate against Brazilian competitors (e.g. Trinks) before quoting in sales material.
+- Assisted beta: 30-day pilot, then Founder Plan at R$59/month for 12 months for the first 20 partners.
+- General availability: 7-day self-service trial; Starter R$79, Growth R$149, Pro R$249. (7 days is the value implemented in code — `TRIAL_DAYS` in `lib/services/organization-service.ts` — and the one the published Terms commit to. This document said 14 until 2026-08-21; do not quote 14 in sales material.) Recalibrated 2026-09-24 against Trinks' real published pricing (R$76/month for 1-2 professionals, R$110 for 3-4 — negocios.trinks.com/planos) after discovering Trinks charges a flat subscription, not a booking commission as earlier drafts of this document assumed. Still not a full willingness-to-pay study.
 - No directory commission during validation. The directory is a free SEO/discovery surface, not a guaranteed lead source.
 - Stripe processing fees remain transparent and separate.
 
