@@ -367,7 +367,7 @@ model BookingAttachment {
   id             String   @id @default(uuid())
   bookingId      String
   organizationId String
-  booking        Booking  @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  booking        Booking  @relation(fields: [bookingId, organizationId], references: [id, organizationId], onDelete: Cascade)
   url            String
   publicId       String
   createdAt      DateTime @default(now())

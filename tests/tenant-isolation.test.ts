@@ -1131,7 +1131,10 @@ describe("Suite 2 — extension fail-closed", () => {
     const customerB = await runWithTenant(orgB.id, () =>
       db.customer.create({ data: { organizationId: orgB.id, name: "Cliente anexo B" } }),
     );
-    const startAt = new Date(Date.now() + 86400_000);
+    // 2 dias à frente (não 1, como o teste "Booking" acima) -- mesmos
+    // staffA/staffB compartilhados, então precisa de uma janela de horário
+    // que não colida com a constraint booking_no_overlap daquele teste.
+    const startAt = new Date(Date.now() + 2 * 86400_000);
     const endAt = new Date(startAt.getTime() + 30 * 60_000);
     const bookingA = await runWithTenant(orgA.id, () =>
       db.booking.create({
