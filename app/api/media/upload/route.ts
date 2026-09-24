@@ -8,6 +8,9 @@ import { hasPermission } from "@/lib/auth/permissions";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { badRequest, forbidden, tooManyRequests, unauthorized } from "@/lib/http-errors";
+import { verifyBookingUploadToken } from "@/lib/booking-upload-token";
+import { db } from "@/lib/db";
+import { runWithTenant } from "@/lib/tenant-context";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -29,33 +32,52 @@ async function hasValidImageSignature(file: File): Promise<boolean> {
 
 export async function POST(request: Request) {
   const requestHeaders = await headers();
-  const session = await auth.api.getSession({ headers: requestHeaders });
   const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) return unauthorized();
+  if (!slug) return unauthorized();
   const organization = await getOrganizationBySlug(slug);
-  const membership = organization
-    ? await getMembership(organization.id, session.user.id)
-    : null;
+  if (!organization) return unauthorized();
+
   const ip = await getClientIp();
-  const { allowed } = await checkRateLimit(
-    `media-upload:${ip}:${organization?.id ?? slug}`,
-    {
-      windowSeconds: 60 * 60,
-      max: 20,
-    },
-  );
+  const { allowed } = await checkRateLimit(`media-upload:${ip}:${organization.id}`, {
+    windowSeconds: 60 * 60,
+    max: 20,
+  });
   if (!allowed) return tooManyRequests("Muitos uploads. Tente novamente mais tarde.");
+
   const form = await request.formData();
   const file = form.get("file");
-  const kind = form.get("kind") === "cover" ? "cover" : "service";
-  const requiredPermission: Parameters<typeof hasPermission>[1] =
-    kind === "cover" ? { settings: ["manage"] } : { service: ["manage"] };
-  if (
-    !organization ||
-    !membership ||
-    !hasPermission(membership.role, requiredPermission)
-  )
-    return forbidden();
+  const kindRaw = form.get("kind");
+  const kind = kindRaw === "cover" ? "cover" : kindRaw === "booking-reference" ? "booking-reference" : "service";
+
+  let folder: string;
+  if (kind === "booking-reference") {
+    // Cliente final anônimo (agendamento público) -- sem sessão de staff.
+    // Autorização vem do token assinado amarrado ao bookingId (ver
+    // lib/booking-upload-token.ts), não de RBAC/membership.
+    const bookingId = form.get("bookingId");
+    const token = form.get("token");
+    const expiresAt = Number(form.get("expiresAt"));
+    if (typeof bookingId !== "string" || typeof token !== "string" || !bookingId || !token)
+      return badRequest("Dados de upload inválidos.");
+    if (!verifyBookingUploadToken(bookingId, expiresAt, token)) return unauthorized();
+    const booking = await runWithTenant(organization.id, () =>
+      db.booking.findUnique({ where: { id: bookingId }, select: { id: true } }),
+    );
+    // findUnique já é escopado por tenant (RLS + middleware) -- null aqui
+    // cobre tanto "não existe" quanto "existe mas é de outra organização".
+    if (!booking) return unauthorized();
+    folder = `aparatus/${organization.id}/bookings/${bookingId}`;
+  } else {
+    const session = await auth.api.getSession({ headers: requestHeaders });
+    const membership = session?.user
+      ? await getMembership(organization.id, session.user.id)
+      : null;
+    const requiredPermission: Parameters<typeof hasPermission>[1] =
+      kind === "cover" ? { settings: ["manage"] } : { service: ["manage"] };
+    if (!membership || !hasPermission(membership.role, requiredPermission)) return forbidden();
+    folder = `aparatus/${organization.id}/${kind === "cover" ? "branding" : "services"}`;
+  }
+
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -71,7 +93,6 @@ export async function POST(request: Request) {
     !(await hasValidImageSignature(file))
   )
     return badRequest("Envie uma imagem JPEG, PNG ou WebP válida de até 5 MB.");
-  const folder = `aparatus/${organization.id}/${kind === "cover" ? "branding" : "services"}`;
   const timestamp = Math.floor(Date.now() / 1000);
   // SHA-256, não o SHA-1 que é o default dos SDKs do Cloudinary: a assinatura
   // é uma construção secret-suffix (H(mensagem || segredo)), e colisão em
@@ -110,6 +131,14 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Resposta inválida do provedor de imagens." },
       { status: 502 },
+    );
+  }
+  if (kind === "booking-reference") {
+    const bookingId = form.get("bookingId") as string;
+    await runWithTenant(organization.id, () =>
+      db.bookingAttachment.create({
+        data: { bookingId, organizationId: organization.id, url: data.secure_url, publicId: data.public_id },
+      }),
     );
   }
   return NextResponse.json({ url: data.secure_url, publicId: data.public_id });

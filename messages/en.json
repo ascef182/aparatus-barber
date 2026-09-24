@@ -320,6 +320,7 @@
       "operationError": "Could not update the appointment.",
       "noAppointments": "No appointments",
       "addWalkIn": "Add walk-in",
+      "referencePhotosTooltip": "Reference photos sent by the customer",
       "newBooking": {
         "title": "New booking",
         "chooseService": "Service",
@@ -817,7 +818,11 @@
     "couponReasonNotYetValid": "Coupon isn't valid yet.",
     "couponReasonExpired": "Coupon expired.",
     "couponReasonExhausted": "Coupon fully redeemed.",
-    "couponReasonWrongService": "Coupon not valid for this service."
+    "couponReasonWrongService": "Coupon not valid for this service.",
+    "referencePhotosLabel": "Reference photos (optional)",
+    "referencePhotosHint": "Want a haircut like a photo you have? Attach up to 3 images.",
+    "referencePhotoRemove": "Remove photo",
+    "referencePhotoUploadError": "Your booking is confirmed, but we couldn't upload one or more photos. Try attaching them again later."
   },
   "landing": {
     "nav": {

@@ -320,6 +320,7 @@
       "operationError": "Não foi possível atualizar o agendamento.",
       "noAppointments": "Sem agendamentos",
       "addWalkIn": "Adicionar walk-in",
+      "referencePhotosTooltip": "Fotos de referência enviadas pelo cliente",
       "newBooking": {
         "title": "Nova reserva",
         "chooseService": "Serviço",
@@ -817,7 +818,11 @@
     "couponReasonNotYetValid": "Cupom ainda não é válido.",
     "couponReasonExpired": "Cupom expirado.",
     "couponReasonExhausted": "Cupom esgotado.",
-    "couponReasonWrongService": "Cupom não válido para este serviço."
+    "couponReasonWrongService": "Cupom não válido para este serviço.",
+    "referencePhotosLabel": "Fotos de referência (opcional)",
+    "referencePhotosHint": "Quer um corte parecido com alguma foto? Anexe até 3 imagens.",
+    "referencePhotoRemove": "Remover foto",
+    "referencePhotoUploadError": "Sua reserva foi confirmada, mas não conseguimos enviar uma ou mais fotos. Tente anexar de novo mais tarde."
   },
   "landing": {
     "nav": {

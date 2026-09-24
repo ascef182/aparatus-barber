@@ -320,6 +320,7 @@
       "operationError": "Termin konnte nicht aktualisiert werden.",
       "noAppointments": "Keine Termine",
       "addWalkIn": "Laufkunde hinzufügen",
+      "referencePhotosTooltip": "Referenzfotos vom Kunden gesendet",
       "newBooking": {
         "title": "Neue Buchung",
         "chooseService": "Dienstleistung",
@@ -817,7 +818,11 @@
     "couponReasonNotYetValid": "Gutschein ist noch nicht gültig.",
     "couponReasonExpired": "Gutschein abgelaufen.",
     "couponReasonExhausted": "Gutschein vollständig eingelöst.",
-    "couponReasonWrongService": "Gutschein für diesen Service nicht gültig."
+    "couponReasonWrongService": "Gutschein für diesen Service nicht gültig.",
+    "referencePhotosLabel": "Referenzfotos (optional)",
+    "referencePhotosHint": "Möchten Sie einen Haarschnitt wie auf einem Foto? Fügen Sie bis zu 3 Bilder hinzu.",
+    "referencePhotoRemove": "Foto entfernen",
+    "referencePhotoUploadError": "Ihre Buchung ist bestätigt, aber ein oder mehrere Fotos konnten nicht hochgeladen werden. Versuchen Sie es später erneut."
   },
   "landing": {
     "nav": {

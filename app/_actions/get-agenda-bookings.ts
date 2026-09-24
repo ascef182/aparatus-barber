@@ -25,7 +25,7 @@ export const getAgendaBookings = staffActionClient({ booking: ["read_own"] })
         startAt: { gte: new Date(parsedInput.fromISO), lt: new Date(parsedInput.toISO) },
         ...staffIdFilter,
       },
-      include: { customer: true, service: true, staff: true },
+      include: { customer: true, service: true, staff: true, attachments: true },
       orderBy: { startAt: "asc" },
     });
     return bookings.map((booking) => ({
@@ -40,5 +40,6 @@ export const getAgendaBookings = staffActionClient({ booking: ["read_own"] })
       paymentReceivedInCents: booking.paymentReceivedInCents,
       priceInCents: booking.priceInCents,
       discountInCents: booking.discountInCents,
+      referencePhotoUrls: booking.attachments.map((attachment) => attachment.url),
     }));
   });

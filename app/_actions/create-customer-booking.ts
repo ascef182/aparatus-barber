@@ -2,6 +2,7 @@
 
 import { ActionError, customerActionClient } from "@/lib/safe-action";
 import { createBooking } from "@/lib/services/booking-service";
+import { createBookingUploadToken } from "@/lib/booking-upload-token";
 import { z } from "zod";
 
 /** Reserva feita por um cliente logado na área de conta — identidade vem
@@ -18,7 +19,7 @@ export const createCustomerBooking = customerActionClient
   )
   .action(async ({ parsedInput, ctx }) => {
     try {
-      return await createBooking({
+      const booking = await createBooking({
         ...parsedInput,
         customerUser: {
           id: ctx.user.id,
@@ -28,6 +29,7 @@ export const createCustomerBooking = customerActionClient
         },
         source: "WEB",
       });
+      return { booking, upload: createBookingUploadToken(booking.id) };
     } catch (error) {
       if (error instanceof Error) throw new ActionError(error.message);
       throw error;
