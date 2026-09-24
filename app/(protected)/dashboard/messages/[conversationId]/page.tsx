@@ -38,12 +38,15 @@ export default async function DashboardConversationPage({
       <ConversationThread
         conversationId={conversation.id}
         canReply={canReply}
+        customerName={conversation.customer.name}
+        customerImage={conversation.customer.image}
         initialMessages={conversation.messages.map((message) => ({
           id: message.id,
           senderType: message.senderType,
           body: message.body,
           createdAt: message.createdAt.toISOString(),
         }))}
+        initialLastCustomerReadAt={conversation.lastCustomerReadAt?.toISOString() ?? null}
       />
     </PageContainer>
   );
