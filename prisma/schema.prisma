@@ -511,7 +511,7 @@ model StripeEvent {
 }
 
 /**
- * Trilha de auditoria (GDPR + operacional) — append-only, nunca update/delete
+ * Trilha de auditoria (LGPD + operacional) — append-only, nunca update/delete
  * pela aplicação. organizationId null = evento de plataforma (ex.: impersonation).
  * Entra em TENANT_MODELS (lib/db.ts) quando organizationId presente.
  */
@@ -520,7 +520,7 @@ model StripeEvent {
 /// **Data Retention Policy:**
 /// - Marketing/analytics events: 90 days (not required by regulation)
 /// - Booking/payment/subscription events: 3 years (tax + fraud investigation)
-/// - Customer erasure events: 3 years (GDPR proof of erasure)
+/// - Customer erasure events: 3 years (LGPD proof of erasure)
 ///
 /// Archival strategy: Create automated job to move old records to archive table
 /// (future) after retention period expires. Use partition by date if >10M records.
