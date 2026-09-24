@@ -199,7 +199,7 @@ model Service {
   bufferBeforeMinutes Int             @default(0)
   bufferAfterMinutes  Int             @default(0)
   priceInCents        Int
-  currency            String          @default("EUR")
+  currency            String          @default("BRL")
   depositInCents      Int?
   paymentMode         PaymentMode? // null = regra padrão do tenant
   depositPercent      Int? // obrigatório quando paymentMode = DEPOSIT
@@ -322,7 +322,7 @@ model Booking {
   status                     BookingStatus
   source                     BookingSource @default(WEB)
   priceInCents               Int // snapshot no momento do booking
-  currency                   String        @default("EUR")
+  currency                   String        @default("BRL")
   discountInCents            Int           @default(0)
   couponId                   String?
   coupon                     Coupon?       @relation(fields: [couponId], references: [id])
@@ -449,9 +449,9 @@ model Organization {
   metadata      String?
 
   // Extensões próprias (fora do plugin Better Auth):
-  timezone                     String             @default("Europe/Berlin")
-  defaultLocale                String             @default("de")
-  currency                     String             @default("EUR") // ISO 4217
+  timezone                     String             @default("America/Sao_Paulo")
+  defaultLocale                String             @default("pt")
+  currency                     String             @default("BRL") // ISO 4217
   status                       OrgStatus          @default(TRIALING)
   brandingJson                 Json? // tokens de branding validados por Zod
   stripeCustomerId             String?            @unique
@@ -645,7 +645,7 @@ model Location {
   addressLine2     String?
   postalCode       String
   city             String
-  countryCode      String         @default("DE")
+  countryCode      String         @default("BR")
   phone            String?
   description      String? // curta, exibida na página pública de agendamento
   timezone         String? // override do timezone do tenant (raro)
@@ -704,7 +704,7 @@ model TenantImpressum {
   addressLine1   String
   postalCode     String
   city           String
-  country        String   @default("DE")
+  country        String   @default("BR")
   representedBy  String?
   phone          String?
   email          String?

@@ -6,4 +6,4 @@
  */
 export const SUPPORTED_LOCALES = ["de", "en", "pt"] as const;
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
-export const DEFAULT_LOCALE: AppLocale = "de";
+export const DEFAULT_LOCALE: AppLocale = "pt";

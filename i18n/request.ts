@@ -19,7 +19,7 @@ function fromAcceptLanguage(header: string | null): AppLocale | undefined {
 
 /**
  * Resolução de locale (fundação da Fase 1, sem prefixo de path):
- * cookie NEXT_LOCALE > Accept-Language > "de".
+ * cookie NEXT_LOCALE > Accept-Language > DEFAULT_LOCALE ("pt").
  * Fase 3 insere na cadeia: User.locale e Organization.defaultLocale (por host).
  */
 export default getRequestConfig(async () => {
