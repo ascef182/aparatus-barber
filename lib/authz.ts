@@ -48,6 +48,25 @@ export async function getOwnStaffId(
  * evitar import circular com services que o próprio safe-action.ts importa
  * (ex.: customer-service.ts).
  */
+/**
+ * Filtro de staffId pra LISTAGENS de booking restritas ao "próprio staff"
+ * de um professional (agenda etc.) — mesma regra de negócio de
+ * assertOwnBookingAccess, mas pro caminho de leitura/lista em vez de
+ * asserção sobre um registro já carregado.
+ *
+ * Fail-closed por construção: nunca retorna `undefined`/vazio pra um
+ * professional sem Staff vinculado (o que removeria o filtro do `where` e
+ * exporia o tenant inteiro via spread condicional) — `{ staffId: { in: [] } }`
+ * não bate com nenhum booking. Ver tests/integration/action-rbac.test.ts.
+ */
+export async function resolveOwnStaffBookingFilter(
+  membership: { id: string; role: string },
+): Promise<{ staffId?: string | { in: string[] } }> {
+  if (membership.role !== "professional") return {};
+  const ownStaffId = await getOwnStaffId(membership.id);
+  return { staffId: ownStaffId ?? { in: [] } };
+}
+
 export async function assertOwnBookingAccess(
   booking: { staffId: string },
   membership: { id: string; role: string },

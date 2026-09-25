@@ -9,6 +9,7 @@ import { serviceSchema } from "@/app/_actions/manage-operations.schemas";
 import {
   assertOwnBookingAccess,
   getOwnStaffId,
+  resolveOwnStaffBookingFilter,
 } from "@/lib/authz";
 
 /**
@@ -226,6 +227,40 @@ describe("Ownership dentro do mesmo tenant — lib/authz.ts", () => {
     await expect(
       runWithTenant(authzOrgId, () => getOwnStaffId(proNoStaffMembershipId)),
     ).resolves.toBeNull();
+  });
+
+  /**
+   * Sprint 2 (hardening) — achado de auditoria IDOR: app/(protected)/dashboard/agenda/page.tsx
+   * tinha `...(ownStaff ? { staffId: ownStaff.id } : {})` alimentando um
+   * `where` de booking.findMany — quando `ownStaff` é null (professional
+   * sem Staff vinculado), o spread vira `{}` e a query fica SEM filtro
+   * nenhum de staffId, expondo os bookings do tenant inteiro (nomes,
+   * telefones, valores) a um professional que deveria ver zero. O resto do
+   * módulo (assertOwnBookingAccess acima) já é fail-closed pro mesmo
+   * cenário; esta função fecha a mesma lacuna pro caminho de LEITURA/lista.
+   */
+  test("resolveOwnStaffBookingFilter: professional sem Staff vinculado não vê nenhum booking (fail-closed, não all-bookings)", async () => {
+    const filter = await runWithTenant(authzOrgId, () =>
+      resolveOwnStaffBookingFilter({ id: proNoStaffMembershipId, role: "professional" }),
+    );
+    const bookings = await runWithTenant(authzOrgId, () =>
+      db.booking.findMany({ where: filter }),
+    );
+    expect(bookings).toEqual([]);
+  });
+
+  test("resolveOwnStaffBookingFilter: professional com Staff vinculado é restrito ao próprio staffId", async () => {
+    const filter = await runWithTenant(authzOrgId, () =>
+      resolveOwnStaffBookingFilter({ id: proAMembershipId, role: "professional" }),
+    );
+    expect(filter).toEqual({ staffId: staffA.id });
+  });
+
+  test("resolveOwnStaffBookingFilter: manager/owner/receptionist não são restritos (acesso ao tenant inteiro é intencional)", async () => {
+    const filter = await runWithTenant(authzOrgId, () =>
+      resolveOwnStaffBookingFilter({ id: managerMembershipId, role: "manager" }),
+    );
+    expect(filter).toEqual({});
   });
 });
 

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getDashboardContext } from "@/lib/services/dashboard-context-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
+import { resolveOwnStaffBookingFilter } from "@/lib/authz";
 import { Agenda } from "../agenda";
 
 export default async function AgendaPage() {
@@ -17,9 +18,9 @@ export default async function AgendaPage() {
   const from = new Date(now.getTime() - 86400000);
   const to = new Date(now.getTime() + 8 * 86400000);
   const [bookings, services, staffList] = await runWithTenant(organization.id, async () => {
-    const ownStaff = membership.role === "professional" ? await db.staff.findFirst({ where: { memberId: membership.id }, select: { id: true } }) : null;
+    const ownStaffFilter = await resolveOwnStaffBookingFilter(membership);
     return Promise.all([
-      db.booking.findMany({ where: { startAt: { gte: from, lt: to }, ...(ownStaff ? { staffId: ownStaff.id } : {}) }, include: { customer: true, service: true, staff: true, attachments: true }, orderBy: { startAt: "asc" } }),
+      db.booking.findMany({ where: { startAt: { gte: from, lt: to }, ...ownStaffFilter }, include: { customer: true, service: true, staff: true, attachments: true }, orderBy: { startAt: "asc" } }),
       db.service.findMany({ where: { isActive: true }, select: { id: true, name: true, durationMinutes: true, priceInCents: true, currency: true }, orderBy: { sortOrder: "asc" } }),
       db.staff.findMany({ where: { isActive: true }, select: { id: true, displayName: true, color: true, services: { select: { serviceId: true } } } }),
     ]);
