@@ -10,7 +10,7 @@ export function GET() {
     "barbershops, salons, clinics, and similar appointment-based or",
     "quote-based services. Each business gets its own white-labeled booking",
     "site on a dedicated subdomain, with online payments via Stripe, team",
-    "scheduling, and German legal compliance (Impressum).",
+    "scheduling, and LGPD-aligned data handling.",
     "",
     `- Directory of listed businesses by city: ${getRootUrl("/find")}`,
     `- Privacy policy: ${getRootUrl("/privacy")}`,

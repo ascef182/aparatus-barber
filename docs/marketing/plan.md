@@ -3,7 +3,7 @@
 **Prepared by:** fCMO run (Claude Code, metodologia `marketing-plan`)
 **For:** Fundador da Bladiq / CazaTech
 **Date:** 2026-08-14
-**Status:** Draft v1 — **parcialmente superado, ver aviso abaixo**
+**Status:** Draft v1 — **parcialmente superado, ver avisos abaixo**
 
 > ### ⚠️ Aviso de revisão (2026-08-21)
 >
@@ -26,31 +26,86 @@
 >    `docs/LAUNCH-READINESS.md` P1.1. Onde este plano condiciona um passo a
 >    "resolver a falha dos testes", o passo está liberado.
 
+> ### ⚠️ Aviso de revisão (2026-08-24) — **superado pelo aviso de 2026-09-24 abaixo**
+>
+> Este aviso mudava o alvo geográfico para "lusófono-Europa" (Lisboa/Porto +
+> comunidade em Berlim/Frankfurt/Munique/Hamburgo) e afirmava explicitamente
+> que **não** era um pivô para o Brasil. Essa decisão foi revertida cinco
+> dias depois — ver o aviso seguinte. Texto original mantido no histórico do
+> git (`git log -p -- docs/marketing/plan.md`) para referência de quem
+> revisar o raciocínio anterior.
+
+> ### ⚠️ Aviso de revisão (2026-09-24) — Pivô para o Brasil
+>
+> **O alvo geográfico muda para o Brasil.** A fundadora está operando do
+> Brasil e, diferente da premissa do aviso anterior, decidiu não manter o
+> foco comercial na Europa — hoje não há ninguém disponível na Europa para
+> cuidar de imprensa/relações públicas lá, o que tornava a aposta lusófona
+> europeia mais frágil do que o plano de 08-24 assumia. Lançar no mercado
+> onde a fundadora está fisicamente resolve isso e simplifica fuso horário,
+> suporte e prospecção ao vivo.
+>
+> Isso **reverte** o aviso de 2026-08-24 (que era explicitamente "não é pivô
+> para o Brasil") — a intenção mudou, e este documento foi reescrito abaixo
+> para refletir Brasil como mercado primário, não como nota lateral.
+> `.agents/product-marketing.md` v3 tem o mesmo contexto atualizado.
+>
+> **O que muda de fato:** moeda (EUR→BRL), ICP deixa de mencionar "negócio
+> liderado por imigrante"/diáspora (não se aplica dentro do próprio país),
+> a camada de compliance legal deixa de ser alemã (Impressum/GoBD/DPA) e
+> passa a ser LGPD (ver `PRODUCT.md` e as páginas legais do produto).
+> **O que fica em aberto, de propósito, em vez de inventado:** cidade-base
+> específica de prospecção, comunidades/associações locais equivalentes às
+> mapeadas para Portugal em `community-channels.md`, e comparação direta com
+> concorrentes brasileiros validada. Ver decisões em aberto, §13.
+> **Status: recomendação aceita, ainda não validada** — o portão de
+> validação (50 negócios mapeados → 20 conversas → ≥5 pilotos aceitos)
+> segue o mesmo, agora aplicado ao mercado brasileiro.
+
+> ### ⚠️ Aviso de revisão (2026-09-24, correção factual) — Trinks não cobra comissão
+>
+> Pesquisei o site oficial da Trinks (`negocios.trinks.com/planos`) e a
+> afirmação usada em todo este documento até agora — "Trinks cobra
+> comissão sobre reserva" — está **errada**. A Trinks cobra assinatura
+> mensal fixa (R$76/mês pra 1-2 profissionais, R$110/mês pra 3-4, sob
+> consulta acima disso), sem comissão sobre agendamento. O modelo dela é
+> igual ao da Bladiq (SaaS de assinatura), não um marketplace. Quem cobra
+> comissão de verdade (~8% do faturamento) e já opera no Brasil é a
+> **Fresha**. Toda menção a "Trinks" como exemplo de comissão abaixo foi
+> corrigida pra Fresha — a Trinks continua citada como concorrente de
+> preço/features, com modelo de cobrança igual ao nosso.
+>
+> Isso também expôs que o pricing placeholder deste plano (herdado
+> proporcionalmente do EUR, R$149/199/399/699) ficava bem mais caro que a
+> Trinks pro mesmo porte de negócio. Recalibrado pra **Founder Plan R$59 ·
+> Starter R$79 · Growth R$149 · Pro R$249** — mais próximo da faixa real
+> de mercado, ainda não é pesquisa de willingness-to-pay (ver §13).
+
 ---
 
 ## 1. Resumo executivo
 
-**Este plano otimiza para uma coisa só: fechar e reter os 3-5 parceiros piloto de Berlim nos próximos 90 dias, sem gastar em mídia paga.** Não é um plano de crescimento — é um plano de primeira tração, porque a Bladiq está em receita zero, com um produto pronto e testado (agenda, depósitos, pagamentos, isolamento de dados, compliance alemão) e nenhum canal de aquisição ligado ainda. O gargalo não é produto. É contato humano com donos de salão/barbearia reais.
+**Este plano otimiza para uma coisa só: fechar e reter os 3-5 parceiros piloto no Brasil nos próximos 90 dias, sem gastar em mídia paga.** Não é um plano de crescimento — é um plano de primeira tração, porque a Bladiq está em receita zero, com um produto pronto e testado (agenda, depósitos, pagamentos, isolamento de dados) e nenhum canal de aquisição ligado ainda. O gargalo não é produto. É contato humano com donos de salão/barbearia reais.
 
 **Três apostas, em ordem de alavancagem:**
 
-1. **Prospecção local manual bate qualquer canal pago neste estágio.** Com €0-500/mês de orçamento e um ICP hiperlocal (Berlim, 1-5 profissionais por negócio), nenhuma verba de mídia paga produz volume suficiente pra validar nada — e o CAC de tráfego pago sobre um ticket de €29-79/mês provavelmente não fecha a conta. A aposta é: o fundador usa o navegador (Google Maps, Instagram, busca por nome) pra montar uma lista qualificada de 50-100 barbearias/salões/estúdios de unha em Berlim e faz contato direto — visita, WhatsApp, mensagem curta e específica. Isso é o que qualquer operador local bem-sucedido faz antes de existir orçamento de marketing.
-2. **A comunidade lusófona/brasileira de cabeleireiros e barbeiros em Berlim é um canal de distribuição concreto, não uma ideia abstrata.** O produto já suporta português como um dos três idiomas principais (não é tradução de última hora), e negócios liderados por imigrantes são o ICP declarado do próprio produto. Isso não é "mais um canal de social media" — é um grupo real, acessível pela rede pessoal do fundador, com confiança pré-existente maior do que qualquer outreach frio teria.
-3. **O diferencial "sem comissão de marketplace sobre o cliente que você mesmo trouxe" precisa virar uma página específica e um argumento repetível, não ficar só no README.** Fresha e Treatwell cobram comissão do dono do salão sobre reservas — inclusive, em alguns planos, sobre clientes que o próprio dono trouxe. Essa é a objeção mais fácil de vencer com um dono cético, e hoje ela não existe em lugar nenhum do site público da Bladiq.
+1. **Prospecção remota bate qualquer canal pago neste estágio.** Com R$0-2.500/mês de orçamento e um ICP hiperlocal (1-5 profissionais por negócio), nenhuma verba de mídia paga produz volume suficiente pra validar nada — e o CAC de tráfego pago sobre um ticket de R$79-149/mês provavelmente não fecha a conta. A aposta é: a fundadora usa o navegador (Google Maps, Instagram, busca por nome) pra montar uma lista qualificada de 50-100 barbearias/salões/estúdios de unha no Brasil e faz contato remoto — Instagram DM como canal primário, WhatsApp quando a conversa avança, mensagem curta e específica. Isso é o que qualquer operador bem-sucedido faz antes de existir orçamento de marketing.
+2. **Estar no mesmo país e fuso horário do cliente é vantagem real, não só conveniência.** A operação já era remota antes (vendendo pra Europa do Brasil); vender dentro do próprio país remove a fricção de fuso horário, idioma sem tradução alguma e contexto cultural do dia a dia de um salão brasileiro — inclusive nuances de forma de pagamento (Pix é esperado, não opcional) que o produto ainda não trata explicitamente e que vale investigar cedo (ver §13, decisões em aberto).
+3. **O diferencial "sem comissão de marketplace sobre o cliente que você mesmo trouxe" precisa virar uma página específica e um argumento repetível, não ficar só no README.** Plataformas de agendamento com comissão sobre reserva — a Fresha é a mais conhecida operando no Brasil, ~8% do faturamento — cobram do dono do salão mesmo sobre clientes que ele mesmo trouxe. Essa é a objeção mais fácil de vencer com um dono cético, e hoje ela não existe em lugar nenhum do site público da Bladiq. (Correção 2026-09-24: a Trinks, citada aqui até então, **não** cobra comissão — é assinatura fixa, mesmo modelo da Bladiq. Ver aviso de revisão no topo do documento.)
 
 **O que doze meses parecem, de forma plausível:**
-- 3-5 parceiros ativos em Berlim até o fim do Q1 (piloto gratuito de 30 dias).
-- Willingness to pay validada — pelo menos 3 desses convertendo pro Founder Plan (€29/mês) até o fim do Q2.
-- Abertura de GA self-service (trial de **7 dias** — corrigido 2026-08-21, é o valor no código e no Terms —, planos €39/€79/€149) só depois de validar isso, não antes — abrir cedo demais sem prova de retenção desperdiçaria a primeira impressão dos parceiros mais importantes.
-- 8-15 negócios ativos em Berlim até o fim do ano, ainda sem verba de mídia paga relevante — crescimento é local e manual neste horizonte, não de canal escalável.
+- 3-5 parceiros ativos no Brasil até o fim do Q1 (piloto gratuito de 30 dias).
+- Willingness to pay validada — pelo menos 3 desses convertendo pro Founder Plan (R$59/mês) até o fim do Q2.
+- Abertura de GA self-service (trial de **7 dias** — é o valor no código e no Terms —, planos R$79/R$149/R$249) só depois de validar isso, não antes — abrir cedo demais sem prova de retenção desperdiçaria a primeira impressão dos parceiros mais importantes.
+- 8-15 negócios ativos no Brasil até o fim do ano, ainda sem verba de mídia paga relevante — crescimento é manual e remoto neste horizonte, não de canal escalável.
 
 **Prioridades dos primeiros 90 dias:**
-1. Montar lista de 50-100 prospects qualificados em Berlim (critério: 1-5 profissionais, sem agendamento online decente ou preso a marketplace com comissão).
-2. Escrever e testar o script de contato direto (visita/WhatsApp) com uma frase central: "você não paga comissão sobre o cliente que já é seu".
+1. Montar lista de 50-100 prospects qualificados no Brasil (critério: 1-5 profissionais, sem agendamento online decente ou preso a marketplace com comissão).
+2. Escrever e testar o script de contato remoto (Instagram DM/WhatsApp) com uma frase central: "você não paga comissão sobre o cliente que já é seu".
 3. Publicar uma página "Bladiq vs. marketplace de comissão" no site.
-4. Ativar o canal da comunidade lusófona via rede pessoal do fundador.
+4. Mapear e ativar canais de comunidade de barbeiros/cabeleireiros no Brasil (equivalente ao levantamento já feito pra Portugal — ainda pendente para o mercado brasileiro).
 5. Fechar e ativar os primeiros 3-5 pilotos, com acompanhamento semanal de perto (não escalável de propósito — é o único jeito de aprender rápido com n pequeno).
-6. Resolver a falha de confiabilidade nos testes de agendamento (`docs/LAUNCH-READINESS.md`, item P1) antes de prometer estabilidade de agenda a um parceiro cético.
+6. Confirmar que o fluxo de pagamento cobre a expectativa do mercado brasileiro (Pix incluso, não só cartão) antes de prometer isso a um prospect.
 
 ---
 
@@ -60,23 +115,22 @@
 Uma plataforma de agendamento e pagamentos que devolve a um dono de barbearia/salão a propriedade da relação com o cliente — sem comissão de marketplace sobre quem ele mesmo trouxe.
 
 ### A categoria que estamos reivindicando
-A Bladiq não está criando uma categoria nova (agendamento online para negócios de beleza já existe, com Fresha, Treatwell, Booksy, Salonized, Shore). Está **redefinindo os termos dentro da categoria**: a maioria dos concorrentes monetiza como marketplace (comissão sobre reserva, inclusive de clientes que o próprio dono trouxe, ou modelo de "leilão de visibilidade" dentro do próprio app deles). A Bladiq se posiciona como **infraestrutura, não marketplace** — o dono paga uma assinatura fixa, mantém 100% da relação com o cliente, e o diretório público (`/find/[city]`) é bônus de descoberta, não a proposta central. Essa é a mesma lógica de "own your audience" que já funcionou pra outras categorias (Substack vs. rede social, Shopify vs. marketplace) aplicada a agendamento de beleza.
+A Bladiq não está criando uma categoria nova (agendamento online para negócios de beleza já existe, com Trinks, Fresha, Booksy, entre outros). Está **redefinindo os termos dentro da categoria**: a maioria dos concorrentes monetiza como marketplace (comissão sobre reserva, inclusive de clientes que o próprio dono trouxe, ou modelo de "leilão de visibilidade" dentro do próprio app deles). A Bladiq se posiciona como **infraestrutura, não marketplace** — o dono paga uma assinatura fixa, mantém 100% da relação com o cliente, e o diretório público (`/find/[city]`) é bônus de descoberta, não a proposta central. Essa é a mesma lógica de "own your audience" que já funcionou pra outras categorias (Substack vs. rede social, Shopify vs. marketplace) aplicada a agendamento de beleza.
 
 ### Para quem somos (ICP, destilado)
-- Dono-operador de barbearia, salão de cabelo, estúdio de unha ou salão de beleza em Berlim, geralmente com 1-5 profissionais.
-- Frequentemente parte de um time multilíngue ou negócio liderado por imigrante (inclusive comunidade lusófona/brasileira).
+- Dono-operador de barbearia, salão de cabelo, estúdio de unha ou salão de beleza no Brasil, geralmente com 1-5 profissionais.
 - O que dizem que querem: "um site/app de agendamento decente".
 - O que realmente querem: parar de sangrar receita com no-show e cancelamento de última hora, parar de gastar o dia respondendo WhatsApp/Instagram pra marcar horário, e parar de sentir que está "alugando" a própria lista de clientes de um marketplace que cobra comissão.
 - O que estão comprando de verdade: controle sobre o próprio fluxo de caixa (depósito, cobrança de no-show) e dignidade profissional (não depender de agenda de caderno nem de aparecer "no meio da lista" de um app de terceiros).
 
 ### A lógica do modelo de negócio
-Assinatura mensal fixa (SaaS clássico), sem comissão sobre reservas trazidas pelo próprio dono — a monetização é a mensalidade, não uma fatia de cada agendamento. Piloto gratuito de 30 dias reduz o risco de decisão pro dono cético; Founder Plan (€29/mês por 12 meses, só pros 20 primeiros parceiros) cria urgência real e recompensa quem chega cedo; GA (Starter €39 / Growth €79 / Pro €149) segmenta por número de locais/profissionais. Taxa do Stripe fica separada e transparente — a Bladiq não lucra em cima da taxa de processamento. Tese de canal composto: hoje é 100% prospecção manual + comunidade; a médio prazo, o diretório `/find/[city]` vira ativo de SEO orgânico à medida que parceiros são adicionados — cada parceiro fechado manualmente também melhora o canal orgânico futuro (efeito composto, não é só "mais um cliente").
+Assinatura mensal fixa (SaaS clássico), sem comissão sobre reservas trazidas pelo próprio dono — a monetização é a mensalidade, não uma fatia de cada agendamento. Piloto gratuito de 30 dias reduz o risco de decisão pro dono cético; Founder Plan (R$59/mês por 12 meses, só pros 20 primeiros parceiros) cria urgência real e recompensa quem chega cedo; GA (Starter R$79 / Growth R$149 / Pro R$249) segmenta por número de locais/profissionais — recalibrados 2026-09-24 contra o pricing real da Trinks (R$76-110), ainda não é pesquisa de willingness-to-pay brasileira (ver §13). Taxa do Stripe fica separada e transparente — a Bladiq não lucra em cima da taxa de processamento. Tese de canal composto: hoje é 100% prospecção manual + comunidade; a médio prazo, o diretório `/find/[city]` vira ativo de SEO orgânico à medida que parceiros são adicionados — cada parceiro fechado manualmente também melhora o canal orgânico futuro (efeito composto, não é só "mais um cliente").
 
 ### Voz de marca (não-negociável)
 Não há um documento de voz formal ainda (gap real, ver rubrica §3) — mas os princípios já estão implícitos no próprio código e nos documentos do produto, e devem virar regra explícita a partir deste plano:
 
-- **SIM**: falar só do que está no ar hoje, não do roadmap como se já existisse. Nomear restrições reais (isolamento de dados por tenant, retenção fiscal alemã de 10 anos, RLS no banco) como sinal de confiança, não como jargão técnico assustador. Tratar português com o mesmo peso que alemão e inglês — não é "tradução de cortesia". Linguagem direta, sem jargão de startup.
-- **NÃO**: nenhuma promessa de IA/recepcionista automática — o próprio README documenta que essa promessa foi removida até haver demanda e desenho operacional seguro; reintroduzir isso na comunicação pública quebraria a própria disciplina do produto. Nenhum framing de "marketplace"/"roube o cliente do concorrente" — não é esse o jogo da Bladiq, é o jogo da Fresha/Treatwell. Nenhuma tática de urgência falsa/pressão de vendas com donos de negócio que já são céticos com vendedor de software.
+- **SIM**: falar só do que está no ar hoje, não do roadmap como se já existisse. Nomear restrições reais (isolamento de dados por tenant, RLS no banco, tratamento de dados alinhado à LGPD) como sinal de confiança, não como jargão técnico assustador. Linguagem direta, sem jargão de startup.
+- **NÃO**: nenhuma promessa de IA/recepcionista automática — o próprio README documenta que essa promessa foi removida até haver demanda e desenho operacional seguro; reintroduzir isso na comunicação pública quebraria a própria disciplina do produto. Nenhum framing de "marketplace"/"roube o cliente do concorrente" — não é esse o jogo da Bladiq, é o jogo da Fresha/Booksy (a Trinks é assinatura fixa, como a Bladiq — não citar como exemplo de marketplace). Nenhuma tática de urgência falsa/pressão de vendas com donos de negócio que já são céticos com vendedor de software.
 
 Se alguma peça de copy violar essas regras (especialmente qualquer menção a IA/automação que não existe hoje), ela deve ser reescrita antes de publicar — isso vale para toda copy gerada a partir das Seções 4-8 deste plano.
 
@@ -93,12 +147,12 @@ Se alguma peça de copy violar essas regras (especialmente qualquer menção a I
 Não há hire de marketing, contractor ou agência hoje. Não é tactical-only nem π-shaped — é founder-led puro, o que é normal e correto neste estágio (Tier 1). O primeiro "hire" recomendado não é uma contratação — é liberar as primeiras horas semanais do próprio fundador para prospecção (ver §11 RACI).
 
 ### Orçamento de marketing (atual)
-- Pago: €0/mês.
-- Tooling: ~€0-500/mês disponíveis, hoje não alocados a nenhuma ferramenta de marketing específica (a stack técnica — Resend, Sentry, Cloudinary — já está paga como custo de produto, não de marketing).
+- Pago: R$0/mês.
+- Tooling: ~R$0-2.500/mês disponíveis, hoje não alocados a nenhuma ferramenta de marketing específica (a stack técnica — Resend, Sentry, Cloudinary — já está paga como custo de produto, não de marketing).
 - Retainers/fCMO: nenhum.
 - Headcount: 0 dedicado.
 - CAC bloomed: desconhecido (pré-receita) — **maior decisão em aberto deste plano, ver §13**.
-- % de ARR em marketing: não aplicável (ARR = €0).
+- % de ARR em marketing: não aplicável (ARR = R$0).
 
 **Tier de funding: Pré-seed/bootstrapped (Tier 1)**, per `funding-stage-unlocks.md`. Implicação prática: todo movimento do plano precisa funcionar com tempo do fundador + as skills/MCPs disponíveis, sem depender de verba paga. Nenhuma recomendação deste plano assume orçamento pago antes que ele seja explicitamente desbloqueado por receita real (ver §10).
 
@@ -111,8 +165,8 @@ Não há hire de marketing, contractor ou agência hoje. Não é tactical-only n
 |---|---|---|
 | Produto funcional completo (agenda, depósitos, cupons, mensagens, portal do cliente) | ✅ Pronto | Não é vaporware — dá pra vender e demonstrar hoje, ao vivo |
 | Segurança/isolamento de tenant testado adversarialmente (RLS, MFA, rate limiting) | ✅ Pronto (`docs/LAUNCH-READINESS.md`) | Argumento de confiança para donos preocupados com dado de cliente e pagamento |
-| Compliance alemão (Impressum, DPA/AVV, retenção GoBD, cookie consent) | ✅ Pronto | Diferencial real vs. concorrente genérico não-europeu; reduz objeção jurídica |
-| i18n de/en/pt em produto e legal | ✅ Pronto | Habilita o canal da comunidade lusófona sem trabalho extra de tradução |
+| Compliance LGPD (dados do cliente, base legal de tratamento, retenção documentada) | 🔄 Rascunho pronto, pendente revisão jurídica (ver `docs/marketing/../PRODUCT.md` e páginas legais) | Diferencial real vs. concorrente que não trata dado com seriedade; reduz objeção jurídica — mas só pode ser usado em vendas depois da revisão |
+| i18n pt/en/de em produto e legal | ✅ Pronto | pt-BR é o idioma padrão do produto — sem trabalho extra de tradução pro mercado brasileiro |
 | Landing page + seção de preço | ✅ Pronto (nunca testado com tráfego real) | Base pra iterar, não pra reconstruir do zero |
 | Diretório público `/find/[city]` | ✅ Esqueleto pronto, vazio de conteúdo | Vira ativo de SEO só depois que houver parceiros reais listados |
 
@@ -127,8 +181,8 @@ Não há hire de marketing, contractor ou agência hoje. Não é tactical-only n
 | Problema | Custo de não agir | Ação |
 |---|---|---|
 | Zero contato feito com prospects reais até hoje | Cada semana sem contato é uma semana sem sinal de mercado — o maior risco do produto neste momento não é técnico, é de distribuição | Iniciar prospecção manual na Semana 1 (§9) |
-| ~~Falha de confiabilidade nos testes de booking/cupom~~ **RESOLVIDO 2026-08-21** | — | Era data literal vencida no fixture, não defeito de agendamento. Suíte em 211/211. Não bloqueia mais nada. Ver `docs/LAUNCH-READINESS.md` P1.1 |
-| Nenhuma página "vs. marketplace de comissão" | Perde o argumento mais forte de vendas toda vez que um prospect pergunta "qual a diferença pro Fresha" | Publicar na Semana 3-4 (§4, Move 4) |
+| Nenhuma página "vs. marketplace de comissão" | Perde o argumento mais forte de vendas toda vez que um prospect pergunta "qual a diferença pra Fresha" | Publicar na Semana 3-4 (§4, Move 4) |
+| Nenhum canal de comunidade brasileiro mapeado | O canal de maior confiança do plano de Europa (comunidade lusófona local) não tem equivalente ainda documentado para o Brasil | Mapear na Semana 1-2 (§4, Move 2) |
 
 ### Retrato da rubrica de auditoria (17 seções)
 
@@ -143,28 +197,28 @@ Nenhum canal ativo. Zero tráfego medido, zero contato feito com prospects.
 
 ### O plano
 
-**Move 1 — Prospecção local manual em Berlim.** Usar busca no Google Maps + Instagram + verificação cruzada por nome do negócio pra montar uma lista de 50-100 barbearias, salões de cabelo, estúdios de unha e salões de beleza em Berlim, priorizando negócios com 1-5 profissionais, presença fraca ou ausente de agendamento online próprio (ou presos a marketplace com comissão), e sinais de atividade real (avaliações recentes, perfil do Google atualizado). Segue o processo de qualificação e scoring do próprio catálogo de skills do projeto (`prospecting` — referência de prospecção local). Não é scraping em massa — é pesquisa manual, business a business, respeitando os termos do Google Maps.
+**Move 1 — Prospecção remota no Brasil (revisado 2026-09-24, ver aviso de revisão).** Usar busca no Google Maps + Instagram + verificação cruzada por nome do negócio pra montar uma lista de 50-100 barbearias, salões de cabelo, estúdios de unha e salões de beleza, priorizando negócios com 1-5 profissionais, presença fraca ou ausente de agendamento online próprio (ou presos a marketplace com comissão), e sinais de atividade real (avaliações recentes, perfil do Google atualizado). Cidade-base ou recorte regional inicial **não definido neste plano** — ao contrário do recorte Lisboa/Porto (~60%) + Alemanha (~40%) do plano anterior, que tinha uma lógica de dados por trás (mercado direto vs. diáspora), aqui a operação já é 100% remota desde o início, então não há um motivo estrutural óbvio pra recortar por cidade sem o fundador decidir onde tem mais contexto/rede. Ver decisão aberta em §13. Segue o processo de qualificação e scoring do próprio catálogo de skills do projeto (`prospecting` — referência de prospecção local). Não é scraping em massa — é pesquisa manual, business a business, respeitando os termos do Google Maps.
 
-**Move 2 — Comunidade lusófona/brasileira de cabeleireiros e barbeiros em Berlim.** Canal de maior confiança disponível hoje: rede pessoal do fundador, grupos de WhatsApp/comunidade de imigrantes brasileiros/portugueses em Berlim que atuam no setor de beleza. Já habilitado pelo produto (i18n em pt não é cortesia, é canal). Abordagem: não é "postar num grupo", é conversa 1:1 com introdução por alguém de confiança.
+**Move 2 — Comunidade de barbeiros/cabeleireiros no Brasil (mapeamento pendente).** Canal de maior confiança disponível no plano anterior era a rede pessoal do fundador na comunidade lusófona/brasileira na Europa — esse ativo específico não transfere 1:1 pro mercado interno. O equivalente a construir agora é: grupos de WhatsApp/Instagram/Facebook de profissionais de beleza, associações regionais de barbeiros e cabeleireiros, e eventos/feiras do setor no Brasil. `docs/marketing/community-channels.md` tem o mapeamento já feito para Portugal (ACP, ANCC, ANEP, APBCIB, grupos de Facebook, hashtags) como modelo de processo — o equivalente brasileiro ainda não foi levantado e é o primeiro item tático real desta seção. Abordagem, uma vez mapeado: não é "postar num grupo", é conversa 1:1 com introdução por alguém de confiança quando possível.
 
-**Move 3 — Contato direto do fundador (visita + WhatsApp).** Pitch curto, específico, sem jargão: "você paga comissão hoje sobre cliente que já é seu? Isso não devia acontecer." Oferta: piloto gratuito de 30 dias, sem cartão de crédito, com o próprio fundador ajudando a configurar (concierge setup — ver §5). Meta: 10-15 contatos qualificados por semana a partir da Semana 3.
+**Move 3 — Contato direto do fundador (Instagram DM/WhatsApp).** Pitch curto, específico, sem jargão: "você paga comissão hoje sobre cliente que já é seu? Isso não devia acontecer." Oferta: piloto gratuito de 30 dias, sem cartão de crédito, com o próprio fundador ajudando a configurar (concierge setup — ver §5). Meta: 10-15 contatos qualificados por semana a partir da Semana 3.
 
-**Move 4 — Página "Bladiq vs. comissão de marketplace".** Uma página direta comparando o modelo de assinatura fixa da Bladiq contra o modelo de comissão da Fresha/Treatwell/Booksy sobre reservas — inclusive as trazidas pelo próprio dono. Serve dois papéis: argumento de vendas linkável durante o contato direto, e página de intenção alta pra quando SEO começar a importar (Q2+).
+**Move 4 — Página "Bladiq vs. comissão de marketplace".** Uma página direta comparando o modelo de assinatura fixa da Bladiq contra o modelo de comissão de plataformas como a Fresha (~8% do faturamento, confirmado operando no Brasil) sobre reservas — inclusive as trazidas pelo próprio dono. `docs/marketing/comparison-page-draft.md` já tem um rascunho desse argumento montado pro contexto europeu (Fresha/Treatwell/Booksy) — o argumento central ("comissão mesmo sobre cliente que você trouxe") é market-agnostic, então o rascunho é ponto de partida, não trabalho do zero; adaptar pra citar Fresha como exemplo de comissão e Trinks como comparação de preço/features (modelo de cobrança igual ao nosso, não comissão — correção 2026-09-24). Serve dois papéis: argumento de vendas linkável durante o contato direto, e página de intenção alta pra quando SEO começar a importar (Q2+).
 
-**Move 5 — Diretório `/find/[city]` como ativo composto.** Cada parceiro fechado manualmente entra no diretório de Berlim — não é canal de aquisição por si só ainda (sem tráfego), mas cada adição de hoje é o que faz o diretório valer algo como SEO local em 6-12 meses. Tratar como investimento de longo prazo embutido em cada fechamento manual, não como iniciativa separada.
+**Move 5 — Diretório `/find/[city]` como ativo composto.** Cada parceiro fechado manualmente entra no diretório da cidade correspondente — não é canal de aquisição por si só ainda (sem tráfego), mas cada adição de hoje é o que faz o diretório valer algo como SEO local em 6-12 meses. Tratar como investimento de longo prazo embutido em cada fechamento manual, não como iniciativa separada.
 
-**Move 6 — Camada paga: explicitamente retida.** Nenhum orçamento de mídia paga neste trimestre — o ticket médio (€29-79/mês) e o volume necessário (3-5 clientes) não justificam o CAC de aprendizado de um canal pago do zero. Revisitar só depois que o Move 1-3 provar CAC baixo o suficiente via canal manual (ver §10, Q3).
+**Move 6 — Camada paga: explicitamente retida.** Nenhum orçamento de mídia paga neste trimestre — o ticket médio (R$79-149/mês) e o volume necessário (3-5 clientes) não justificam o CAC de aprendizado de um canal pago do zero. Revisitar só depois que o Move 1-3 provar CAC baixo o suficiente via canal manual (ver §10, Q3).
 
 ### Movimentos de 90 dias
-- Semanas 1-2: montar a lista de 50-100 prospects; escrever o script de contato (visita/WhatsApp) e o pitch de uma frase.
-- Semanas 3-4: publicar a página de comparação; iniciar contato direto (10-15/semana); ativar o canal da comunidade lusófona.
-- Semanas 5-8: fechar os primeiros pilotos (meta: 3-5 ativos); começar a listar parceiros fechados no `/find/berlin`.
+- Semanas 1-2: montar a lista de 50-100 prospects; mapear comunidades/associações de barbeiros e cabeleireiros no Brasil (Move 2); escrever o script de contato (Instagram DM/WhatsApp) e o pitch de uma frase.
+- Semanas 3-4: publicar a página de comparação; iniciar contato direto (10-15/semana); ativar os canais de comunidade mapeados.
+- Semanas 5-8: fechar os primeiros pilotos (meta: 3-5 ativos); começar a listar parceiros fechados no diretório da cidade correspondente.
 - Semanas 9-12: coletar os primeiros depoimentos/casos reais; refinar o pitch com base nas objeções mais repetidas.
 
 ### Perspectiva de 12 meses
 - Q1: prospecção manual pura, sem conteúdo/SEO ainda.
-- Q2: se a willingness to pay for validada (§10), começar conteúdo leve (a própria página de comparação + 2-3 posts sobre no-show/depósito) e expandir a busca de prospects dentro de Berlim.
-- Q3: se o CAC manual continuar viável, primeiro teste pago pequeno (~€300-500, intenção local no Google) e expansão pra 1-2 cidades DACH além de Berlim.
+- Q2: se a willingness to pay for validada (§10), começar conteúdo leve (a própria página de comparação + 2-3 posts sobre no-show/depósito) e expandir a busca de prospects dentro do Brasil.
+- Q3: se o CAC manual continuar viável, primeiro teste pago pequeno (~R$1.500-2.500, intenção local no Google) e expansão pra 1-2 regiões adicionais, conforme onde a conversão validar melhor.
 - Q4: reavaliar programa de indicação formal (ver §7) uma vez que exista uma base retida.
 
 ### Skills + ferramentas
@@ -180,11 +234,11 @@ Fluxo de onboarding existe no produto, nunca testado com um dono de negócio rea
 
 ### O plano
 
-**Move 1 — Onboarding assistido (concierge) para os primeiros 3-5 parceiros.** Com n tão pequeno, escala não importa — o que importa é aprender rápido. O próprio fundador acompanha a configuração de cada parceiro ao vivo (chamada ou presencial), garantindo que a página seja publicada em menos de 15 minutos como o produto promete. Isso não é só onboarding — é a maior fonte de pesquisa de cliente que a Bladiq vai ter neste trimestre (ver rubrica §3, item 2 = nota 1).
+**Move 1 — Onboarding assistido (concierge) para os primeiros 3-5 parceiros.** Com n tão pequeno, escala não importa — o que importa é aprender rápido. O próprio fundador acompanha a configuração de cada parceiro ao vivo (chamada), garantindo que a página seja publicada em menos de 15 minutos como o produto promete. Isso não é só onboarding — é a maior fonte de pesquisa de cliente que a Bladiq vai ter neste trimestre (ver rubrica §3, item 2 = nota 1).
 
 **Move 2 — Cutucão ativo se não houver reserva em 3 dias.** A métrica de ativação real é "primeira reserva em 7 dias", não só "página publicada". Se um parceiro publicar a página mas não tiver reserva em 3 dias, contato proativo do fundador (não e-mail automático — ainda não há volume que justifique automação) para entender o que está travando (divulgação pro próprio cliente final do salão, por exemplo).
 
-**Move 3 — Revisão de fricção pós-piloto.** Ao final de cada um dos primeiros pilotos (convertido ou não), uma conversa curta e direta: o que travou, o que confundiu, o que faria a decisão de pagar mais fácil. Isso alimenta tanto a Seção 4 (pitch) quanto a Seção 8 (pricing).
+**Move 3 — Revisão de fricção pós-piloto.** Ao final de cada um dos primeiros pilotos (convertido ou não), uma conversa curta e direta: o que travou, o que confundiu, o que faria a decisão de pagar mais fácil. Isso alimenta tanto a Seção 4 (pitch) quanto a Seção 8 (pricing) — inclusive se Pix precisa entrar no fluxo de pagamento antes do GA (ver §13).
 
 ### Movimentos de 90 dias
 Embutidos no cronograma da Seção 4 — ativação e aquisição andam juntas neste tamanho de amostra.
@@ -208,7 +262,7 @@ Não aplicável — sem clientes ainda.
 
 **Move 2 — Acompanhar taxa de no-show e "payment attachment" desde o dia 1.** Essas já são métricas de suporte definidas pelo produto (`PRODUCT.md`). Se um parceiro não estiver anexando pagamento/depósito às reservas, é sinal de que o valor central da Bladiq (proteger a receita) não está sendo usado — vale intervenção antes do fim do piloto, não depois.
 
-**Move 3 — Conversa de véspera do dia 30 (antes de cobrar o Founder Plan).** Não deixar a cobrança ser surpresa nem depender só do produto pra converter — uma conversa direta sobre o que funcionou e o que não funcionou, antes do cartão ser cobrado.
+**Move 3 — Conversa de véspera do dia 30 (antes de cobrar o Founder Plan).** Não deixar a cobrança ser surpresa nem depender só do produto pra converter — uma conversa direta sobre o que funcionou e o que não funcionou, antes do cartão (ou Pix) ser cobrado.
 
 ### Skills + ferramentas
 `churn-prevention`, `emails` (útil só a partir de ~10+ clientes, quando lifecycle automatizado por Resend passa a valer o esforço — antes disso, contato humano é mais barato e mais eficaz).
@@ -222,7 +276,7 @@ Não aplicável — sem clientes ainda.
 
 ### O plano
 
-**Move 1 — Pedido informal de indicação, não programa formal.** Assim que um parceiro converter pro Founder Plan, pedir diretamente por 1 indicação de outro dono de salão/barbearia que ele conheça em Berlim. Com n pequeno, um programa formal de indicação (comissão, dashboard de tracking) é esforço desproporcional ao retorno — o pedido direto, pessoa a pessoa, é mais forte nesse estágio e mais alinhado à voz de marca (nada de mecanismo "viral" artificial).
+**Move 1 — Pedido informal de indicação, não programa formal.** Assim que um parceiro converter pro Founder Plan, pedir diretamente por 1 indicação de outro dono de salão/barbearia que ele conheça. Com n pequeno, um programa formal de indicação (comissão, dashboard de tracking) é esforço desproporcional ao retorno — o pedido direto, pessoa a pessoa, é mais forte nesse estágio e mais alinhado à voz de marca (nada de mecanismo "viral" artificial).
 
 **Move 2 — Programa formal de indicação (idea #137, "two-sided referrals"), só a partir de Q3+**, quando existir uma base retida de 10+ parceiros que justifique o esforço de construir tracking/comissão.
 
@@ -234,13 +288,13 @@ Não aplicável — sem clientes ainda.
 ## 8. Revenue (Receita)
 
 ### Estado atual
-Estrutura de preço já definida e implementada em código (`lib/billing/plan-limits.ts`): Founder Plan €29/mês por 12 meses (só os 20 primeiros parceiros, após piloto gratuito de 30 dias), depois GA com trial de **7 dias** (`TRIAL_DAYS` em `lib/services/organization-service.ts`; este plano dizia 14 até 2026-08-21) e planos Starter €39 / Growth €79 / Pro €149. Nunca pressure-testado com cliente real.
+Estrutura de preço já definida e implementada em código (`lib/billing/plan-limits.ts`): Founder Plan R$59/mês por 12 meses (só os 20 primeiros parceiros, após piloto gratuito de 30 dias), depois GA com trial de **7 dias** (`TRIAL_DAYS` em `lib/services/organization-service.ts`) e planos Starter R$79 / Growth R$149 / Pro R$249. Nunca pressure-testado com cliente real; recalibrados 2026-09-24 contra o pricing real da Trinks (R$76-110/mês) — ainda não é pesquisa de willingness-to-pay brasileira (ver §13).
 
 ### O plano
 
-**Move 1 — Não mexer no preço antes de validar com os primeiros 3-5 parceiros.** O preço já está desenhado com uma lógica clara (Founder Plan recompensa quem chega cedo, planos GA segmentam por tamanho). O trabalho da Seção 8 neste trimestre não é redesenhar pricing — é confirmar, via as conversas da Seção 6, se €29/mês é uma barreira real ou não para o piloto converter.
+**Move 1 — Não mexer no preço antes de validar com os primeiros 3-5 parceiros.** O preço já está desenhado com uma lógica clara (Founder Plan recompensa quem chega cedo, planos GA segmentam por tamanho). O trabalho da Seção 8 neste trimestre não é redesenhar pricing — é confirmar, via as conversas da Seção 6, se R$59/mês é uma barreira real ou não para o piloto converter, e se os valores fazem sentido pro mercado brasileiro (já recalibrados contra a Trinks, mas ainda não testados com cliente real).
 
-**Move 2 — Página de comparação de preço vs. comissão de marketplace (junto com Move 4 da Seção 4).** O maior argumento de revenue não é o valor absoluto de €29-149/mês — é mostrar que uma comissão de marketplace sobre reservas ao longo de um ano custa mais do que a assinatura fixa pra um salão com volume razoável.
+**Move 2 — Página de comparação de preço vs. comissão de marketplace (junto com Move 4 da Seção 4).** O maior argumento de revenue não é o valor absoluto de R$59-249/mês — é mostrar que uma comissão de marketplace sobre reservas ao longo de um ano custa mais do que a assinatura fixa pra um salão com volume razoável.
 
 **Move 3 — Upsell Starter→Growth→Pro: fora de escopo deste trimestre.** Não há base suficiente ainda; volta a ser relevante em Q3+ quando o GA abrir (§10).
 
@@ -248,14 +302,14 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 
 | Métrica | Valor | Nota |
 |---|---|---|
-| ARPC (receita média mensal por cliente) | €29 (Founder Plan) até validação; €39-149 em GA | Baseline do próprio pricing, não medido ainda |
+| ARPC (receita média mensal por cliente) | R$59 (Founder Plan) até validação; R$79-249 em GA | Baseline do próprio pricing, recalibrado contra Trinks 2026-09-24, não medido com cliente real ainda |
 | CAC blended | **Desconhecido — TBD** | Maior decisão em aberto do plano (§13); hoje o custo real é tempo do fundador, não dinheiro, o que dificulta o cálculo tradicional |
 | Retenção anual | **Desconhecido — TBD** | Sem histórico; medir a partir dos primeiros 3-5 pilotos |
 | LTV (aprox.) | Não calculável ainda | Depende de retenção, que depende dos primeiros meses reais |
 | LTV/CAC | Não calculável ainda | — |
 
 ### Skills + ferramentas
-`pricing` (só se as conversas do piloto revelarem objeção real de preço), `sales-enablement` (a página de comparação funciona como material de vendas), `revops` (fora de escopo até haver volume).
+`pricing` (validar os valores BRL contra o mercado assim que houver as primeiras conversas de piloto), `sales-enablement` (a página de comparação funciona como material de vendas), `revops` (fora de escopo até haver volume).
 
 ---
 
@@ -265,16 +319,16 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 
 | Movimento | Estágio | Responsável |
 |---|---|---|
-| Montar lista de 50-100 prospects em Berlim (`prospecting` local) | Acquisition | Fundador |
-| Escrever script de contato direto (visita/WhatsApp) + pitch de 1 frase | Acquisition | Fundador |
-| ~~Resolver a falha de confiabilidade dos testes de booking/cupom~~ **feito 2026-08-21** | — | — |
+| Montar lista de 50-100 prospects no Brasil (`prospecting` local) | Acquisition | Fundador |
+| Mapear comunidades/associações de barbeiros e cabeleireiros no Brasil | Acquisition | Fundador |
+| Escrever script de contato direto (Instagram DM/WhatsApp) + pitch de 1 frase | Acquisition | Fundador |
 
 ### Semanas 3-4 — Fundação
 
 | Movimento | Estágio | Responsável |
 |---|---|---|
 | Publicar página "Bladiq vs. comissão de marketplace" | Acquisition + Revenue | Fundador |
-| Ativar canal da comunidade lusófona/brasileira em Berlim | Acquisition | Fundador |
+| Ativar canais de comunidade mapeados na Semana 1-2 | Acquisition | Fundador |
 | Iniciar contato direto — meta 10-15 contatos qualificados/semana | Acquisition | Fundador |
 | Ligar GA4 (gratuito) na landing page | Acquisition (instrumentação) | Fundador |
 
@@ -294,43 +348,43 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 | Conversa de fim de piloto (convertido ou não) com cada um dos 3-5 | Retention | Fundador |
 | Conversão pro Founder Plan (cobrança dia 30) | Revenue | Fundador |
 | Pedido direto de indicação a cada convertido | Referral | Fundador |
-| Listar parceiros fechados em `/find/berlin` | Acquisition (composto) | Fundador |
+| Listar parceiros fechados no diretório da(s) cidade(s) correspondente(s) | Acquisition (composto) | Fundador |
 | Revisão de 90 dias: o que funcionou, o que não funcionou, recalibrar Q2 | — | Fundador |
 
 ---
 
 ## 10. Perspectiva de 12 meses
 
-**Método de orçamento usado:** nenhum dos dois métodos formais (Revenue-Based ou Goal-Based, `budget-planning.md`) é aplicável ainda — ambos exigem uma base de ARR ou CAC histórico que a Bladiq não tem (ARR = €0 hoje). Aplicar a fórmula agora produziria um número fabricado, não defensável — indo contra o próprio princípio do método. Em vez disso, este plano trata o **tempo do fundador como o orçamento real** do Q1-Q2, e só volta a aplicar o Método 2 (Goal-Based) a partir do Q3, quando houver CAC real medido nos primeiros pilotos pra ancorar o cálculo.
+**Método de orçamento usado:** nenhum dos dois métodos formais (Revenue-Based ou Goal-Based, `budget-planning.md`) é aplicável ainda — ambos exigem uma base de ARR ou CAC histórico que a Bladiq não tem (ARR = R$0 hoje). Aplicar a fórmula agora produziria um número fabricado, não defensável — indo contra o próprio princípio do método. Em vez disso, este plano trata o **tempo do fundador como o orçamento real** do Q1-Q2, e só volta a aplicar o Método 2 (Goal-Based) a partir do Q3, quando houver CAC real medido nos primeiros pilotos pra ancorar o cálculo.
 
-**Orçamento total do ano:** ~€0-500/mês em tooling (sem verba paga) até Q2; primeiro teste pago pequeno (~€300-500 pontuais, não recorrente) condicionado a CAC manual comprovado, a partir do Q3.
+**Orçamento total do ano:** ~R$0-2.500/mês em tooling (sem verba paga) até Q2; primeiro teste pago pequeno (~R$1.500-2.500 pontuais, não recorrente) condicionado a CAC manual comprovado, a partir do Q3.
 
-**Meta de ARR de fim de ano:** não é uma meta de ARR em dólar — é uma meta de validação: **8-15 negócios ativos em Berlim, com pelo menos 60-70% de retenção dos que converteram do piloto para o Founder Plan.** Forçar uma meta de ARR específica agora seria promessa vazia (ver `budget-planning.md`: forecast sob controle de startup pré-receita é chute educado, não previsão).
+**Meta de ARR de fim de ano:** não é uma meta de ARR em dinheiro — é uma meta de validação: **8-15 negócios ativos no Brasil, com pelo menos 60-70% de retenção dos que converteram do piloto para o Founder Plan.** Forçar uma meta de ARR específica agora seria promessa vazia (ver `budget-planning.md`: forecast sob controle de startup pré-receita é chute educado, não previsão).
 
 **Padrão de crescimento esperado:** nem linear nem exponencial — **step-function em dois degraus**: primeiro degrau em Q2 (willingness to pay validada, 3-5 → Founder Plan), segundo degrau em Q3 (GA self-service abre, se e somente se o primeiro degrau se provar sólido). Não existe ritmo mensal previsível ainda porque não existe canal escalável ainda — o objetivo do ano é justamente criar as condições pra que um padrão linear (ex.: "+X parceiros/mês") comece a existir a partir do Q3-Q4. Sem âncora VC 3-3-2-2-2 — a empresa é bootstrapped, esse benchmark não se aplica.
 
 ### Q1 — Meses 1-3
 **Estado de funding:** Tier 1 (pré-seed/bootstrapped).
-**Foco:** provar que contato humano direto consegue fechar pilotos reais em Berlim.
+**Foco:** provar que contato humano remoto consegue fechar pilotos reais no Brasil.
 **Resultados até o fim do Q1:**
 - Lista de 50-100 prospects qualificados construída.
+- Comunidades/associações de barbeiros e cabeleireiros no Brasil mapeadas.
 - 3-5 pilotos ativos (30 dias gratuitos), onboarding assistido.
 - Página de comparação vs. marketplace publicada.
 - GA4 instrumentado na landing page.
-- Falha de confiabilidade dos testes de booking resolvida.
 
 **Metas de KPI:** 3-5 pilotos ativos · 50-100 prospects contatados · taxa de resposta ao contato direto medida (mesmo que baixa — é a linha de base) · 0 incidentes críticos de confiabilidade durante os pilotos.
 
-**Posição nas curvas S (canal/produto/mercado):** canal (prospecção manual) começando a subir; produto já maduro pro estágio; mercado (Berlim) ainda não testado.
+**Posição nas curvas S (canal/produto/mercado):** canal (prospecção remota) começando a subir; produto já maduro pro estágio; mercado (Brasil) ainda não testado.
 
 ### Q2 — Meses 4-6
 **Estado de funding:** Tier 1, ainda sem verba paga.
 **Foco:** validar willingness to pay — os pilotos convertem pro Founder Plan de verdade?
 **Resultados até o fim do Q2:**
-- Pelo menos 3 dos 3-5 pilotos convertidos pro Founder Plan (€29/mês).
+- Pelo menos 3 dos 3-5 pilotos convertidos pro Founder Plan (R$59/mês).
 - Conteúdo leve no ar (comparação + 2-3 posts sobre no-show/depósito).
-- `/find/berlin` com os primeiros parceiros reais listados.
-- Expansão da lista de prospects dentro de Berlim (mais 50-100).
+- Diretório com os primeiros parceiros reais listados.
+- Expansão da lista de prospects dentro do Brasil (mais 50-100).
 
 **Metas de KPI:** ≥60% dos pilotos convertendo pro Founder Plan · CAC manual (tempo investido / cliente fechado) medido pela primeira vez · payment attachment rate por parceiro ativo.
 
@@ -341,9 +395,9 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 **Foco:** abrir GA self-service e testar se o canal escala além do contato manual do fundador.
 **Resultados até o fim do Q3:**
 - GA aberto (trial 7 dias, Starter/Growth/Pro).
-- Primeiro teste pago pequeno (~€300-500) em busca de intenção local, condicionado a CAC manual comprovado no Q1-Q2.
+- Primeiro teste pago pequeno (~R$1.500-2.500) em busca de intenção local, condicionado a CAC manual comprovado no Q1-Q2.
 - Guia de self-onboarding pronto (reduz dependência do tempo do fundador).
-- Avaliação de expansão pra 1-2 cidades DACH além de Berlim.
+- Avaliação de expansão pra 1-2 regiões adicionais no Brasil.
 
 **Metas de KPI:** primeira conversão via self-service sem intervenção do fundador · CAC pago (se testado) comparado ao CAC manual · 8-12 negócios ativos totais.
 
@@ -353,7 +407,7 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 **Resultados até o fim do Q4:**
 - Programa formal de indicação avaliado/lançado se a base retida justificar (10+ parceiros).
 - Retenção 4/12 semanas medida e reportada (métrica já definida pelo produto).
-- Decisão informada sobre expansão geográfica para 2027.
+- Decisão informada sobre expansão geográfica dentro do Brasil para 2027.
 
 **Metas de KPI:** 8-15 negócios ativos totais · retenção de 12 semanas ≥ referência definida pelo produto · pelo menos 1 indicação orgânica fechada.
 
@@ -362,7 +416,7 @@ Estrutura de preço já definida e implementada em código (`lib/billing/plan-li
 ## 11. Stack de operações de marketing
 
 ### A tese
-Um fundador sozinho, part-time, com €0-500/mês, não substitui um time de marketing tradicional — mas consegue rodar prospecção, copy, comparação competitiva e instrumentação básica sem precisar contratar, usando as skills de marketing já instaladas no projeto (`.agents/skills/`) e ferramentas gratuitas. A diferença entre isso e "um fundador sozinho tentando fazer marketing" é ter um processo estruturado (este plano) em vez de esforço disperso.
+Um fundador sozinho, part-time, com R$0-2.500/mês, não substitui um time de marketing tradicional — mas consegue rodar prospecção, copy, comparação competitiva e instrumentação básica sem precisar contratar, usando as skills de marketing já instaladas no projeto (`.agents/skills/`) e ferramentas gratuitas. A diferença entre isso e "um fundador sozinho tentando fazer marketing" é ter um processo estruturado (este plano) em vez de esforço disperso.
 
 ### Skills mapeadas por estágio AARRR
 
@@ -388,25 +442,25 @@ Um fundador sozinho, part-time, com €0-500/mês, não substitui um time de mar
 **Honestidade sobre o estágio:** nenhum MCP de marketing está de fato conectado hoje (GA4, Ahrefs, Customer.io). Isso é esperado e correto para Tier 1 — a tese do stack agentic só se justifica quando há volume suficiente pra automatizar. Tratar a conexão do GA4 como item de Semana 3-4 (§9), não como pré-requisito para começar a prospecção manual.
 
 ### Um exemplo concreto
-Ainda não há um momento operacional real registrado (a empresa não começou a prospecção). A primeira prova do stack será: usar a referência `prospecting`/local-prospecting para montar, direto no navegador e sem nenhuma ferramenta paga de lead-gen, uma lista qualificada de 50-100 salões/barbearias de Berlim — validando que um fundador não-especialista em growth consegue produzir uma lista de prospecção decente sozinho, em poucas sessões de pesquisa, seguindo um processo (não intuição pura).
+Ainda não há um momento operacional real registrado (a empresa não começou a prospecção). A primeira prova do stack será: usar a referência `prospecting`/local-prospecting para montar, direto no navegador e sem nenhuma ferramenta paga de lead-gen, uma lista qualificada de 50-100 salões/barbearias no Brasil — validando que um fundador não-especialista em growth consegue produzir uma lista de prospecção decente sozinho, em poucas sessões de pesquisa, seguindo um processo (não intuição pura).
 
 ### Desbloqueios de capacidade por estágio de funding
 
 | Estágio | Headcount | Ferramentas | Canais ativos |
 |---|---|---|---|
-| **Hoje (Tier 1, bootstrapped)** | Fundador sozinho, part-time | GA4 (a ligar) + skills de marketing do projeto | Prospecção manual, comunidade lusófona, contato direto |
-| **Após MRR sustentar ~€500-800/mês (equivalente a "seed close" local, sem rodada externa)** | + freelancer bilíngue pt/de pra conteúdo (contractor, não hire) | + orçamento pago pequeno (~€300-500 teste) | + conteúdo leve/SEO, primeiro teste pago local |
-| **Após 15-20+ parceiros retidos** | + eventual primeira contratação de growth/conteúdo (Manager, não CMO — ver `team-and-agency-model.md`) | + lifecycle automatizado (Resend já é a infra técnica, falta o programa de marketing) | + programa de indicação formal, expansão DACH |
+| **Hoje (Tier 1, bootstrapped)** | Fundador sozinho, part-time | GA4 (a ligar) + skills de marketing do projeto | Prospecção manual, comunidades locais mapeadas, contato direto |
+| **Após MRR sustentar ~R$2.500-4.000/mês (equivalente a "seed close" local, sem rodada externa)** | + freelancer de conteúdo (contractor, não hire) | + orçamento pago pequeno (~R$1.500-2.500 teste) | + conteúdo leve/SEO, primeiro teste pago local |
+| **Após 15-20+ parceiros retidos** | + eventual primeira contratação de growth/conteúdo (Manager, não CMO — ver `team-and-agency-model.md`) | + lifecycle automatizado (Resend já é a infra técnica, falta o programa de marketing) | + programa de indicação formal, expansão regional dentro do Brasil |
 
 ### Time e modelo de agência (RACI)
 
 | Função | Dono estratégico (interno) | Executado por |
 |---|---|---|
 | Growth marketing (motor de demanda) | Fundador | Fundador (100% hoje) |
-| Product marketing (motor de narrativa) | Fundador | Fundador — primeiro terceirizado seria um freelancer bilíngue pt/de pra copy, não antes de Q3 |
+| Product marketing (motor de narrativa) | Fundador | Fundador — primeiro terceirizado seria um freelancer de copy, não antes de Q3 |
 | Content marketing (motor de confiança) | Fundador | Fundador — mesma lógica, freelancer de conteúdo como primeiro contractor, não hire |
 
-Não há função sem dono hoje — o gap real é capacidade de execução, não estratégia. Primeiro movimento de contratação recomendado (Q3+, condicionado a MRR): um contractor freelance bilíngue português/alemão pra produção de conteúdo (páginas de comparação por vertical, posts sobre no-show/depósito), não uma agência generalista nem um hire full-time — coerente com `team-and-agency-model.md` ("contractors e agências de nicho pra pré-Series-A", que aqui se traduz em "pré-tração real").
+Não há função sem dono hoje — o gap real é capacidade de execução, não estratégia. Primeiro movimento de contratação recomendado (Q3+, condicionado a MRR): um contractor freelance pra produção de conteúdo (páginas de comparação por vertical, posts sobre no-show/depósito), não uma agência generalista nem um hire full-time — coerente com `team-and-agency-model.md` ("contractors e agências de nicho pra pré-Series-A", que aqui se traduz em "pré-tração real").
 
 ---
 
@@ -420,7 +474,7 @@ Este banco cruza as 139 ideias do catálogo de marketing do projeto com o estág
 
 | # | Ideia | Status | Nota Bladiq |
 |---|---|---|---|
-| 1 | Easy Keyword Ranking | Q2 | Palavras de intenção local ("agenda barbearia Berlim") só valem a pena depois que o site tiver conteúdo real |
+| 1 | Easy Keyword Ranking | Q2 | Palavras de intenção local ("agenda barbearia [cidade]") só valem a pena depois que o site tiver conteúdo real |
 | 2 | SEO Audit | Q3+ | Auditoria formal só faz sentido com conteúdo publicado pra auditar |
 | 3 | Glossary Marketing | Skip | Esforço desproporcional pro volume de busca do nicho |
 | 4 | Programmatic SEO | Q3+ | `/find/[city]` é literalmente essa ideia — mas só escala depois de ter parceiros reais em múltiplas cidades |
@@ -443,8 +497,8 @@ Este banco cruza as 139 ideias do catálogo de marketing do projeto com o estág
 | 21 | Scanners | Skip | Não aplicável |
 | 22 | Public APIs | Skip | Não aplicável ao ICP (dono de salão não é desenvolvedor) |
 | 23-34 | Podcast/Facebook/Instagram/Twitter/LinkedIn/Reddit/Quora/Google/YouTube/Retargeting/Messenger Ads | Skip (por ora) | Toda a categoria de ads pagos retida até Q3, condicionada a CAC manual comprovado (§4, Move 6) |
-| 35 | Community Marketing | **Now** | Move 2 da Seção 4 — comunidade lusófona |
-| 36 | Quora Marketing | Skip | Baixo volume de busca em pt/de sobre o nicho no Quora |
+| 35 | Community Marketing | **Now** | Move 2 da Seção 4 — mapear e ativar comunidade brasileira do nicho |
+| 36 | Quora Marketing | Skip | Baixo volume de busca em português sobre o nicho no Quora |
 | 37 | Reddit Keyword Research | Skip | Baixa relevância pro ICP (dono de salão não está no Reddit sobre isso) |
 | 38 | Reddit Marketing | Skip | Idem |
 | 39 | LinkedIn Audience | Q3+ | Mais útil pra B2B de ACV alto; ICP da Bladiq não vive no LinkedIn |
@@ -454,15 +508,16 @@ Este banco cruza as 139 ideias do catálogo de marketing do projeto com o estág
 | 43 | Engagement Pods | Skip | Contra a voz de marca |
 | 44 | Comment Marketing | Skip | Baixo retorno pro esforço no nicho |
 | 49 | Monthly Newsletters | Q3+ | Sem base de assinantes ainda |
-| 54-64 | Partnerships (afiliados via backlink, influencer whitelisting, reseller, expert network, newsletter swap, HARO, pixel sharing, Slack, integração, patrocínio de comunidade) | Skip (maioria) exceto #59 | #59 (HARO/citações de imprensa) = Q3+, se houver ângulo de imprensa alemã sobre negócios de imigrantes; resto não se aplica ao estágio |
-| 65-72 | Eventos (webinar, summit, roadshow, meetup, palestra, conferência, patrocínio) | Q3+/Q4+ | Meetup local de donos de salão em Berlim é a única ideia de evento com ajuste real — Q3+, quando já houver base de parceiros pra convidar |
-| 73-76 | PR/Mídia (aquisição de mídia, cobertura de imprensa, PR de captação, documentários) | Skip/Q4+ | Sem captação em andamento (#75 n/a); cobertura de imprensa (#74) fica Q4+, condicionada a ter história real pra contar |
+| 54-64 | Partnerships (afiliados via backlink, influencer whitelisting, reseller, expert network, newsletter swap, HARO, pixel sharing, Slack, integração, patrocínio de comunidade) | Skip (maioria) exceto #59 | #59 (citações de imprensa) = Q3+, condicionado a existir capacidade de relação com imprensa — hoje não há ninguém cuidando disso, ver decisão aberta §13; resto não se aplica ao estágio |
+| 65-72 | Eventos (webinar, summit, roadshow, meetup, palestra, conferência, patrocínio) | Q3+/Q4+ | Meetup/feira local de donos de salão é a única ideia de evento com ajuste real — Q3+, quando já houver base de parceiros pra convidar |
+| 73-76 | PR/Mídia (aquisição de mídia, cobertura de imprensa, PR de captação, documentários) | Skip/Q4+ | Sem captação em andamento (#75 n/a); cobertura de imprensa (#74) fica Q4+ e depende de alguém assumir relações com imprensa — hoje é justamente a lacuna que motivou lançar onde a fundadora está (ver aviso de revisão 2026-09-24) |
 | 77-86 | Launches (Black Friday, Product Hunt, early-access, promoção de ano novo, giveaways, lifetime deal) | Skip (maioria) | #86 Lifetime Deals explicitamente fora — dano ao LTV e contra a voz de marca; giveaways/Twitter giveaways fora de voz; Product Hunt (#78) fica Q3+, na abertura do GA, não antes |
 | 87-89 | Product-Led (powered by, migração grátis, contract buyout) | Skip | Não aplicável ao modelo (não há "migração" de concorrente formal nem contrato pra comprar) |
 | 97-109 | Formatos de conteúdo (playlist, template, vídeo promo, entrevista, prints sociais, curso, livro, relatório anual, wrap de fim de ano, podcast, changelog, demo pública) | Q2-Q4+ (esparso) | #109 Public Demos = Q2, vídeo curto mostrando o produto ao vivo é o formato de maior retorno pro esforço; resto fica pra quando houver capacidade de conteúdo sobrando |
 | 110-122 | Unconventional (prêmios, desafios, reality TV, controvérsia, moneyball, curadoria, grants, competição, cameo, OOH, stunts, guerrilla, humor) | Skip (quase todos) | Fora de voz de marca ou fora de escala (OOH é Series A+); #114 Moneyball Marketing (medir tudo, decidir por dado) já é o princípio operacional deste plano, não uma tática separada |
 | 123-130 | Plataformas (open source, marketplace de apps, YouTube reviews/canal, source platforms, review sites, live audio) | Skip (maioria) exceto #129 | #129 Review Sites (Google Business Profile bem cuidado dos próprios parceiros) = Now, informalmente — orientar cada piloto a manter o perfil do Google ativo já ajuda a própria prospecção futura |
-| 131 | International Expansion | Q4+ | DACH além de Berlim, condicionado ao sucesso local |
+| 131 | International Expansion | Q4+ | Expansão além do Brasil condicionada ao sucesso local; sem plano de reentrada na Europa definido |
+| 132 | Price Localization | Skip (por ora) | Preço já em BRL, mercado único (Brasil) neste horizonte — mas os valores em si ainda não foram validados localmente (ver §13), o que é diferente de "precisar localizar pra outro mercado" |
 | 133 | Investor Marketing | Skip | Sem captação em andamento |
 | 138 | Podcast Tours | Skip | Sem ângulo de imprensa ainda |
 
@@ -507,7 +562,7 @@ Este banco cruza as 139 ideias do catálogo de marketing do projeto com o estág
 | # | Ideia | Status | Nota |
 |---|---|---|---|
 | 91 | In-App Upsells | Q3+ | Repetido da Ativação — cross-cut |
-| 132 | Price Localization | Skip | Preço já em EUR, mercado único (DACH) neste horizonte |
+| 132 | Price Localization | Skip | Repetido da Aquisição — cross-cut, ver nota lá |
 
 ### 12.6 Cross-cutting / fundação de marca
 
@@ -563,10 +618,13 @@ Com time de uma pessoa, o RACI é trivial hoje — o valor de deixá-lo explíci
 ### Decisões em aberto, por impacto
 
 1. **CAC e retenção são completamente desconhecidos.** Toda a Seção 10 depende de medir isso nos primeiros pilotos reais — é a decisão de maior impacto do plano inteiro, porque decide se o canal manual escala ou não.
-2. ~~**A falha de confiabilidade nos testes de booking/cupom precisa ser resolvida antes de ativar o primeiro piloto pago.**~~ **Resolvido 2026-08-21** — era data literal vencida no fixture. Em seu lugar, a decisão realmente aberta e mais urgente é: **o worker BullMQ precisa estar no ar antes de qualquer prospecção**. Hoje tudo roda na Vercel, que não executa processo longo — então nenhum e-mail transacional sai e holds `PENDING_PAYMENT` nunca expiram. O primeiro prospect que se cadastrar não recebe e-mail nenhum. Migração para Railway em andamento.
-3. **Não há decisão tomada sobre quando abrir GA self-service.** Este plano recomenda condicionar a Q3 e a willingness-to-pay validada — mas é uma escolha do fundador, não uma certeza.
-4. **O primeiro teste pago (Q3) está condicionado a CAC manual comprovado — mas "comprovado" ainda não tem um número-alvo definido.** Vale decidir, já no Q1, qual CAC manual seria "bom o suficiente" pra justificar testar pago (ex.: menos de X horas de fundador por cliente fechado).
-5. **Não existe decisão sobre expansão além de Berlim antes do fim do ano** — este plano trata isso como Q4+/2027, mas é uma escolha explícita, não um default.
+2. **Cidade-base/recorte regional de prospecção não está definido.** Diferente do plano anterior (Lisboa/Porto vs. Alemanha, com lógica explícita de mercado direto vs. diáspora), este plano não recorta por cidade porque a operação já nasce remota. Vale decidir se faz sentido concentrar os primeiros 50-100 prospects numa região onde o fundador já tem alguma rede/contexto, em vez de espalhar por todo o Brasil desde o início.
+3. **Comunidades/associações de barbeiros e cabeleireiros no Brasil ainda não foram mapeadas.** `community-channels.md` tem o modelo pronto pra Portugal; o equivalente brasileiro é trabalho pendente, não feito neste plano por não haver base de pesquisa local confiável sem o fundador confirmar rede/região.
+4. **[Parcialmente resolvido 2026-09-24]** Os valores em BRL foram recalibrados contra o pricing real da Trinks (R$76-110/mês) — Founder Plan R$59, Starter R$79, Growth R$149, Pro R$249. Ainda não é pesquisa de willingness-to-pay, só deixou de ser conversão arbitrária de EUR.
+5. **[Em andamento 2026-09-24]** Pix habilitado no depósito de reserva via Stripe Connect (capability `pix_payments` na conta do tenant, `country === "BR"`). A cobrança da própria assinatura SaaS (dono do salão pagando a Bladiq) continua só cartão — Pix recorrente não está disponível no Brasil via Stripe (Pix Automático é só por convite). Avaliar migração/complemento com **Asaas** (fintech nativa brasileira, sem essa limitação de Pix recorrente) como próximo projeto — não escopado ainda, decisão do fundador de tratar como rodada separada.
+6. **Não há decisão tomada sobre quando abrir GA self-service.** Este plano recomenda condicionar a Q3 e a willingness-to-pay validada — mas é uma escolha do fundador, não uma certeza.
+7. **O worker BullMQ precisa estar no ar antes de qualquer prospecção.** Hoje tudo roda na Vercel, que não executa processo longo — então nenhum e-mail transacional sai e holds `PENDING_PAYMENT` nunca expiram. O primeiro prospect que se cadastrar não recebe e-mail nenhum. Migração para Railway em andamento.
+8. **Não existe decisão sobre expansão além do recorte inicial dentro do Brasil antes do fim do ano** — este plano trata isso como Q4+/2027, mas é uma escolha explícita, não um default.
 
 ### Apêndice — links de aprofundamento
 
@@ -575,11 +633,13 @@ Com time de uma pessoa, o RACI é trivial hoje — o valor de deixá-lo explíci
 - `PRODUCT.md` — promessa de produto, princípios, modelo comercial, métricas
 - `docs/ROADMAP-2026-08-01.md` — roadmap Gate 0 → assisted beta → GA → growth
 - `SECURITY.md`, `docs/ARCHITECTURE.md`, `docs/data-retention-policy.md` — fundamentos técnicos citados na Seção 2 (voz de marca) como sinal de confiança
+- `docs/marketing/community-channels.md` — mapeamento de comunidades feito pra Portugal, modelo de processo pro mapeamento brasileiro pendente (decisão aberta #3)
+- `docs/marketing/comparison-page-draft.md` — rascunho da página vs. marketplace, feito pro contexto europeu, ponto de partida pra adaptação (Move 4, §4)
 
 **Contexto estratégico do fundador (fora deste repositório de plano):**
-- Rede pessoal/comunidade lusófona de profissionais de beleza em Berlim — não documentada, mas citada nas Seções 2 e 4 como canal real
+- Rede pessoal/comunidade de profissionais de beleza no Brasil — ainda não documentada nem confirmada; diferente do plano de Europa, este plano não assume que ela existe (decisão aberta #2-3)
 - Registro completo de intake (research record) mantido junto com os arquivos de trabalho deste plano de marketing
 
 ---
 
-*Bladiq Marketing Plan v1. Preparado por fCMO run (Claude Code), 2026-08-14. Para revisão do fundador.*
+*Bladiq Marketing Plan v1. Preparado por fCMO run (Claude Code), 2026-08-14. Revisado 2026-09-24 para o pivô de mercado ao Brasil. Para revisão do fundador.*

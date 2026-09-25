@@ -129,6 +129,11 @@ export const auth = betterAuth({
       // Previne brute force em contas via email de reset (confirmação de
       // existência, inundação de emails, etc.).
       "/request-password-reset": { window: 300, max: 1 },
+      // /two-factor/verify-totp e /two-factor/verify-backup-code não têm
+      // regra própria de propósito: caem no limite global (100/60s) e,
+      // além disso, o próprio plugin two-factor do Better Auth já aplica
+      // lockout nativo por conta (failedVerificationCount/lockedUntil em
+      // node_modules/better-auth/dist/plugins/two-factor/schema.mjs).
     },
   },
   socialProviders: {

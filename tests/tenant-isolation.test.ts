@@ -1114,6 +1114,95 @@ describe("Suite 2 — extension fail-closed", () => {
     expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
   });
 
+  test("BookingAttachment: fail-closed sem contexto, escopado sob tenant, update cross-tenant falha", async () => {
+    const serviceA = await runWithTenant(orgA.id, () =>
+      db.service.create({
+        data: { organizationId: orgA.id, name: "Serviço anexo A", durationMinutes: 30, priceInCents: 3000 },
+      }),
+    );
+    const serviceB = await runWithTenant(orgB.id, () =>
+      db.service.create({
+        data: { organizationId: orgB.id, name: "Serviço anexo B", durationMinutes: 30, priceInCents: 3000 },
+      }),
+    );
+    const customerA = await runWithTenant(orgA.id, () =>
+      db.customer.create({ data: { organizationId: orgA.id, name: "Cliente anexo A" } }),
+    );
+    const customerB = await runWithTenant(orgB.id, () =>
+      db.customer.create({ data: { organizationId: orgB.id, name: "Cliente anexo B" } }),
+    );
+    // 2 dias à frente (não 1, como o teste "Booking" acima) -- mesmos
+    // staffA/staffB compartilhados, então precisa de uma janela de horário
+    // que não colida com a constraint booking_no_overlap daquele teste.
+    const startAt = new Date(Date.now() + 2 * 86400_000);
+    const endAt = new Date(startAt.getTime() + 30 * 60_000);
+    const bookingA = await runWithTenant(orgA.id, () =>
+      db.booking.create({
+        data: {
+          organizationId: orgA.id,
+          locationId: locationA.id,
+          staffId: staffA.id,
+          serviceId: serviceA.id,
+          customerId: customerA.id,
+          startAt,
+          endAt,
+          status: "CONFIRMED",
+          priceInCents: 3000,
+        },
+      }),
+    );
+    const bookingB = await runWithTenant(orgB.id, () =>
+      db.booking.create({
+        data: {
+          organizationId: orgB.id,
+          locationId: locationB.id,
+          staffId: staffB.id,
+          serviceId: serviceB.id,
+          customerId: customerB.id,
+          startAt,
+          endAt,
+          status: "CONFIRMED",
+          priceInCents: 3000,
+        },
+      }),
+    );
+
+    await expect(
+      db.bookingAttachment.create({
+        data: { bookingId: bookingA.id, organizationId: orgA.id, url: "https://res.cloudinary.com/x/a.jpg", publicId: "a" },
+      }),
+    ).rejects.toBeInstanceOf(MissingTenantContextError);
+
+    const attachmentA = await runWithTenant(orgA.id, () =>
+      db.bookingAttachment.create({
+        data: { bookingId: bookingA.id, organizationId: orgA.id, url: "https://res.cloudinary.com/x/a.jpg", publicId: "a" },
+      }),
+    );
+    const attachmentB = await runWithTenant(orgB.id, () =>
+      db.bookingAttachment.create({
+        data: { bookingId: bookingB.id, organizationId: orgB.id, url: "https://res.cloudinary.com/x/b.jpg", publicId: "b" },
+      }),
+    );
+
+    const seenByA = await runWithTenant(orgA.id, () => db.bookingAttachment.findMany());
+    expect(seenByA.every((entry) => entry.organizationId === orgA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === attachmentA.id)).toBe(true);
+    expect(seenByA.some((entry) => entry.id === attachmentB.id)).toBe(false);
+
+    const foundCrossTenant = await runWithTenant(orgA.id, () =>
+      db.bookingAttachment.findUnique({ where: { id: attachmentB.id } }),
+    );
+    expect(foundCrossTenant).toBeNull();
+
+    const seenByPlatform = await runWithPlatformScope(() =>
+      db.bookingAttachment.findMany({
+        where: { organizationId: { in: [orgA.id, orgB.id] } },
+      }),
+    );
+    const orgIds = new Set(seenByPlatform.map((entry) => entry.organizationId));
+    expect(orgIds).toEqual(new Set([orgA.id, orgB.id]));
+  });
+
   test("Conversation: fail-closed sem contexto, escopado sob tenant", async () => {
     const customerA = await runWithTenant(orgA.id, () =>
       db.customer.create({

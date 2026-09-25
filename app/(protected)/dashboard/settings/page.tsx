@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { resolveTenantSlug } from "@/lib/tenant-host";
 import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { getMembership, listMembers, listPendingInvitations } from "@/lib/services/member-service";
+import { hasCredentialAccount } from "@/lib/services/account-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { getResolvedRules } from "@/lib/services/settings-service";
 import { getImpressum } from "@/lib/services/impressum-service";
@@ -37,7 +38,7 @@ export default async function SettingsPage({
   const membership = await getMembership(organization.id, session.user.id);
   if (!membership || !["owner", "manager"].includes(membership.role)) redirect("/dashboard");
   const { mfaRequired } = await searchParams;
-  const [rules, impressum, locations, members, pendingInvitations, quoteRequests] = await Promise.all([
+  const [rules, impressum, locations, members, pendingInvitations, quoteRequests, hasPassword] = await Promise.all([
     runWithTenant(organization.id, getResolvedRules),
     runWithTenant(organization.id, getImpressum),
     runWithTenant(organization.id, listLocations),
@@ -46,6 +47,7 @@ export default async function SettingsPage({
     isQuoteBasedCategory(organization.category)
       ? runWithTenant(organization.id, listQuoteRequests)
       : Promise.resolve([]),
+    hasCredentialAccount(session.user.id),
   ]);
   const cities = [...new Set(locations.filter((l) => l.isActive).map((l) => l.city))];
   const t = await getTranslations("dashboard.settings");
@@ -178,7 +180,7 @@ export default async function SettingsPage({
         </TabsContent>
 
         <TabsContent value="security" className="mt-6">
-          <SecuritySection twoFactorEnabled={!!session.user.twoFactorEnabled} />
+          <SecuritySection twoFactorEnabled={!!session.user.twoFactorEnabled} hasPassword={hasPassword} />
         </TabsContent>
       </Tabs>
     </PageContainer>

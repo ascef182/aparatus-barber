@@ -1,6 +1,6 @@
 # Bladiq
 
-Bladiq is a multi-tenant booking and payments platform for independent beauty businesses in the DACH market. It gives barbershops, hair salons, nail studios, and beauty salons a branded booking page, operational calendar, customer portal, deposits, reminders, and German compliance foundations in German, English, and Portuguese.
+Bladiq is a multi-tenant booking and payments platform for independent beauty businesses in Brazil. It gives barbershops, hair salons, nail studios, and beauty salons a branded booking page, operational calendar, customer portal, deposits, reminders, and LGPD-aligned compliance foundations in Portuguese, English, and German.
 
 ## Product surfaces
 
@@ -69,4 +69,4 @@ See the [deployment runbook](docs/DEPLOYMENT.md) for local workflows, provider c
 
 ## Current direction
 
-The launch wedge is Beauty DACH, initially with 3–5 assisted design partners in Berlin. Construction, electrician, medical, and dental categories remain in the database for compatibility but are not accepted by public onboarding. See [Product strategy](PRODUCT.md) and [current roadmap](docs/ROADMAP-2026-08-01.md).
+The launch wedge is Beauty Brazil, initially with 3–5 assisted design partners (specific city/region not yet fixed — see open decisions in `docs/marketing/plan.md`). Construction, electrician, medical, and dental categories remain in the database for compatibility but are not accepted by public onboarding. See [Product strategy](PRODUCT.md) and [current roadmap](docs/ROADMAP-2026-08-01.md).

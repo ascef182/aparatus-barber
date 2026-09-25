@@ -12,7 +12,7 @@ const FAILURE_ACTIONS = new Set(["ONBOARDING_FAILED"]);
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
-  timeZone: "Europe/Berlin",
+  timeZone: "America/Sao_Paulo",
 });
 
 function subscriptionBadgeVariant(status: string): "default" | "secondary" | "destructive" {

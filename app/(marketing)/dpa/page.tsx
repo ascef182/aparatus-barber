@@ -1,6 +1,13 @@
 import { getLocale } from "next-intl/server";
 import { LegalPage } from "../legal-page";
 
+/**
+ * Até 2026-09-24 este termo citava Art. 28 GDPR (relação
+ * controller/processor) e retenção GoBD de 10 anos. Com o pivô para o
+ * Brasil, a base legal citada passa a ser a LGPD (relação
+ * controlador/operador, Art. 39) e a retenção fiscal alemã é removida —
+ * ver nota equivalente em app/(marketing)/privacy/page.tsx.
+ */
 export default async function DpaPage() {
   const locale = await getLocale();
 
@@ -9,9 +16,10 @@ export default async function DpaPage() {
       <LegalPage title="Data Processing Agreement (DPA)">
         <p>
           This Data Processing Agreement forms part of the Terms of Service between the tenant
-          (&ldquo;Controller&rdquo;) and Bladiq (&ldquo;Processor&rdquo;) and applies whenever Bladiq processes
-          personal data of the Controller&apos;s customers on the Controller&apos;s behalf (Art. 28 GDPR).
-          Acceptance is recorded with version, timestamp, IP address, and user agent at signup.
+          (&ldquo;Controller&rdquo;) and Bladiq (&ldquo;Operator&rdquo;) and applies whenever Bladiq processes
+          personal data of the Controller&apos;s customers on the Controller&apos;s behalf, under the
+          controller/operator relationship defined by Brazil&apos;s LGPD (Art. 39). Acceptance is recorded with
+          version, timestamp, IP address, and user agent at signup.
         </p>
         <section>
           <h2>1. Subject and duration</h2>
@@ -45,8 +53,9 @@ export default async function DpaPage() {
         <section>
           <h2>5. Deletion</h2>
           <p>
-            Upon termination, personal data is anonymized; records required for fiscal retention (GoBD §147 AO) are
-            kept for 10 years in anonymized/minimized form where required.
+            Upon termination, personal data is anonymized; records required for applicable Brazilian fiscal
+            retention obligations are kept in anonymized/minimized form for as long as required — the exact
+            retention period is under legal review (see the Privacy Policy §4).
           </p>
         </section>
       </LegalPage>
@@ -59,8 +68,9 @@ export default async function DpaPage() {
         <p>
           Este Acordo de Processamento de Dados é parte integrante dos Termos de Serviço entre o tenant
           (&ldquo;Controlador&rdquo;) e a Bladiq (&ldquo;Operador&rdquo;) e se aplica sempre que a Bladiq processar
-          dados pessoais dos clientes do Controlador em nome deste (Art. 28 GDPR). A aceitação é registrada com
-          versão, data/hora, endereço IP e user agent no momento do cadastro.
+          dados pessoais dos clientes do Controlador em nome deste, na relação controlador/operador definida pela
+          LGPD (Art. 39). A aceitação é registrada com versão, data/hora, endereço IP e user agent no momento do
+          cadastro.
         </p>
         <section>
           <h2>1. Objeto e duração</h2>
@@ -97,8 +107,9 @@ export default async function DpaPage() {
         <section>
           <h2>5. Apagamento</h2>
           <p>
-            Ao término do contrato, os dados pessoais são anonimizados; registros exigidos para retenção fiscal
-            (GoBD §147 AO) são mantidos por 10 anos em forma anonimizada/minimizada, quando exigido.
+            Ao término do contrato, os dados pessoais são anonimizados; registros exigidos por obrigações fiscais
+            brasileiras aplicáveis são mantidos em forma anonimizada/minimizada pelo prazo exigido — o prazo exato
+            está em revisão jurídica (ver §4 da Política de Privacidade).
           </p>
         </section>
       </LegalPage>
@@ -110,8 +121,11 @@ export default async function DpaPage() {
       <p>
         Dieser Auftragsverarbeitungsvertrag ist Bestandteil der AGB zwischen dem Mandanten
         (&ldquo;Verantwortlicher&rdquo;) und Bladiq (&ldquo;Auftragsverarbeiter&rdquo;) und gilt, wann immer Bladiq
-        personenbezogene Daten der Kunden des Mandanten in dessen Auftrag verarbeitet (Art. 28 DSGVO). Die
-        Zustimmung wird bei der Registrierung mit Version, Zeitstempel, IP-Adresse und User-Agent protokolliert.
+        personenbezogene Daten der Kunden des Mandanten in dessen Auftrag verarbeitet, im Rahmen der von der
+        brasilianischen LGPD (Art. 39) definierten Beziehung Controlador/Operador. Die Zustimmung wird bei der
+        Registrierung mit Version, Zeitstempel, IP-Adresse und User-Agent protokolliert. Hinweis: Zielmarkt dieses
+        Produkts ist jetzt Brasilien; diese deutsche Fassung ist Referenz, nicht führende Sprachversion (siehe
+        Datenschutzerklärung).
       </p>
       <section>
         <h2>1. Gegenstand und Dauer</h2>
@@ -146,9 +160,9 @@ export default async function DpaPage() {
       <section>
         <h2>5. Löschung</h2>
         <p>
-          Nach Vertragsende werden personenbezogene Daten anonymisiert; für die steuerliche Aufbewahrung
-          erforderliche Datensätze (GoBD §147 AO) werden 10 Jahre in anonymisierter/minimierter Form aufbewahrt,
-          soweit erforderlich.
+          Nach Vertragsende werden personenbezogene Daten anonymisiert; nach anwendbarem brasilianischem
+          Steuerrecht erforderliche Datensätze werden in anonymisierter/minimierter Form so lange aufbewahrt, wie
+          erforderlich — die genaue Frist wird derzeit rechtlich geprüft (siehe Datenschutzerklärung, Abschnitt 4).
         </p>
       </section>
     </LegalPage>

@@ -35,12 +35,14 @@ export default async function AccountMessagesPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       </header>
       <MessageThread
+        organizationName={organization.name}
         initialMessages={(conversation?.messages ?? []).map((message) => ({
           id: message.id,
           senderType: message.senderType,
           body: message.body,
           createdAt: message.createdAt.toISOString(),
         }))}
+        initialLastStaffReadAt={conversation?.lastStaffReadAt?.toISOString() ?? null}
       />
     </section>
   );

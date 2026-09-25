@@ -37,8 +37,8 @@ export function NewCustomerBookingSheet({ services, staff }: { services: Service
   const booking = useAction(createCustomerBooking, {
     onSuccess: async ({ data }) => {
       if (!data) return;
-      if (data.status === "PENDING_PAYMENT") {
-        const payment = await checkout.executeAsync({ bookingId: data.id });
+      if (data.booking.status === "PENDING_PAYMENT") {
+        const payment = await checkout.executeAsync({ bookingId: data.booking.id });
         if (payment.serverError || !payment.data?.url) {
           toast.error(payment.serverError ?? t("createError"));
           return;

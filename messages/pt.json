@@ -114,7 +114,7 @@
       "representedBy": "Representado por:",
       "phone": "Telefone:",
       "email": "E-mail:",
-      "vatId": "Nº fiscal (USt-IdNr.):"
+      "vatId": "CNPJ / Nº fiscal:"
     },
     "nav": {
       "signIn": "Entrar"
@@ -196,7 +196,11 @@
       "sendError": "Não foi possível enviar sua mensagem.",
       "empty": "Nenhuma mensagem ainda. Envie a primeira!",
       "you": "Você",
-      "staffLabel": "Equipe de suporte"
+      "staffLabel": "Equipe de suporte",
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "sentStatus": "Enviada",
+      "readStatus": "Lida"
     },
     "signIn": {
       "title": "Entrar",
@@ -208,6 +212,7 @@
       "nameLabel": "Nome",
       "emailLabel": "E-mail",
       "passwordLabel": "Senha",
+      "forgotPasswordLink": "Esqueci minha senha",
       "emailInUse": "Este e-mail já está cadastrado.",
       "submit": "Entrar",
       "submitSignUp": "Criar conta",
@@ -262,7 +267,11 @@
       "reply": "Responder",
       "replying": "Enviando…",
       "replyError": "Não foi possível enviar sua resposta.",
-      "customerLabel": "Cliente"
+      "customerLabel": "Cliente",
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "sentStatus": "Enviada",
+      "readStatus": "Lida"
     },
     "userMenu": {
       "signOut": "Sair",
@@ -311,6 +320,7 @@
       "operationError": "Não foi possível atualizar o agendamento.",
       "noAppointments": "Sem agendamentos",
       "addWalkIn": "Adicionar walk-in",
+      "referencePhotosTooltip": "Fotos de referência enviadas pelo cliente",
       "newBooking": {
         "title": "Nova reserva",
         "chooseService": "Serviço",
@@ -639,6 +649,14 @@
       "coverImageSaveError": "Erro ao salvar a foto de capa.",
       "coverImageUploadError": "Não foi possível enviar a imagem.",
       "removeCoverImage": "Remover foto de capa",
+      "setPasswordTitle": "Definir senha",
+      "setPasswordHint": "Sua conta foi criada com o Google e ainda não tem senha. Defina uma para também poder entrar com e-mail e senha.",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar senha",
+      "setPasswordCta": "Definir senha",
+      "passwordSet": "Senha definida.",
+      "passwordSetError": "Não foi possível definir a senha.",
+      "passwordMismatch": "As senhas não coincidem.",
       "securityTitle": "Segurança",
       "twoFactorLabel": "Autenticação de dois fatores (TOTP):",
       "twoFactorActive": "ativa",
@@ -800,7 +818,11 @@
     "couponReasonNotYetValid": "Cupom ainda não é válido.",
     "couponReasonExpired": "Cupom expirado.",
     "couponReasonExhausted": "Cupom esgotado.",
-    "couponReasonWrongService": "Cupom não válido para este serviço."
+    "couponReasonWrongService": "Cupom não válido para este serviço.",
+    "referencePhotosLabel": "Fotos de referência (opcional)",
+    "referencePhotosHint": "Quer um corte parecido com alguma foto? Anexe até 3 imagens.",
+    "referencePhotoRemove": "Remover foto",
+    "referencePhotoUploadError": "Sua reserva foi confirmada, mas não conseguimos enviar uma ou mais fotos. Tente anexar de novo mais tarde."
   },
   "landing": {
     "nav": {
@@ -815,12 +837,12 @@
       "badge": "Plataforma multi-tenant para negócios locais",
       "titleLine1": "Agende, cobre",
       "titleLine2": "e cresça — tudo em um só lugar",
-      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade legal alemã — pronto em minutos, em 3 idiomas.",
+      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade com a LGPD — pronto em minutos, em 3 idiomas.",
       "ctaPrimary": "Começar teste grátis",
       "ctaSecondary": "Ver como funciona",
-      "trustGdpr": "Conforme GDPR",
+      "trustGdpr": "Conforme LGPD",
       "trustStripe": "Pagamentos via Stripe",
-      "trustLanguages": "Alemão · Inglês · Português",
+      "trustLanguages": "Português · Inglês · Alemão",
       "tabs": {
         "booking": {
           "label": "Agendamento",
@@ -857,8 +879,8 @@
       "teamBody": "Convide gerentes, profissionais e recepcionistas com acesso controlado por função.",
       "securityTitle": "Segurança de verdade",
       "securityBody": "Autenticação em dois fatores e isolamento de dados entre negócios à prova de falhas.",
-      "complianceTitle": "Conformidade legal alemã",
-      "complianceBody": "Impressum, DPA e exportação/apagamento de dados prontos para operar na Alemanha."
+      "complianceTitle": "Conformidade com a LGPD",
+      "complianceBody": "Base legal de tratamento de dados, exportação e apagamento prontos para operar no Brasil."
     },
     "howItWorks": {
       "title": "Como funciona",
@@ -876,7 +898,7 @@
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
-      "a3": "Sim. Isolamento de dados entre negócios, autenticação em dois fatores e conformidade com GDPR, incluindo exportação e apagamento de dados a pedido.",
+      "a3": "Sim. Isolamento de dados entre negócios, autenticação em dois fatores e conformidade com a LGPD, incluindo exportação e apagamento de dados a pedido.",
       "q4": "Meus clientes podem pagar online?",
       "a4": "Sim, via Stripe: depósito, pré-pagamento total ou pagamento no local, configurável por serviço.",
       "q5": "Funciona em outros idiomas?",
@@ -906,7 +928,7 @@
       "legalTitle": "Legal",
       "featuresLink": "Funcionalidades",
       "pricingLink": "Preços",
-      "impressumLink": "Impressum",
+      "impressumLink": "Dados da Empresa",
       "privacyLink": "Privacidade",
       "termsLink": "Termos",
       "dpaLink": "DPA",
@@ -917,6 +939,7 @@
     "title": "Entrar",
     "emailLabel": "E-mail",
     "passwordLabel": "Senha",
+    "forgotPasswordLink": "Esqueci minha senha",
     "submit": "Entrar",
     "signingIn": "Entrando...",
     "invalidCredentials": "E-mail ou senha incorretos.",
@@ -1021,6 +1044,7 @@
       "nameLabel": "Nome",
       "emailLabel": "E-mail",
       "passwordLabel": "Senha",
+      "forgotPasswordLink": "Esqueci minha senha",
       "emailInUse": "Este e-mail já está cadastrado.",
       "submit": "Entrar",
       "submitSignUp": "Criar conta",
@@ -1107,5 +1131,16 @@
     "submit": "Redefinir senha",
     "done": "Senha redefinida",
     "signInLink": "Entrar"
+  },
+  "twoFactorVerify": {
+    "title": "Autenticação de dois fatores",
+    "subtitle": "Digite o código de 6 dígitos do seu app autenticador.",
+    "codeLabel": "Código",
+    "backupCodeLabel": "Código de backup",
+    "submit": "Verificar",
+    "verifying": "Verificando...",
+    "invalidCode": "Código inválido. Tente novamente.",
+    "useBackupCode": "Usar um código de backup",
+    "backToCode": "Usar o código do autenticador"
   }
 }

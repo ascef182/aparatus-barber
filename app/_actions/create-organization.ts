@@ -55,13 +55,15 @@ const inputSchema = z.object({
   city: z.string().min(2).max(80),
   phone: z.string().max(40).optional(),
   description: z.string().max(500).optional(),
-  // Impressum (§5 TMG) — coletado aqui, não só depois no dashboard, porque
-  // sem ele o wizard de agendamento público fica bloqueado para filiais
-  // alemãs (app/t/[slug]/page.tsx) desde a primeira visita.
+  // Dados legais da empresa — coletados aqui, não só depois no dashboard.
+  // Para filiais alemãs legadas (countryCode "DE"), sem isso o wizard de
+  // agendamento público fica bloqueado desde a primeira visita (§5 TMG,
+  // ver app/t/[slug]/page.tsx); esse gate não se aplica a filiais
+  // brasileiras (default a partir do pivô de mercado, ver PRODUCT.md).
   legalName: z.string().min(2).max(160),
   representedBy: z.string().max(160).optional(),
   contactEmail: z.email().optional(),
-  country: z.string().length(2).default("DE"),
+  country: z.string().length(2).default("BR"),
   registerCourt: z.string().max(120).optional(),
   registerNumber: z.string().max(60).optional(),
   vatId: z.string().max(40).optional(),

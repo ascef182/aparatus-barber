@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
-import { getTenantUrl } from "@/lib/tenant-host";
+import { authClient, isTwoFactorRedirect } from "@/lib/auth-client";
+import { getTenantUrl, getRootUrl } from "@/lib/tenant-host";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
 import { PasswordInput } from "@/app/_components/ui/password-input";
 import { GoogleIcon } from "@/app/_components/ui/google-icon";
+import { TwoFactorVerifyForm } from "@/app/_components/two-factor-verify-form";
 
 /**
  * Login/cadastro do app de descoberta (app.{root}) — mesmo Better Auth do
@@ -27,6 +29,7 @@ export function AppSignInForm() {
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [emailInUse, setEmailInUse] = useState(false);
+  const [needsTwoFactor, setNeedsTwoFactor] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -52,6 +55,13 @@ export function AppSignInForm() {
       toast.error(result.error.status === 401 ? t("invalidCredentials") : t("genericError"));
       return;
     }
+    // Ver comentário equivalente em app/sign-in/sign-in-form.tsx: 2FA ativo
+    // não vem como erro, então sem esse check o assign() abaixo navegaria
+    // sem sessão completa.
+    if (isTwoFactorRedirect(result.data)) {
+      setNeedsTwoFactor(true);
+      return;
+    }
     window.location.assign("/account");
   }
 
@@ -73,75 +83,88 @@ export function AppSignInForm() {
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
       <div className="flex flex-col gap-4">
-        <Button type="button" variant="outline" disabled={isGooglePending} onClick={onGoogleClick} className="rounded-full">
-          <GoogleIcon className="size-4" />
-          {t("googleCta")}
-        </Button>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          {t("orDivider")}
-          <div className="h-px flex-1 bg-border" />
-        </div>
-        <form className="flex flex-col gap-3" onSubmit={onSubmit}>
-          {mode === "signUp" && (
-            <div className="grid gap-2">
-              <Label htmlFor="app-account-name">{t("nameLabel")}</Label>
-              <Input
-                id="app-account-name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                autoComplete="name"
-                className="rounded-xl"
-              />
+        {needsTwoFactor ? (
+          <TwoFactorVerifyForm onVerified={() => window.location.assign("/account")} />
+        ) : (
+          <>
+            <Button type="button" variant="outline" disabled={isGooglePending} onClick={onGoogleClick} className="rounded-full">
+              <GoogleIcon className="size-4" />
+              {t("googleCta")}
+            </Button>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              {t("orDivider")}
+              <div className="h-px flex-1 bg-border" />
             </div>
-          )}
-          <div className="grid gap-2">
-            <Label htmlFor="app-account-email">{t("emailLabel")}</Label>
-            <Input
-              id="app-account-email"
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setEmailInUse(false);
-              }}
-              autoComplete="email"
-              required
-              className="rounded-xl"
-            />
-          </div>
-          <PasswordInput
-            id="app-account-password"
-            label={t("passwordLabel")}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete={mode === "signUp" ? "new-password" : "current-password"}
-            minLength={mode === "signUp" ? 8 : undefined}
-            required
-            className="rounded-xl"
-          />
-          {emailInUse && <p className="text-xs text-destructive">{t("emailInUse")}</p>}
-          <Button type="submit" disabled={isPending} className="rounded-full">
-            {isPending ? t("submitting") : mode === "signIn" ? t("submit") : t("submitSignUp")}
-          </Button>
-        </form>
-        <p className="text-center text-xs text-muted-foreground">
-          {mode === "signIn" ? (
-            <>
-              {t("noAccountPrefix")}{" "}
-              <button type="button" className="underline" onClick={() => setMode("signUp")}>
-                {t("noAccountLink")}
-              </button>
-            </>
-          ) : (
-            <>
-              {t("hasAccountPrefix")}{" "}
-              <button type="button" className="underline" onClick={() => setMode("signIn")}>
-                {t("hasAccountLink")}
-              </button>
-            </>
-          )}
-        </p>
+            <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+              {mode === "signUp" && (
+                <div className="grid gap-2">
+                  <Label htmlFor="app-account-name">{t("nameLabel")}</Label>
+                  <Input
+                    id="app-account-name"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    autoComplete="name"
+                    className="rounded-xl"
+                  />
+                </div>
+              )}
+              <div className="grid gap-2">
+                <Label htmlFor="app-account-email">{t("emailLabel")}</Label>
+                <Input
+                  id="app-account-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    setEmailInUse(false);
+                  }}
+                  autoComplete="email"
+                  required
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <PasswordInput
+                  id="app-account-password"
+                  label={t("passwordLabel")}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  autoComplete={mode === "signUp" ? "new-password" : "current-password"}
+                  minLength={mode === "signUp" ? 8 : undefined}
+                  required
+                  className="rounded-xl"
+                />
+                {mode === "signIn" && (
+                  <Link href={getRootUrl("/forgot-password")} className="mt-1 block text-right text-xs text-muted-foreground underline">
+                    {t("forgotPasswordLink")}
+                  </Link>
+                )}
+              </div>
+              {emailInUse && <p className="text-xs text-destructive">{t("emailInUse")}</p>}
+              <Button type="submit" disabled={isPending} className="rounded-full">
+                {isPending ? t("submitting") : mode === "signIn" ? t("submit") : t("submitSignUp")}
+              </Button>
+            </form>
+            <p className="text-center text-xs text-muted-foreground">
+              {mode === "signIn" ? (
+                <>
+                  {t("noAccountPrefix")}{" "}
+                  <button type="button" className="underline" onClick={() => setMode("signUp")}>
+                    {t("noAccountLink")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  {t("hasAccountPrefix")}{" "}
+                  <button type="button" className="underline" onClick={() => setMode("signIn")}>
+                    {t("hasAccountLink")}
+                  </button>
+                </>
+              )}
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

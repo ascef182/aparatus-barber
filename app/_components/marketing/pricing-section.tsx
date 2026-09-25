@@ -44,7 +44,7 @@ export async function PricingSection() {
                   <p className="text-sm text-neutral-400">{t(taglineKey)}</p>
                 </div>
                 <p className="text-3xl font-semibold text-white">
-                  €{price}
+                  R${price}
                   <span className="text-base font-normal text-neutral-500">{t("perMonth")}</span>
                 </p>
                 <ul className="flex flex-col gap-2 text-sm text-neutral-300">

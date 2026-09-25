@@ -1,20 +1,21 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getOrganizationBySlug } from "@/lib/services/organization-service";
 import { getImpressum } from "@/lib/services/impressum-service";
 import { runWithTenant } from "@/lib/tenant-context";
 
 export default async function TenantImpressumPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
-  const organization = await getOrganizationBySlug(slug);
+  const [organization, locale] = await Promise.all([getOrganizationBySlug(slug), getLocale()]);
   if (!organization) notFound();
   const impressum = await runWithTenant(organization.id, getImpressum);
   if (!impressum) notFound();
   const t = await getTranslations("tenant.impressum");
+  const heading = locale === "en" ? "Company Information" : locale === "pt" ? "Dados da Empresa" : "Impressum";
 
   return (
     <main className="mx-auto max-w-3xl p-8 py-16 text-sm leading-relaxed">
-      <h1 className="mb-6 text-2xl font-semibold">Impressum — {organization.name}</h1>
+      <h1 className="mb-6 text-2xl font-semibold">{heading} — {organization.name}</h1>
       <p>{impressum.legalName}</p>
       <p>{impressum.addressLine1}</p>
       <p>{impressum.postalCode} {impressum.city}, {impressum.country}</p>

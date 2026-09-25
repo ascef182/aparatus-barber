@@ -29,6 +29,7 @@ const TENANT_MODELS = new Set([
   "Coupon",
   "CouponService",
   "Booking",
+  "BookingAttachment",
   "TenantSettings",
   "AuditLog",
   "TenantImpressum",

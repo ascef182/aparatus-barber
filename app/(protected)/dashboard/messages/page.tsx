@@ -11,6 +11,16 @@ import { runWithTenant } from "@/lib/tenant-context";
 import { listConversationsForStaff } from "@/lib/services/conversation-service";
 import { PageContainer, PageHeader } from "@/app/_components/ui/page";
 import { Badge } from "@/app/_components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/_components/ui/avatar";
+
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 
 export default async function DashboardMessagesPage() {
   const requestHeaders = await headers();
@@ -43,11 +53,19 @@ export default async function DashboardMessagesPage() {
               href={`/dashboard/messages/${conversation.id}`}
               className="flex items-center justify-between gap-3 rounded-xl border bg-card p-4 hover:bg-muted/50"
             >
-              <div className="min-w-0">
-                <p className="font-medium">{conversation.customer.name}</p>
-                <p className="truncate text-sm text-muted-foreground">
-                  {conversation.lastMessage?.body ?? t("lastMessage")}
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                <Avatar>
+                  {conversation.customer.image && (
+                    <AvatarImage src={conversation.customer.image} alt={conversation.customer.name} />
+                  )}
+                  <AvatarFallback>{initials(conversation.customer.name)}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="font-medium">{conversation.customer.name}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {conversation.lastMessage?.body ?? t("lastMessage")}
+                  </p>
+                </div>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 {conversation.unread && <Badge variant="default">{t("unread")}</Badge>}

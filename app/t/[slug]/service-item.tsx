@@ -66,6 +66,8 @@ export function ServiceItem({
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountInCents: number } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [referencePhotos, setReferencePhotos] = useState<{ file: File; previewUrl: string }[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
   const availability = useAction(getPublicAvailability);
   const booking = useAction(createPublicBooking);
@@ -128,6 +130,53 @@ export function ServiceItem({
     setAppliedCoupon({ code: couponCode.trim(), discountInCents: result.data.discountInCents });
   }
 
+  const MAX_REFERENCE_PHOTOS = 3;
+
+  function handleAddPhotos(files: FileList | null) {
+    if (!files) return;
+    const room = MAX_REFERENCE_PHOTOS - referencePhotos.length;
+    const picked = Array.from(files).slice(0, room);
+    setReferencePhotos((prev) => [
+      ...prev,
+      ...picked.map((file) => ({ file, previewUrl: URL.createObjectURL(file) })),
+    ]);
+  }
+
+  function removeReferencePhoto(index: number) {
+    setReferencePhotos((prev) => {
+      const target = prev[index];
+      if (target) URL.revokeObjectURL(target.previewUrl);
+      return prev.filter((_, i) => i !== index);
+    });
+  }
+
+  // Roda DEPOIS que o booking já existe (não durante o wizard) -- o upload
+  // usa um token assinado amarrado ao bookingId (createBookingUploadToken em
+  // lib/booking-upload-token.ts), não sessão, já que o cliente do wizard
+  // público é anônimo. Falha de upload não desfaz a reserva: ela já está
+  // confirmada, a foto é só um extra -- por isso só avisa, não bloqueia.
+  async function uploadReferencePhotos(bookingId: string, upload: { token: string; expiresAt: number }) {
+    setIsUploadingPhotos(true);
+    try {
+      const results = await Promise.all(
+        referencePhotos.map(({ file }) => {
+          const formData = new FormData();
+          formData.set("file", file);
+          formData.set("kind", "booking-reference");
+          formData.set("bookingId", bookingId);
+          formData.set("token", upload.token);
+          formData.set("expiresAt", String(upload.expiresAt));
+          return fetch("/api/media/upload", { method: "POST", body: formData });
+        }),
+      );
+      if (results.some((response) => !response.ok)) toast.error(t("referencePhotoUploadError"));
+    } catch {
+      toast.error(t("referencePhotoUploadError"));
+    } finally {
+      setIsUploadingPhotos(false);
+    }
+  }
+
   async function handleConfirm() {
     if (!slot || !staffId) return;
     if (!customerName && (!name || !email)) return;
@@ -170,8 +219,12 @@ export function ServiceItem({
     }
     if (!result.data) return;
 
-    if (result.data.status === "PENDING_PAYMENT") {
-      const payment = await checkout.executeAsync({ bookingId: result.data.id });
+    if (referencePhotos.length > 0) {
+      await uploadReferencePhotos(result.data.booking.id, result.data.upload);
+    }
+
+    if (result.data.booking.status === "PENDING_PAYMENT") {
+      const payment = await checkout.executeAsync({ bookingId: result.data.booking.id });
       if (payment.serverError || !payment.data?.url) {
         toast.error(payment.serverError ?? t("paymentError"));
         return;
@@ -200,6 +253,8 @@ export function ServiceItem({
       setCouponCode("");
       setAppliedCoupon(null);
       setCouponError(null);
+      referencePhotos.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
+      setReferencePhotos([]);
     }
   }
 
@@ -430,6 +485,48 @@ export function ServiceItem({
               {appliedCoupon && <p className="mt-1.5 text-xs text-primary">{t("couponApplied")}</p>}
             </div>
 
+            <Separator />
+
+            <div className="px-5">
+              <Label htmlFor={`${service.id}-reference-photos`}>{t("referencePhotosLabel")}</Label>
+              <p className="mt-0.5 text-xs text-muted-foreground">{t("referencePhotosHint")}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {referencePhotos.map((photo, index) => (
+                  <div key={photo.previewUrl} className="relative size-16 overflow-hidden rounded-lg border">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- preview local (blob:), nunca vai pro Cloudinary sem passar pelo upload */}
+                    <img src={photo.previewUrl} alt="" className="size-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeReferencePhoto(index)}
+                      className="absolute right-0 top-0 flex size-5 items-center justify-center rounded-bl bg-black/60 text-xs text-white"
+                      aria-label={t("referencePhotoRemove")}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {referencePhotos.length < MAX_REFERENCE_PHOTOS && (
+                  <Label
+                    htmlFor={`${service.id}-reference-photos`}
+                    className="flex size-16 cursor-pointer items-center justify-center rounded-lg border border-dashed text-2xl text-muted-foreground"
+                  >
+                    +
+                  </Label>
+                )}
+              </div>
+              <input
+                id={`${service.id}-reference-photos`}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  handleAddPhotos(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
             <div className="px-5">
               <div className="flex flex-col gap-3 rounded-2xl border p-3">
                 <div className="flex items-center justify-between">
@@ -465,11 +562,14 @@ export function ServiceItem({
                   (!customerName && !validation.success) ||
                   booking.isPending ||
                   customerBooking.isPending ||
-                  checkout.isPending
+                  checkout.isPending ||
+                  isUploadingPhotos
                 }
                 onClick={handleConfirm}
               >
-                {booking.isPending || customerBooking.isPending || checkout.isPending ? t("booking") : t("confirmBooking")}
+                {booking.isPending || customerBooking.isPending || checkout.isPending || isUploadingPhotos
+                  ? t("booking")
+                  : t("confirmBooking")}
               </Button>
             </div>
           </div>

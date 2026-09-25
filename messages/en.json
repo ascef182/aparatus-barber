@@ -114,7 +114,7 @@
       "representedBy": "Represented by:",
       "phone": "Phone:",
       "email": "Email:",
-      "vatId": "VAT ID:"
+      "vatId": "Tax ID:"
     },
     "nav": {
       "signIn": "Sign in"
@@ -196,7 +196,11 @@
       "sendError": "Could not send your message.",
       "empty": "No messages yet. Send one to get started!",
       "you": "You",
-      "staffLabel": "Support team"
+      "staffLabel": "Support team",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "sentStatus": "Sent",
+      "readStatus": "Read"
     },
     "signIn": {
       "title": "Sign in",
@@ -208,6 +212,7 @@
       "nameLabel": "Name",
       "emailLabel": "Email",
       "passwordLabel": "Password",
+      "forgotPasswordLink": "Forgot my password",
       "emailInUse": "This email is already registered.",
       "submit": "Sign in",
       "submitSignUp": "Create account",
@@ -262,7 +267,11 @@
       "reply": "Reply",
       "replying": "Sending…",
       "replyError": "Could not send your reply.",
-      "customerLabel": "Customer"
+      "customerLabel": "Customer",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "sentStatus": "Sent",
+      "readStatus": "Read"
     },
     "userMenu": {
       "signOut": "Sign out",
@@ -311,6 +320,7 @@
       "operationError": "Could not update the appointment.",
       "noAppointments": "No appointments",
       "addWalkIn": "Add walk-in",
+      "referencePhotosTooltip": "Reference photos sent by the customer",
       "newBooking": {
         "title": "New booking",
         "chooseService": "Service",
@@ -639,6 +649,14 @@
       "coverImageSaveError": "Failed to save cover photo.",
       "coverImageUploadError": "The image could not be uploaded.",
       "removeCoverImage": "Remove cover photo",
+      "setPasswordTitle": "Set a password",
+      "setPasswordHint": "Your account was created with Google and has no password yet. Set one so you can also sign in with email and password.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "setPasswordCta": "Set password",
+      "passwordSet": "Password set.",
+      "passwordSetError": "Could not set the password.",
+      "passwordMismatch": "Passwords don't match.",
       "securityTitle": "Security",
       "twoFactorLabel": "Two-factor authentication (TOTP):",
       "twoFactorActive": "active",
@@ -800,7 +818,11 @@
     "couponReasonNotYetValid": "Coupon isn't valid yet.",
     "couponReasonExpired": "Coupon expired.",
     "couponReasonExhausted": "Coupon fully redeemed.",
-    "couponReasonWrongService": "Coupon not valid for this service."
+    "couponReasonWrongService": "Coupon not valid for this service.",
+    "referencePhotosLabel": "Reference photos (optional)",
+    "referencePhotosHint": "Want a haircut like a photo you have? Attach up to 3 images.",
+    "referencePhotoRemove": "Remove photo",
+    "referencePhotoUploadError": "Your booking is confirmed, but we couldn't upload one or more photos. Try attaching them again later."
   },
   "landing": {
     "nav": {
@@ -815,12 +837,12 @@
       "badge": "Multi-tenant platform for local businesses",
       "titleLine1": "Book, get paid,",
       "titleLine2": "and grow — all in one place",
-      "subtitle": "Your business with its own page, online booking, Stripe payments, and German legal compliance — ready in minutes, in 3 languages.",
+      "subtitle": "Your business with its own page, online booking, Stripe payments, and LGPD compliance — ready in minutes, in 3 languages.",
       "ctaPrimary": "Start free trial",
       "ctaSecondary": "See how it works",
-      "trustGdpr": "GDPR-compliant",
+      "trustGdpr": "LGPD-compliant",
       "trustStripe": "Payments via Stripe",
-      "trustLanguages": "German · English · Portuguese",
+      "trustLanguages": "Portuguese · English · German",
       "tabs": {
         "booking": {
           "label": "Booking",
@@ -857,8 +879,8 @@
       "teamBody": "Invite managers, professionals, and receptionists with role-based access.",
       "securityTitle": "Real security",
       "securityBody": "Two-factor authentication and fail-closed data isolation between tenants.",
-      "complianceTitle": "German legal compliance",
-      "complianceBody": "Impressum, DPA, and data export/erasure — ready to operate in Germany."
+      "complianceTitle": "LGPD compliance",
+      "complianceBody": "Data processing basis, export, and erasure — ready to operate in Brazil."
     },
     "howItWorks": {
       "title": "How it works",
@@ -876,7 +898,7 @@
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
-      "a3": "Yes. Data isolation between businesses, two-factor authentication, and GDPR compliance, including data export and erasure on request.",
+      "a3": "Yes. Data isolation between businesses, two-factor authentication, and LGPD compliance, including data export and erasure on request.",
       "q4": "Can my customers pay online?",
       "a4": "Yes, via Stripe: deposit, full prepayment, or pay-on-site, configurable per service.",
       "q5": "Does it work in other languages?",
@@ -906,7 +928,7 @@
       "legalTitle": "Legal",
       "featuresLink": "Features",
       "pricingLink": "Pricing",
-      "impressumLink": "Impressum",
+      "impressumLink": "Company Info",
       "privacyLink": "Privacy",
       "termsLink": "Terms",
       "dpaLink": "DPA",
@@ -917,6 +939,7 @@
     "title": "Sign in",
     "emailLabel": "Email",
     "passwordLabel": "Password",
+    "forgotPasswordLink": "Forgot my password",
     "submit": "Sign in",
     "signingIn": "Signing in...",
     "invalidCredentials": "Incorrect email or password.",
@@ -1021,6 +1044,7 @@
       "nameLabel": "Name",
       "emailLabel": "Email",
       "passwordLabel": "Password",
+      "forgotPasswordLink": "Forgot my password",
       "emailInUse": "This email is already registered.",
       "submit": "Sign in",
       "submitSignUp": "Create account",
@@ -1107,5 +1131,16 @@
     "submit": "Reset password",
     "done": "Password reset",
     "signInLink": "Sign in"
+  },
+  "twoFactorVerify": {
+    "title": "Two-factor authentication",
+    "subtitle": "Enter the 6-digit code from your authenticator app.",
+    "codeLabel": "Code",
+    "backupCodeLabel": "Backup code",
+    "submit": "Verify",
+    "verifying": "Verifying...",
+    "invalidCode": "Invalid code. Please try again.",
+    "useBackupCode": "Use a backup code instead",
+    "backToCode": "Use authenticator code instead"
   }
 }

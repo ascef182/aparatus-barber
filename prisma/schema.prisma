@@ -199,7 +199,7 @@ model Service {
   bufferBeforeMinutes Int             @default(0)
   bufferAfterMinutes  Int             @default(0)
   priceInCents        Int
-  currency            String          @default("EUR")
+  currency            String          @default("BRL")
   depositInCents      Int?
   paymentMode         PaymentMode? // null = regra padrão do tenant
   depositPercent      Int? // obrigatório quando paymentMode = DEPOSIT
@@ -322,7 +322,7 @@ model Booking {
   status                     BookingStatus
   source                     BookingSource @default(WEB)
   priceInCents               Int // snapshot no momento do booking
-  currency                   String        @default("EUR")
+  currency                   String        @default("BRL")
   discountInCents            Int           @default(0)
   couponId                   String?
   coupon                     Coupon?       @relation(fields: [couponId], references: [id])
@@ -345,12 +345,35 @@ model Booking {
   notes                      String?
   createdAt                  DateTime      @default(now())
   updatedAt                  DateTime      @default(now()) @updatedAt
+  attachments                BookingAttachment[]
 
+  @@unique([id, organizationId])
   @@index([organizationId, startAt])
   @@index([staffId, startAt])
   @@index([customerId, startAt])
   @@index([organizationId, status])
   @@map("booking")
+}
+
+/**
+ * Fotos de referência que o cliente anexa ao agendar (ex.: "quero um corte
+ * assim"). Upload acontece DEPOIS que o Booking já existe (não durante o
+ * wizard) -- ver createBookingUploadToken em lib/booking-upload-token.ts --
+ * pra não precisar de auth de cliente anonimizado pré-reserva. publicId
+ * guardado separado da url pra permitir apagar do Cloudinary depois, se
+ * necessário (hoje não há UI de apagar; guardado pra esse futuro).
+ */
+model BookingAttachment {
+  id             String   @id @default(uuid())
+  bookingId      String
+  organizationId String
+  booking        Booking  @relation(fields: [bookingId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  url            String
+  publicId       String
+  createdAt      DateTime @default(now())
+
+  @@index([bookingId])
+  @@map("bookingAttachment")
 }
 
 model TenantSettings {
@@ -449,9 +472,9 @@ model Organization {
   metadata      String?
 
   // Extensões próprias (fora do plugin Better Auth):
-  timezone                     String             @default("Europe/Berlin")
-  defaultLocale                String             @default("de")
-  currency                     String             @default("EUR") // ISO 4217
+  timezone                     String             @default("America/Sao_Paulo")
+  defaultLocale                String             @default("pt")
+  currency                     String             @default("BRL") // ISO 4217
   status                       OrgStatus          @default(TRIALING)
   brandingJson                 Json? // tokens de branding validados por Zod
   stripeCustomerId             String?            @unique
@@ -511,7 +534,7 @@ model StripeEvent {
 }
 
 /**
- * Trilha de auditoria (GDPR + operacional) — append-only, nunca update/delete
+ * Trilha de auditoria (LGPD + operacional) — append-only, nunca update/delete
  * pela aplicação. organizationId null = evento de plataforma (ex.: impersonation).
  * Entra em TENANT_MODELS (lib/db.ts) quando organizationId presente.
  */
@@ -520,7 +543,7 @@ model StripeEvent {
 /// **Data Retention Policy:**
 /// - Marketing/analytics events: 90 days (not required by regulation)
 /// - Booking/payment/subscription events: 3 years (tax + fraud investigation)
-/// - Customer erasure events: 3 years (GDPR proof of erasure)
+/// - Customer erasure events: 3 years (LGPD proof of erasure)
 ///
 /// Archival strategy: Create automated job to move old records to archive table
 /// (future) after retention period expires. Use partition by date if >10M records.
@@ -622,6 +645,13 @@ model TwoFactor {
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   verified    Boolean @default(false)
+  // Lockout de tentativas do plugin twoFactor do Better Auth (login-time
+  // verify-totp): incrementado a cada código errado, zerado em sucesso.
+  // Colunas exigidas pelo schema do plugin (node_modules/better-auth/dist/
+  // plugins/two-factor/schema.mjs) — sem elas o verify-totp pós-login
+  // (isSignIn) quebra com "Unknown argument `failedVerificationCount`".
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
 
   @@index([userId])
   @@map("twoFactor")
@@ -638,7 +668,7 @@ model Location {
   addressLine2     String?
   postalCode       String
   city             String
-  countryCode      String         @default("DE")
+  countryCode      String         @default("BR")
   phone            String?
   description      String? // curta, exibida na página pública de agendamento
   timezone         String? // override do timezone do tenant (raro)
@@ -697,7 +727,7 @@ model TenantImpressum {
   addressLine1   String
   postalCode     String
   city           String
-  country        String   @default("DE")
+  country        String   @default("BR")
   representedBy  String?
   phone          String?
   email          String?

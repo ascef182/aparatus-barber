@@ -196,7 +196,11 @@
       "sendError": "Nachricht konnte nicht gesendet werden.",
       "empty": "Noch keine Nachrichten. Schreib die erste!",
       "you": "Du",
-      "staffLabel": "Support-Team"
+      "staffLabel": "Support-Team",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "sentStatus": "Gesendet",
+      "readStatus": "Gelesen"
     },
     "signIn": {
       "title": "Anmelden",
@@ -208,6 +212,7 @@
       "nameLabel": "Name",
       "emailLabel": "E-Mail",
       "passwordLabel": "Passwort",
+      "forgotPasswordLink": "Passwort vergessen",
       "emailInUse": "Diese E-Mail ist bereits registriert.",
       "submit": "Anmelden",
       "submitSignUp": "Konto erstellen",
@@ -262,7 +267,11 @@
       "reply": "Antworten",
       "replying": "Wird gesendet…",
       "replyError": "Antwort konnte nicht gesendet werden.",
-      "customerLabel": "Kunde"
+      "customerLabel": "Kunde",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "sentStatus": "Gesendet",
+      "readStatus": "Gelesen"
     },
     "userMenu": {
       "signOut": "Abmelden",
@@ -311,6 +320,7 @@
       "operationError": "Termin konnte nicht aktualisiert werden.",
       "noAppointments": "Keine Termine",
       "addWalkIn": "Laufkunde hinzufügen",
+      "referencePhotosTooltip": "Referenzfotos vom Kunden gesendet",
       "newBooking": {
         "title": "Neue Buchung",
         "chooseService": "Dienstleistung",
@@ -639,6 +649,14 @@
       "coverImageSaveError": "Titelbild konnte nicht gespeichert werden.",
       "coverImageUploadError": "Das Bild konnte nicht hochgeladen werden.",
       "removeCoverImage": "Titelbild entfernen",
+      "setPasswordTitle": "Passwort festlegen",
+      "setPasswordHint": "Ihr Konto wurde mit Google erstellt und hat noch kein Passwort. Legen Sie eines fest, um sich auch mit E-Mail und Passwort anmelden zu können.",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "setPasswordCta": "Passwort festlegen",
+      "passwordSet": "Passwort festgelegt.",
+      "passwordSetError": "Das Passwort konnte nicht festgelegt werden.",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
       "securityTitle": "Sicherheit",
       "twoFactorLabel": "Zwei-Faktor-Authentifizierung (TOTP):",
       "twoFactorActive": "aktiv",
@@ -800,7 +818,11 @@
     "couponReasonNotYetValid": "Gutschein ist noch nicht gültig.",
     "couponReasonExpired": "Gutschein abgelaufen.",
     "couponReasonExhausted": "Gutschein vollständig eingelöst.",
-    "couponReasonWrongService": "Gutschein für diesen Service nicht gültig."
+    "couponReasonWrongService": "Gutschein für diesen Service nicht gültig.",
+    "referencePhotosLabel": "Referenzfotos (optional)",
+    "referencePhotosHint": "Möchten Sie einen Haarschnitt wie auf einem Foto? Fügen Sie bis zu 3 Bilder hinzu.",
+    "referencePhotoRemove": "Foto entfernen",
+    "referencePhotoUploadError": "Ihre Buchung ist bestätigt, aber ein oder mehrere Fotos konnten nicht hochgeladen werden. Versuchen Sie es später erneut."
   },
   "landing": {
     "nav": {
@@ -815,12 +837,12 @@
       "badge": "Multi-Tenant-Plattform für lokale Unternehmen",
       "titleLine1": "Buchen, kassieren",
       "titleLine2": "und wachsen — an einem Ort",
-      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und deutscher Rechtskonformität — startklar in Minuten, in 3 Sprachen.",
+      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und LGPD-Konformität — startklar in Minuten, in 3 Sprachen.",
       "ctaPrimary": "Kostenlos testen",
       "ctaSecondary": "So funktioniert's",
-      "trustGdpr": "DSGVO-konform",
+      "trustGdpr": "LGPD-konform",
       "trustStripe": "Zahlungen über Stripe",
-      "trustLanguages": "Deutsch · Englisch · Portugiesisch",
+      "trustLanguages": "Portugiesisch · Englisch · Deutsch",
       "tabs": {
         "booking": {
           "label": "Buchung",
@@ -857,8 +879,8 @@
       "teamBody": "Laden Sie Manager, Fachkräfte und Rezeption mit rollenbasiertem Zugriff ein.",
       "securityTitle": "Echte Sicherheit",
       "securityBody": "Zwei-Faktor-Authentifizierung und ausfallsichere Datentrennung zwischen Mandanten.",
-      "complianceTitle": "Deutsche Rechtskonformität",
-      "complianceBody": "Impressum, AVV und Datenexport/-löschung — startklar für den Betrieb in Deutschland."
+      "complianceTitle": "LGPD-Konformität",
+      "complianceBody": "Rechtsgrundlage der Datenverarbeitung, Datenexport und -löschung — startklar für den Betrieb in Brasilien."
     },
     "howItWorks": {
       "title": "So funktioniert's",
@@ -876,7 +898,7 @@
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
-      "a3": "Ja. Datentrennung zwischen Unternehmen, Zwei-Faktor-Authentifizierung und DSGVO-Konformität, einschließlich Datenexport und -löschung auf Anfrage.",
+      "a3": "Ja. Datentrennung zwischen Unternehmen, Zwei-Faktor-Authentifizierung und LGPD-Konformität (brasilianisches Datenschutzrecht), einschließlich Datenexport und -löschung auf Anfrage.",
       "q4": "Können meine Kunden online bezahlen?",
       "a4": "Ja, über Stripe: Anzahlung, vollständige Vorauszahlung oder Zahlung vor Ort, konfigurierbar pro Leistung.",
       "q5": "Funktioniert es in anderen Sprachen?",
@@ -917,6 +939,7 @@
     "title": "Anmelden",
     "emailLabel": "E-Mail",
     "passwordLabel": "Passwort",
+    "forgotPasswordLink": "Passwort vergessen",
     "submit": "Anmelden",
     "signingIn": "Wird angemeldet...",
     "invalidCredentials": "Falsche E-Mail oder falsches Passwort.",
@@ -1021,6 +1044,7 @@
       "nameLabel": "Name",
       "emailLabel": "E-Mail",
       "passwordLabel": "Passwort",
+      "forgotPasswordLink": "Passwort vergessen",
       "emailInUse": "Diese E-Mail ist bereits registriert.",
       "submit": "Anmelden",
       "submitSignUp": "Konto erstellen",
@@ -1107,5 +1131,16 @@
     "submit": "Passwort zurücksetzen",
     "done": "Passwort zurückgesetzt",
     "signInLink": "Anmelden"
+  },
+  "twoFactorVerify": {
+    "title": "Zwei-Faktor-Authentifizierung",
+    "subtitle": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
+    "codeLabel": "Code",
+    "backupCodeLabel": "Backup-Code",
+    "submit": "Bestätigen",
+    "verifying": "Wird geprüft...",
+    "invalidCode": "Ungültiger Code. Bitte versuchen Sie es erneut.",
+    "useBackupCode": "Stattdessen einen Backup-Code verwenden",
+    "backToCode": "Stattdessen den Authenticator-Code verwenden"
   }
 }

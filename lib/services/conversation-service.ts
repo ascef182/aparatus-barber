@@ -1,5 +1,21 @@
 import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { requireTenantId } from "@/lib/tenant-context";
+
+/**
+ * Customer.userId aponta pro User do Better Auth, mas não é uma relação do
+ * Prisma (User é gerenciado à parte, sem organizationId — ver lib/db.ts) —
+ * por isso a foto (User.image, populada por contas Google) precisa desse
+ * lookup em separado via client cru, em vez de um include.
+ */
+async function customerImagesByUserId(userIds: string[]): Promise<Map<string, string | null>> {
+  if (userIds.length === 0) return new Map();
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, image: true },
+  });
+  return new Map(users.map((user) => [user.id, user.image]));
+}
 
 export async function findOrCreateConversationForCustomer(customerId: string) {
   const organizationId = requireTenantId();
@@ -107,7 +123,7 @@ export async function listConversationsForStaff() {
     where: { organizationId },
     include: {
       customer: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, userId: true },
       },
       messages: {
         take: 1,
@@ -116,8 +132,12 @@ export async function listConversationsForStaff() {
     },
     orderBy: { lastMessageAt: "desc" },
   });
+  const images = await customerImagesByUserId(
+    conversations.map((conv) => conv.customer.userId).filter((id): id is string => !!id),
+  );
   return conversations.map((conv) => ({
     ...conv,
+    customer: { ...conv.customer, image: conv.customer.userId ? (images.get(conv.customer.userId) ?? null) : null },
     lastMessage: conv.messages[0] || null,
     unread:
       conv.lastMessageAt &&
@@ -131,22 +151,24 @@ export async function getConversationForStaff(conversationId: string) {
     where: { id_organizationId: { id: conversationId, organizationId } },
     include: {
       customer: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, userId: true },
       },
       messages: {
         orderBy: { createdAt: "asc" },
       },
     },
   });
-  if (conversation) {
-    await db.conversation.update({
-      where: { id: conversationId },
-      data: {
-        lastStaffReadAt: new Date(),
-      },
-    });
-  }
-  return conversation;
+  if (!conversation) return null;
+  await db.conversation.update({
+    where: { id: conversationId },
+    data: {
+      lastStaffReadAt: new Date(),
+    },
+  });
+  const image = conversation.customer.userId
+    ? ((await customerImagesByUserId([conversation.customer.userId])).get(conversation.customer.userId) ?? null)
+    : null;
+  return { ...conversation, customer: { ...conversation.customer, image } };
 }
 
 export async function createStaffReply(

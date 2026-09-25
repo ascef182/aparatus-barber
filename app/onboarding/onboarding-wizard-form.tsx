@@ -45,10 +45,13 @@ const slugify = (value: string) =>
 
 /**
  * 2 passos: (1) negócio + endereço, (2) info pública (telefone/descrição)
- * + Impressum + DPA. O Impressum entra AQUI (não só depois no dashboard)
- * porque, sem ele, o wizard de agendamento público fica bloqueado para
- * filiais alemãs (ver app/t/[slug]/page.tsx) — sem isso o dono não tinha
- * como saber que precisava preencher algo antes do primeiro cliente.
+ * + dados da empresa + termos de tratamento de dados. Os dados legais
+ * entram AQUI (não só depois no dashboard) porque, para filiais alemãs
+ * legadas, o wizard de agendamento público ainda fica bloqueado sem
+ * Impressum preenchido (ver app/t/[slug]/page.tsx) — gate que não se aplica
+ * a filiais brasileiras (countryCode "BR"), que é o default a partir do
+ * pivô de mercado (ver PRODUCT.md). Mantido pra não quebrar tenants
+ * alemães existentes.
  */
 export function OnboardingWizardForm({
   sessionId,
@@ -76,7 +79,7 @@ export function OnboardingWizardForm({
   const [legalName, setLegalName] = useState("");
   const [representedBy, setRepresentedBy] = useState("");
   const [contactEmail, setContactEmail] = useState("");
-  const [country, setCountry] = useState("DE");
+  const [country, setCountry] = useState("BR");
   const [registerCourt, setRegisterCourt] = useState("");
   const [registerNumber, setRegisterNumber] = useState("");
   const [vatId, setVatId] = useState("");
