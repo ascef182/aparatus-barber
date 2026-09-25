@@ -29,12 +29,25 @@ import { renderBrandedEmail } from "@/lib/email-template";
 import { recordNotificationLog } from "@/lib/services/notification-log-service";
 import { logger } from "@/lib/logger";
 import { assertRuntimeEnv } from "@/lib/env";
+import { sanitizeSentryEvent } from "@/lib/error-sanitizer";
+import { classifyError } from "@/lib/error-taxonomy";
 
 assertRuntimeEnv("worker");
 
 // Processo separado do web — precisa do próprio Sentry.init (não passa
-// pela instrumentação do Next.js). dsn ausente = no-op seguro.
-Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
+// pela instrumentação do Next.js). dsn ausente = no-op seguro. Mesmo
+// beforeSend do server/edge/client (sentry.*.config.ts) — sem isso, os 7
+// call sites de Sentry.captureException deste arquivo mandavam o erro cru
+// (nenhum dos 13 do projeto no total sanitizava antes da Sprint 5, exceto
+// lib/safe-action.ts).
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  beforeSend: (event, hint) => {
+    event.tags = { ...event.tags, errorCategory: classifyError(hint.originalException) };
+    return sanitizeSentryEvent(event);
+  },
+});
 
 logger({}).info(
   { queues: ["booking-notifications", "booking-maintenance", "invitation-notifications", "quote-request-notifications", "mfa-reminder-maintenance"] },
