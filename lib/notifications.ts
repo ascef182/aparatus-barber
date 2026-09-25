@@ -133,6 +133,27 @@ export async function scheduleMfaReminderSweep() {
 }
 
 /**
+ * Chave de idempotência passada pro Resend (resend.emails.send(email, {
+ * idempotencyKey })) — formato recomendado pela própria Resend,
+ * "<event-type>/<entity-id>". Dado a MESMA chave + MESMO payload, o
+ * Resend devolve a resposta original sem reenviar (dedupe server-side,
+ * até 24h) — é o que protege contra o worker (attempts:5, backoff
+ * exponencial) reenviar o mesmo e-mail se o processo crashar entre o
+ * Resend aceitar o envio e o job ser marcado completed no BullMQ. jobId
+ * determinístico (enqueueBookingNotification) evita duplicar o
+ * ENFILEIRAMENTO; esta chave evita duplicar o ENVIO num retry do mesmo
+ * job já enfileirado. Extraída aqui (não em worker/index.ts) pra ser
+ * testável sem subir um Worker/Redis real, mesmo motivo de
+ * buildNotificationEmail abaixo.
+ */
+export function buildNotificationIdempotencyKey(
+  type: string,
+  entityId: string,
+): string {
+  return `${type}/${entityId}`;
+}
+
+/**
  * Decide se e o que enviar para um job de notificação — extraído do worker
  * para ser testável sem subir um Worker/Redis real. Retorna null quando a
  * notificação deve ser suprimida (sem e-mail, sem status compatível).
