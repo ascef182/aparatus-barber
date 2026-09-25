@@ -1,16 +1,15 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug } from "@/lib/services/organization-service";
-import { getMembership } from "@/lib/services/member-service";
+import { getDashboardContext } from "@/lib/services/dashboard-context-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { Agenda } from "../agenda";
 
 export default async function AgendaPage() {
-  const requestHeaders = await headers(); const session = await auth.api.getSession({ headers: requestHeaders }); const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) redirect("/"); const organization = await getOrganizationBySlug(slug); if (!organization) redirect("/"); const membership = await getMembership(organization.id, session.user.id); if (!membership) redirect("/");
+  const requestHeaders = await headers();
+  const ctx = await getDashboardContext(requestHeaders);
+  if (!ctx) redirect("/");
+  const { organization, membership } = ctx;
   const now = new Date();
   // Mesmo padding de 1 dia usado pelo polling client-side (ver agenda.tsx)
   // ao redor da janela visível de 7 dias a partir de agora — sem isso a

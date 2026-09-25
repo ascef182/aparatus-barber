@@ -3,10 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Contact, SearchX } from "lucide-react";
-import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug } from "@/lib/services/organization-service";
-import { getMembership } from "@/lib/services/member-service";
+import { getDashboardContext } from "@/lib/services/dashboard-context-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { getCustomerStats, listCustomers, type CustomerStatusFilter } from "@/lib/services/customer-service";
 import { PageContainer, PageHeader } from "@/app/_components/ui/page";
@@ -21,13 +18,9 @@ export default async function CustomersPage({ searchParams }: PageProps<"/dashbo
   const statusFilter: CustomerStatusFilter = params.status === "active" || params.status === "blocked" ? params.status : "all";
 
   const requestHeaders = await headers();
-  const session = await auth.api.getSession({ headers: requestHeaders });
-  const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) redirect("/");
-  const organization = await getOrganizationBySlug(slug);
-  if (!organization) redirect("/");
-  const membership = await getMembership(organization.id, session.user.id);
-  if (!membership) redirect("/dashboard");
+  const ctx = await getDashboardContext(requestHeaders);
+  if (!ctx) redirect("/");
+  const { organization } = ctx;
 
   const customers = await runWithTenant(organization.id, () => listCustomers(query || undefined, statusFilter));
   const stats = await runWithTenant(organization.id, () => getCustomerStats(customers.map((c) => c.id)));

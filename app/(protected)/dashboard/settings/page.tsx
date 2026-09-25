@@ -1,10 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug } from "@/lib/services/organization-service";
-import { getMembership, listMembers, listPendingInvitations } from "@/lib/services/member-service";
+import { getDashboardContext } from "@/lib/services/dashboard-context-service";
+import { listMembers, listPendingInvitations } from "@/lib/services/member-service";
 import { hasCredentialAccount } from "@/lib/services/account-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { getResolvedRules } from "@/lib/services/settings-service";
@@ -30,13 +28,10 @@ export default async function SettingsPage({
   searchParams: Promise<{ mfaRequired?: string }>;
 }) {
   const requestHeaders = await headers();
-  const session = await auth.api.getSession({ headers: requestHeaders });
-  const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) redirect("/");
-  const organization = await getOrganizationBySlug(slug);
-  if (!organization) redirect("/");
-  const membership = await getMembership(organization.id, session.user.id);
-  if (!membership || !["owner", "manager"].includes(membership.role)) redirect("/dashboard");
+  const ctx = await getDashboardContext(requestHeaders);
+  if (!ctx) redirect("/");
+  const { session, organization, membership } = ctx;
+  if (!["owner", "manager"].includes(membership.role)) redirect("/dashboard");
   const { mfaRequired } = await searchParams;
   const [rules, impressum, locations, members, pendingInvitations, quoteRequests, hasPassword] = await Promise.all([
     runWithTenant(organization.id, getResolvedRules),

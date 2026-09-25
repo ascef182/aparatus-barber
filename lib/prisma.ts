@@ -21,7 +21,14 @@ const connectionString = process.env.RUNTIME_DATABASE_URL;
 // dispara facilmente 10+ dessas concorrentemente, e com o pool default
 // baixo isso já foi visto estourando o timeout de 5s do $transaction
 // batch (P2028) por contenção de conexão, não por query lenta.
-const adapter = new PrismaPg({ connectionString, max: 20 });
+//
+// connectionTimeoutMillis: default do driver `pg` é 0 (sem timeout) — um
+// host inalcançável (DNS resolve mas ninguém responde o SYN, ex.: hostname
+// interno de outro provedor/rede) trava a request inteira até o timeout de
+// TCP do próprio SO em vez de falhar rápido. Visto em produção como
+// "connect ETIMEDOUT" numa SSR do dashboard; 10s falha rápido e ainda dá
+// folga pra uma conexão saudável só lenta.
+const adapter = new PrismaPg({ connectionString, max: 20, connectionTimeoutMillis: 10_000 });
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 

@@ -257,6 +257,11 @@
       "notifications": "Benachrichtigungen",
       "noNotifications": "Noch keine Benachrichtigungen."
     },
+    "error": {
+      "title": "Diese Seite konnte nicht geladen werden",
+      "description": "Beim Laden dieses Bereichs ist ein Fehler aufgetreten. Das ist meist vorübergehend — versuchen Sie es in ein paar Sekunden erneut.",
+      "retry": "Erneut versuchen"
+    },
     "messages": {
       "title": "Nachrichten",
       "noConversations": "Noch keine Unterhaltungen",

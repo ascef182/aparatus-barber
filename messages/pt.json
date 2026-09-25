@@ -257,6 +257,11 @@
       "notifications": "Notificações",
       "noNotifications": "Nenhuma notificação por aqui ainda."
     },
+    "error": {
+      "title": "Não foi possível carregar esta página",
+      "description": "Algo deu errado ao carregar esta parte do painel. Isso costuma ser temporário — tente novamente em alguns segundos.",
+      "retry": "Tentar de novo"
+    },
     "messages": {
       "title": "Mensagens",
       "noConversations": "Nenhuma conversa ainda",

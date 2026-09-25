@@ -257,6 +257,11 @@
       "notifications": "Notifications",
       "noNotifications": "No notifications yet."
     },
+    "error": {
+      "title": "This page couldn't load",
+      "description": "Something went wrong while loading this part of the dashboard. This is usually temporary — try again in a few seconds.",
+      "retry": "Try again"
+    },
     "messages": {
       "title": "Messages",
       "noConversations": "No conversations yet",

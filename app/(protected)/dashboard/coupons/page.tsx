@@ -1,10 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug } from "@/lib/services/organization-service";
-import { getMembership } from "@/lib/services/member-service";
+import { getDashboardContext } from "@/lib/services/dashboard-context-service";
 import { runWithTenant } from "@/lib/tenant-context";
 import { db } from "@/lib/db";
 import { countRedemptions } from "@/lib/services/coupon-service";
@@ -12,7 +9,10 @@ import { PageContainer, PageHeader } from "@/app/_components/ui/page";
 import { CouponsList } from "./coupons-list";
 
 export default async function CouponsPage() {
-  const requestHeaders = await headers(); const session = await auth.api.getSession({ headers: requestHeaders }); const slug = resolveTenantSlug(requestHeaders.get("host")); if (!session?.user || !slug) redirect("/"); const organization = await getOrganizationBySlug(slug); if (!organization) redirect("/"); const membership = await getMembership(organization.id, session.user.id); if (!membership) redirect("/dashboard");
+  const requestHeaders = await headers();
+  const ctx = await getDashboardContext(requestHeaders);
+  if (!ctx) redirect("/");
+  const { organization } = ctx;
   const [coupons, services] = await runWithTenant(organization.id, () =>
     Promise.all([
       db.coupon.findMany({ include: { services: { include: { service: true } } }, orderBy: { createdAt: "desc" } }),
