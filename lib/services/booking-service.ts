@@ -14,6 +14,7 @@ import { checkCancellation } from "@/lib/rules/policies/cancellation";
 import { logger } from "@/lib/logger";
 import { logAuditEvent } from "@/lib/services/audit-service";
 import { assertOwned } from "@/lib/authz";
+import { claimRefundApplication } from "@/lib/services/stripe-event-service";
 
 export type CreateBookingInput = {
   serviceId: string;
@@ -389,33 +390,55 @@ export async function getCustomerOverviewStats(customerId: string) {
 }
 
 /** Aplica um refund (parcial ou total) via payment intent — webhook Connect. */
+/**
+ * refund.amount (Stripe) é o valor de UM Refund object, nunca cumulativo
+ * por charge/payment_intent — uma reserva pode receber mais de um
+ * reembolso parcial ao longo do tempo (Dashboard, manual). SOMA no total
+ * já registrado em vez de sobrescrever, e só conta reembolsos com
+ * status "succeeded" (pending/failed/canceled ainda não são dinheiro que
+ * voltou de verdade pro cliente). claimRefundApplication garante que o
+ * MESMO refund.id nunca é somado duas vezes, mesmo que
+ * charge.refund.updated dispare de novo pra ele (event.id novo a cada
+ * disparo, então o dedup de nível de evento em claimStripeEvent não
+ * cobre este caso). O clamp final é defensivo — Stripe já impede
+ * reembolsar mais do que foi cobrado do lado dele.
+ */
 export async function applyRefundToBooking(
   paymentIntentId: string,
-  amountRefundedInCents: number,
+  refund: { id: string; status: string; amountInCents: number },
 ) {
+  if (refund.status !== "succeeded") return null;
   return runWithPlatformScope(async () => {
     const booking = await db.booking.findFirst({
       where: { stripePaymentIntentId: paymentIntentId },
     });
     if (!booking) return null;
+
+    const isNewRefund = await claimRefundApplication(refund.id);
+    if (!isNewRefund) return booking;
+
     // Compara contra o que foi de fato cobrado (onlinePaymentAmountInCents),
     // não booking.priceInCents (preço cheio do serviço) — com deposit mode
     // ou cupom aplicado, o valor cobrado é menor que o preço, e comparar
     // contra o preço cheio classificava um reembolso 100% do cobrado como
     // PARTIALLY_REFUNDED por engano.
     const chargeAmount = booking.onlinePaymentAmountInCents;
+    const refundedAmountInCents = Math.min(
+      booking.refundedAmountInCents + refund.amountInCents,
+      chargeAmount,
+    );
     const paymentStatus =
-      amountRefundedInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
+      refundedAmountInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
     const updated = await db.booking.update({
       where: { id: booking.id },
-      data: { paymentStatus, refundedAmountInCents: amountRefundedInCents },
+      data: { paymentStatus, refundedAmountInCents },
     });
     await logAuditEvent({
       entity: "Booking",
       action: "PAYMENT_REFUNDED",
       entityId: booking.id,
       organizationId: booking.organizationId,
-      metadata: { amountRefundedInCents },
+      metadata: { refundId: refund.id, amountRefundedInCents: refund.amountInCents, totalRefundedInCents: refundedAmountInCents },
     });
     return updated;
   });

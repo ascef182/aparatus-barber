@@ -15,6 +15,7 @@ let locationId: string;
 let staffId: string;
 let onSiteServiceId: string;
 let prepaidServiceId: string;
+let depositServiceId: string;
 let customerId: string;
 
 beforeAll(async () => {
@@ -37,10 +38,18 @@ beforeAll(async () => {
       data: { organizationId: org.id, name: "Corte premium", durationMinutes: 30, priceInCents: 5000, paymentMode: "FULL_PREPAYMENT" },
     });
     prepaidServiceId = prepaid.id;
+    // priceInCents=999 * depositPercent=33% = 329.67 cents cru — usado pra
+    // provar que o arredondamento de depósito (Math.round, booking-service.ts)
+    // nunca vaza fração de centavo pro banco.
+    const deposit = await db.service.create({
+      data: { organizationId: org.id, name: "Corte com sinal", durationMinutes: 30, priceInCents: 999, paymentMode: "DEPOSIT", depositPercent: 33 },
+    });
+    depositServiceId = deposit.id;
     await db.staffService.createMany({
       data: [
         { organizationId: org.id, staffId, serviceId: onSiteServiceId },
         { organizationId: org.id, staffId, serviceId: prepaidServiceId },
+        { organizationId: org.id, staffId, serviceId: depositServiceId },
       ],
     });
     await db.staffWorkingHours.create({
@@ -289,5 +298,29 @@ describe("fluxo de booking", () => {
     );
     expect(cancelledLog).not.toBeNull();
     expect(cancelledLog?.actorId).toBe("staff-user-1");
+  });
+});
+
+/**
+ * Sprint 3 (hardening), Seção 20 — invariantes de dinheiro: nunca vazar
+ * fração de centavo (dinheiro em integer cents, nunca float), nunca gerar
+ * um valor cobrável negativo ou maior que o preço do serviço.
+ */
+describe("invariantes de dinheiro — depósito", () => {
+  test("depósito de 33% sobre R$9,99 (999 cents) arredonda pra um inteiro (330), nunca fração de centavo", async () => {
+    const booking = await runWithTenant(org.id, () =>
+      createBooking({
+        serviceId: depositServiceId,
+        staffId,
+        startAt: at(18),
+        customer: { name: "Cliente Depósito", email: "deposito@example.com" },
+      }),
+    );
+    // 999 * 33 / 100 = 329.67 -> Math.round -> 330
+    expect(booking.onlinePaymentAmountInCents).toBe(330);
+    expect(Number.isInteger(booking.onlinePaymentAmountInCents)).toBe(true);
+    // Nunca cobrar mais do que o preço cheio do serviço.
+    expect(booking.onlinePaymentAmountInCents).toBeLessThanOrEqual(booking.priceInCents);
+    expect(booking.onlinePaymentAmountInCents).toBeGreaterThan(0);
   });
 });
