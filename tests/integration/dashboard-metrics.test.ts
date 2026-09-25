@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { db } from "@/lib/db";
 import { runWithPlatformScope, runWithTenant } from "@/lib/tenant-context";
@@ -135,5 +135,30 @@ describe("getDashboardMetrics — variação com base zero", () => {
       await db.location.deleteMany({ where: { organizationId: emptyOrg.id } });
     });
     await prisma.organization.delete({ where: { id: emptyOrg.id } });
+  });
+});
+
+/**
+ * Sprint 6 (hardening) — achado de performance medindo query count real de
+ * /dashboard (52 queries brutas, contra ~20-27 de qualquer outra página do
+ * dashboard): staff ativo + working hours não dependem do range de datas,
+ * mas getDashboardMetrics chama computeOccupancyRate duas vezes (período
+ * atual + anterior) — sem deduplicar, as mesmas 2 queries rodavam de novo
+ * na segunda chamada. Este teste trava o comportamento correto (1 chamada
+ * cada, não 2) pra não regredir silenciosamente se alguém reintroduzir a
+ * duplicação.
+ */
+describe("getDashboardMetrics — dedupe de staff/working hours entre período atual e anterior", () => {
+  test("db.staff.findMany e db.staffWorkingHours.findMany são chamados UMA vez cada, não duas (não repete entre as duas chamadas de computeOccupancyRate)", async () => {
+    const staffFindManySpy = vi.spyOn(db.staff, "findMany");
+    const workingHoursFindManySpy = vi.spyOn(db.staffWorkingHours, "findMany");
+
+    await runWithTenant(org.id, () => getDashboardMetrics(TZ, 7));
+
+    expect(staffFindManySpy).toHaveBeenCalledTimes(1);
+    expect(workingHoursFindManySpy).toHaveBeenCalledTimes(1);
+
+    staffFindManySpy.mockRestore();
+    workingHoursFindManySpy.mockRestore();
   });
 });
