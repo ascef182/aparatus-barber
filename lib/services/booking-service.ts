@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getAvailableSlots } from "@/lib/scheduling/availability";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
+import { getOrganizationById } from "@/lib/services/organization-service";
+import { formatDateInTenantTz } from "@/lib/dates";
 import {
   findOrCreateCustomerForUser,
   findOrCreateGuestCustomer,
@@ -68,10 +70,11 @@ function revalidateBookingCaches() {
 /** Server-only booking boundary used by the public wizard and dashboard. */
 export async function createBooking(input: CreateBookingInput) {
   const organizationId = requireTenantId();
-  const [service, staff, rules] = await Promise.all([
+  const [service, staff, rules, organization] = await Promise.all([
     db.service.findUnique({ where: { id: input.serviceId } }),
     db.staff.findUnique({ where: { id: input.staffId } }),
     getResolvedRules(),
+    getOrganizationById(organizationId),
   ]);
   if (
     !service?.isActive ||
@@ -80,15 +83,24 @@ export async function createBooking(input: CreateBookingInput) {
   ) {
     throw new Error("Serviço ou profissional indisponível.");
   }
+  if (!organization) throw new Error("Organização não encontrada.");
   const link = await db.staffService.findUnique({
     where: { staffId_serviceId: { staffId: staff.id, serviceId: service.id } },
   });
   if (!link) throw new Error("Profissional não executa este serviço.");
 
+  // Data CIVIL no timezone do tenant, não a data em UTC do instante —
+  // America/Sao_Paulo (default desde a migração de mercado BR) é UTC-3,
+  // então qualquer horário entre 21:00-23:59 local já virou o dia
+  // seguinte em UTC. `.toISOString().slice(0, 10)` pegava a data errada
+  // nesses casos e getAvailableSlots(dateISO: dia errado) nunca batia
+  // com o slot escolhido — toda reserva legítima nesse horário era
+  // rejeitada como "indisponível". Achado real via E2E (Sprint 8),
+  // reproduzido em tests/integration/booking-flow.test.ts.
   const slots = await getAvailableSlots({
     serviceId: service.id,
     staffId: staff.id,
-    dateISO: input.startAt.toISOString().slice(0, 10),
+    dateISO: formatDateInTenantTz(input.startAt, organization.timezone),
   });
   if (
     !slots.some((slot) => slot.startAt.getTime() === input.startAt.getTime())

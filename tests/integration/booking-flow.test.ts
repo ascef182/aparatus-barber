@@ -9,6 +9,7 @@ import {
   expireStaleHolds,
 } from "@/lib/services/booking-service";
 import { futureMondayAt, futureMondayISO } from "../helpers/future-date";
+import { tenantTimeToUtc } from "@/lib/dates";
 
 const org = { id: randomUUID(), slug: `bkflow-${randomUUID().slice(0, 8)}` };
 let locationId: string;
@@ -298,6 +299,54 @@ describe("fluxo de booking", () => {
     );
     expect(cancelledLog).not.toBeNull();
     expect(cancelledLog?.actorId).toBe("staff-user-1");
+  });
+});
+
+/**
+ * Sprint 8 (hardening) — achado real do E2E de reserva (tests/e2e/
+ * guest-booking-payment.spec.ts): rodando o teste depois das 21h no
+ * timezone local (America/Sao_Paulo, default do schema desde a
+ * migração de mercado BR), toda reserva do "primeiro horário
+ * disponível hoje" era rejeitada como "horário indisponível" — mesmo
+ * escolhendo um slot que a própria UI acabou de oferecer.
+ *
+ * Causa: createBooking revalida a disponibilidade calculando
+ * `dateISO` com `input.startAt.toISOString().slice(0, 10)` — a data
+ * civil em UTC do instante, não a data civil no timezone do tenant.
+ * América/Sao_Paulo é UTC-3: qualquer horário entre 21:00 e 23:59
+ * local já é o dia SEGUINTE em UTC. getAvailableSlots(dateISO: "dia
+ * errado") calcula os slots do dia errado inteiro — nenhum bate com o
+ * instante escolhido, e a reserva é sempre rejeitada. Não é só um bug
+ * de UX chato: é o caminho de CRIAÇÃO de reserva rejeitando reservas
+ * legítimas, no fuso do mercado que o produto acabou de adotar como
+ * default, bem no horário em que mais gente reserva coisas pra mais
+ * tarde/amanhã de manhã.
+ *
+ * tests/helpers/future-date.ts's `at(hour)` deliberadamente evita essa
+ * janela (comentário lá: horas UTC 8-17 "sem atravessar a fronteira do
+ * dia do tenant") — mas o comentário ainda cita Europe/Berlin, o
+ * timezone antigo antes da migração EU->BR; o range "seguro" nunca foi
+ * revisado pro novo default e por isso nenhum teste existente pegou
+ * isso.
+ */
+describe("createBooking — data civil do tenant, não UTC, na revalidação de disponibilidade", () => {
+  test("reserva às 22h no timezone do tenant (America/Sao_Paulo) é aceita, mesmo cruzando a data em UTC", async () => {
+    const monday = futureMondayISO();
+    // 22:00 em São Paulo (UTC-3) = 01:00 UTC do dia seguinte — exatamente
+    // a janela que expõe o bug (staffWorkingHours cobre 00:00-23:59 de
+    // segunda, seedado no beforeAll acima).
+    const startAt = tenantTimeToUtc(monday, "22:00", "America/Sao_Paulo");
+
+    const booking = await runWithTenant(org.id, () =>
+      createBooking({
+        serviceId: onSiteServiceId,
+        staffId,
+        startAt,
+        customer: { name: "Cliente Noturno", email: "noturno@example.com" },
+      }),
+    );
+
+    expect(booking.startAt.getTime()).toBe(startAt.getTime());
   });
 });
 
