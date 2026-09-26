@@ -15,7 +15,7 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https://utfs.io https://res.cloudinary.com",
+  "img-src 'self' data: https://res.cloudinary.com",
   "font-src 'self' data:",
   // *.ingest.us.sentry.io: sem isso o instrumentation-client.ts manda os
   // erros do navegador pro Sentry, mas a própria CSP de produção bloqueia
@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: "res.cloudinary.com",
       },
     ],
   },
