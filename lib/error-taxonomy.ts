@@ -48,6 +48,18 @@ export function classifyError(error: unknown): ErrorCategory {
   if (typeof prismaCode === "string" && /^P\d{4}$/.test(prismaCode)) {
     return "DATABASE_ERROR";
   }
+  // Confirmado via failure injection real (Sprint 9, `docker stop` no
+  // Postgres): uma queda de conexão de verdade chega como
+  // PrismaClientKnownRequestError com code "ECONNREFUSED" — não um
+  // código P-xxxx. Toda a família de classes de erro do Prisma começa
+  // com "PrismaClient" (PrismaClientKnownRequestError,
+  // PrismaClientInitializationError, PrismaClientRustPanicError,
+  // PrismaClientUnknownRequestError, PrismaClientValidationError) —
+  // checagem por nome cobre esses casos sem depender do formato exato
+  // do code.
+  if (error.name.startsWith("PrismaClient")) {
+    return "DATABASE_ERROR";
+  }
 
   // Prefixo definido por nós mesmos em worker/index.ts#sendAndLog — não é
   // um chute sobre a forma interna do SDK do Resend.

@@ -35,6 +35,28 @@ describe("classifyError", () => {
     expect(classifyError(err)).toBe("DATABASE_ERROR");
   });
 
+  /**
+   * Sprint 9 (hardening) — achado real de failure injection: Postgres
+   * derrubado de verdade (docker stop) produziu um erro real
+   * `PrismaClientKnownRequestError` com `code: "ECONNREFUSED"` — não um
+   * código P-xxxx. O check anterior (regex /^P\d{4}$/) não reconhecia
+   * isso, então a queda de banco mais óbvia possível caía em
+   * INTERNAL_ERROR em vez de DATABASE_ERROR. Achado observando o log real
+   * do servidor durante a injeção de falha, não suposição.
+   */
+  test("erro do Prisma por queda de conexão real (code ECONNREFUSED/ETIMEDOUT, sem P-xxxx) -> DATABASE_ERROR", () => {
+    const err = Object.assign(new Error("Can't reach database server"), {
+      name: "PrismaClientKnownRequestError",
+      code: "ECONNREFUSED",
+    });
+    expect(classifyError(err)).toBe("DATABASE_ERROR");
+
+    const err2 = Object.assign(new Error("Connection timed out"), {
+      name: "PrismaClientInitializationError",
+    });
+    expect(classifyError(err2)).toBe("DATABASE_ERROR");
+  });
+
   test("erro do SDK do Stripe (campo type StripeXxxError) -> STRIPE_ERROR", () => {
     const err = Object.assign(new Error("Invalid request"), {
       type: "StripeInvalidRequestError",

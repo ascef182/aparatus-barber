@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import Redis from "ioredis";
-import { checkDatabaseHealth } from "@/lib/services/health-service";
+import { checkDatabaseHealth, withTimeout } from "@/lib/services/health-service";
 import { bookingNotifications } from "@/lib/notifications";
 
 function authorized(request: Request): boolean {
@@ -41,9 +41,17 @@ export async function GET(request: Request) {
       })),
   ]);
   redisClient.disconnect();
-  const queueDepth = await bookingNotifications
-    .getJobCounts("waiting", "active", "delayed")
-    .catch(() => null);
+  // withTimeout, não só .catch(): getJobCounts roda na conexão ioredis
+  // COMPARTILHADA do BullMQ (maxRetriesPerRequest: null, exigido pela
+  // própria lib) — sem Redis disponível, o comando fica pendurado na fila
+  // offline do ioredis esperando reconectar, sem NUNCA rejeitar a Promise,
+  // então um .catch() sozinho nunca dispara. Achado via failure injection
+  // real (Sprint 9): esta rota travava mais de 50s com Redis fora.
+  const queueDepth = await withTimeout(
+    bookingNotifications.getJobCounts("waiting", "active", "delayed"),
+    2000,
+    null,
+  );
   const healthy = database.status === "ok" && redis.status === "ok";
   return NextResponse.json(
     {
