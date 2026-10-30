@@ -1,18 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { Check, ShieldCheck } from "lucide-react";
 import { PLAN_LIMITS } from "@/lib/billing/plan-limits";
-import {
-  FOUNDER_PLAN,
-  GUARANTEE_DAYS,
-  GUARANTEE_ENABLED,
-  getFounderContactUrl,
-} from "@/lib/marketing/offer";
-import { getRootUrl } from "@/lib/tenant-host";
+import { GUARANTEE_DAYS, GUARANTEE_ENABLED } from "@/lib/marketing/offer";
 import { cn } from "@/lib/utils";
 import { PricingCtaButton } from "@/app/_components/pricing-cta-button";
 import { Badge } from "@/app/_components/ui/badge";
-import { Button } from "@/app/_components/ui/button";
 import { Reveal } from "./reveal";
 
 const PLANS = [
@@ -36,21 +28,8 @@ const PLAN_OUTCOME_KEYS = [
   "featureNoCommission",
 ] as const;
 
-// Stack do Founder Plan — cada bônus existe para matar uma objeção específica
-// (ver docs/marketing/grand-slam-offer.md, Fase 2, Bloco C).
-const FOUNDER_STACK_KEYS = [
-  "founderStackCore",
-  "founderStackSetup",
-  "founderStackMigration",
-  "founderStackPolicy",
-  "founderStackSupport",
-  "founderStackPrice",
-] as const;
-
 export async function PricingSection() {
   const t = await getTranslations("pricing");
-  const founderContactUrl = getFounderContactUrl();
-  const founderHref = founderContactUrl ?? getRootUrl("/sign-up?plan=starter");
 
   return (
     <section
@@ -63,66 +42,6 @@ export async function PricingSection() {
             {t("title")}
           </h2>
           <p className="text-muted-foreground mt-4">{t("subtitle")}</p>
-        </Reveal>
-
-        <Reveal delay={0.05}>
-          <div className="border-primary/40 bg-secondary/40 relative mt-16 grid gap-8 rounded-xl border p-6 shadow-[0_0_0_1px_rgba(230,57,70,0.18)] md:grid-cols-[1fr_auto] md:p-8">
-            <Badge className="absolute -top-3 left-6">
-              {t("founderBadge", { spots: FOUNDER_PLAN.spots })}
-            </Badge>
-            <div>
-              <h3 className="text-foreground text-2xl font-semibold">
-                {t("founderName")}
-              </h3>
-              <p className="text-muted-foreground mt-2">
-                {t("founderTagline")}
-              </p>
-              <ul className="text-foreground mt-6 flex flex-col gap-2 text-sm">
-                {FOUNDER_STACK_KEYS.map((key) => (
-                  <li key={key} className="flex items-start gap-2">
-                    <Check className="text-primary mt-0.5 size-4 shrink-0" />
-                    {t(key, {
-                      pilotDays: FOUNDER_PLAN.pilotDays,
-                      months: FOUNDER_PLAN.months,
-                    })}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col justify-center gap-3 md:min-w-64 md:text-center">
-              <p className="text-muted-foreground text-sm">
-                {t("founderPilot", { pilotDays: FOUNDER_PLAN.pilotDays })}
-              </p>
-              <p className="text-foreground text-4xl font-semibold">
-                R${(FOUNDER_PLAN.priceInCents / 100).toFixed(0)}
-                <span className="text-muted-foreground text-base font-normal">
-                  {t("perMonth")}
-                </span>
-              </p>
-              <p className="text-muted-foreground text-sm">
-                {t("founderTerm", { months: FOUNDER_PLAN.months })}
-              </p>
-              <p className="text-foreground text-sm font-medium">
-                {t("founderAnchor")}
-              </p>
-              <Button asChild className="w-full">
-                {founderContactUrl ? (
-                  <a
-                    href={founderHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t("founderCta")}
-                  </a>
-                ) : (
-                  <Link href={founderHref}>{t("founderCta")}</Link>
-                )}
-              </Button>
-              <p className="text-muted-foreground text-xs">
-                {t("founderScarcity", { spots: FOUNDER_PLAN.spots })}
-              </p>
-            </div>
-          </div>
         </Reveal>
 
         {GUARANTEE_ENABLED && (
