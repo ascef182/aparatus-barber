@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "No credit card required. Add one only if you keep your business after the 7-day trial.$",
+    "trialNote": "No credit card required. Add one only if you keep your business after the 7-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
@@ -863,7 +863,7 @@
         "booking": {
           "label": "Booking",
           "title": "Pick a time",
-          "subtitle": "Customers book in a few taps, no account needed.$"
+          "subtitle": "Customers book in a few taps, no account needed."
         },
         "availability": {
           "label": "Availability",
@@ -873,7 +873,7 @@
         "payments": {
           "label": "Payments",
           "title": "Get paid your way",
-          "subtitle": "Deposit, full prepayment, or pay on-site: you choose per service.$"
+          "subtitle": "Deposit, full prepayment, or pay on-site: you choose per service."
         },
         "team": {
           "label": "Team",
@@ -884,19 +884,19 @@
     },
     "features": {
       "title": "Everything your business needs",
-      "subtitle": "One complete platform: no spreadsheets, WhatsApp groups, or disconnected tools.$",
+      "subtitle": "One complete platform: no spreadsheets, WhatsApp groups, or disconnected tools.",
       "multiTenantTitle": "Your own page",
-      "multiTenantBody": "Every business gets its own subdomain with white-label booking, no watermarks, no multi-tenant confusion.$",
+      "multiTenantBody": "Every business gets its own subdomain with white-label booking, no watermarks, no multi-tenant confusion.",
       "bookingTitle": "Simple booking for customers",
       "bookingBody": "Customers pick a service and time and confirm on the spot, no calls, no back-and-forth messages. Availability updates in real time, so no one gets double-booked.",
       "paymentsTitle": "Payments via Stripe",
-      "paymentsBody": "Deposit, full prepayment, or pay-on-site: you choose the rule per service.$",
+      "paymentsBody": "Deposit, full prepayment, or pay-on-site: you choose the rule per service.",
       "teamTitle": "Team with permissions",
       "teamBody": "Invite managers, professionals, and receptionists with role-based access.",
       "securityTitle": "Real security",
       "securityBody": "Two-factor authentication and fail-closed data isolation between tenants.",
       "complianceTitle": "LGPD compliance",
-      "complianceBody": "Data processing basis, export, and erasure, ready to operate in Brazil.$",
+      "complianceBody": "Data processing basis, export, and erasure, ready to operate in Brazil.",
       "agendaTitle": "A schedule under control",
       "agendaBody": "See bookings, confirmations, and no-shows in one place, no WhatsApp group or notebook to check. You know who's coming, when, and with whom, all day long.",
       "managementTitle": "Manage the business in one place",
@@ -914,7 +914,7 @@
     "faq": {
       "title": "Frequently asked questions",
       "q1": "Do I need a credit card to start?",
-      "a1": "No, sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your business live after the trial ends.$",
+      "a1": "No, sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your business live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
@@ -932,7 +932,7 @@
     },
     "mobileShowcase": {
       "title": "Your business, in everyone's pocket",
-      "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone: check the schedule, add a customer, or confirm a booking from anywhere.$",
+      "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone: check the schedule, add a customer, or confirm a booking from anywhere.",
       "quickActions": "Quick actions",
       "features": {
         "overview": "Overview",
@@ -947,7 +947,7 @@
     },
     "finalCta": {
       "title": "Ready to modernize your business?",
-      "subtitle": "Get started now. 7 days free, no card required.$",
+      "subtitle": "Get started now. 7 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {

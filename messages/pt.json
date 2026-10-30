@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Sem cartão de crédito necessário. Só peça um se quiser manter seu negócio depois dos 7 dias de teste.$",
+    "trialNote": "Sem cartão de crédito necessário. Só peça um se quiser manter seu negócio depois dos 7 dias de teste.",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
@@ -863,7 +863,7 @@
         "booking": {
           "label": "Agendamento",
           "title": "Escolha um horário",
-          "subtitle": "Clientes agendam em poucos toques, sem precisar de conta.$"
+          "subtitle": "Clientes agendam em poucos toques, sem precisar de conta."
         },
         "availability": {
           "label": "Disponibilidade",
@@ -873,7 +873,7 @@
         "payments": {
           "label": "Pagamentos",
           "title": "Receba do seu jeito",
-          "subtitle": "Sinal, pagamento total ou no local: você escolhe por serviço.$"
+          "subtitle": "Sinal, pagamento total ou no local: você escolhe por serviço."
         },
         "team": {
           "label": "Equipe",
@@ -886,11 +886,11 @@
       "title": "Tudo que seu negócio precisa",
       "subtitle": "Uma plataforma completa, sem depender de planilhas, grupos de WhatsApp ou sistemas soltos.",
       "multiTenantTitle": "Sua própria página",
-      "multiTenantBody": "Cada negócio recebe um subdomínio próprio com agendamento white-label, sem marca d'água, sem confusão de multi-tenant.$",
+      "multiTenantBody": "Cada negócio recebe um subdomínio próprio com agendamento white-label, sem marca d'água, sem confusão de multi-tenant.",
       "bookingTitle": "Reservas simples para os clientes",
       "bookingBody": "O cliente escolhe serviço e horário e confirma na hora, sem ligação, sem ida e volta de mensagem. A disponibilidade atualiza em tempo real, então ninguém marca em cima de ninguém.",
       "paymentsTitle": "Pagamentos com Stripe",
-      "paymentsBody": "Depósito, pré-pagamento total ou pagamento no local: você escolhe a regra por serviço.$",
+      "paymentsBody": "Depósito, pré-pagamento total ou pagamento no local: você escolhe a regra por serviço.",
       "teamTitle": "Equipe com permissões",
       "teamBody": "Convide gerentes, profissionais e recepcionistas com acesso controlado por função.",
       "securityTitle": "Segurança de verdade",
@@ -914,7 +914,7 @@
     "faq": {
       "title": "Perguntas frequentes",
       "q1": "Preciso de cartão de crédito para começar?",
-      "a1": "Não, cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter seu negócio no ar depois do teste.$",
+      "a1": "Não, cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter seu negócio no ar depois do teste.",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
@@ -932,7 +932,7 @@
     },
     "mobileShowcase": {
       "title": "Seu negócio, no bolso de todo mundo",
-      "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular: veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.$",
+      "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular: veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.",
       "quickActions": "Ações rápidas",
       "features": {
         "overview": "Visão geral",
@@ -947,7 +947,7 @@
     },
     "finalCta": {
       "title": "Pronto para modernizar seu negócio?",
-      "subtitle": "Comece agora. 7 dias grátis, sem cartão necessário.$",
+      "subtitle": "Comece agora. 7 dias grátis, sem cartão necessário.",
       "cta": "Começar teste grátis"
     },
     "footer": {

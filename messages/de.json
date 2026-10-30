@@ -23,7 +23,7 @@
     "staff": "{count, plural, one {# Mitarbeiter} other {# Mitarbeiter}}",
     "unlimitedStaff": "Unbegrenzte Mitarbeiter",
     "cta": "Kostenlos testen",
-    "trialNote": "Keine Kreditkarte nötig. Nur erforderlich, wenn Sie Ihr Unternehmen nach den 7 Testtagen weiter nutzen möchten.$",
+    "trialNote": "Keine Kreditkarte nötig. Nur erforderlich, wenn Sie Ihr Unternehmen nach den 7 Testtagen weiter nutzen möchten.",
     "popularBadge": "Am beliebtesten",
     "featureOnlineBooking": "Unbegrenzte Online-Buchungen",
     "featureStripePayments": "Zahlungen über Stripe",
@@ -863,7 +863,7 @@
         "booking": {
           "label": "Buchung",
           "title": "Termin wählen",
-          "subtitle": "Kunden buchen in wenigen Klicks, kein Konto nötig.$"
+          "subtitle": "Kunden buchen in wenigen Klicks, kein Konto nötig."
         },
         "availability": {
           "label": "Verfügbarkeit",
@@ -873,7 +873,7 @@
         "payments": {
           "label": "Zahlungen",
           "title": "Bezahlt werden, wie Sie wollen",
-          "subtitle": "Anzahlung, volle Vorauszahlung oder vor Ort: pro Service wählbar.$"
+          "subtitle": "Anzahlung, volle Vorauszahlung oder vor Ort: pro Service wählbar."
         },
         "team": {
           "label": "Team",
@@ -884,19 +884,19 @@
     },
     "features": {
       "title": "Alles, was Ihr Unternehmen braucht",
-      "subtitle": "Eine komplette Plattform: ohne Excel-Tabellen, WhatsApp-Gruppen oder verstreute Systeme.$",
+      "subtitle": "Eine komplette Plattform: ohne Excel-Tabellen, WhatsApp-Gruppen oder verstreute Systeme.",
       "multiTenantTitle": "Ihre eigene Seite",
-      "multiTenantBody": "Jedes Unternehmen erhält eine eigene Subdomain mit White-Label-Buchung, ohne Wasserzeichen, ohne Multi-Tenant-Verwirrung.$",
+      "multiTenantBody": "Jedes Unternehmen erhält eine eigene Subdomain mit White-Label-Buchung, ohne Wasserzeichen, ohne Multi-Tenant-Verwirrung.",
       "bookingTitle": "Einfache Buchung für Kunden",
       "bookingBody": "Kunden wählen Leistung und Uhrzeit und bestätigen sofort, ohne Anruf, ohne Nachrichten hin und her. Die Verfügbarkeit aktualisiert sich in Echtzeit, sodass niemand doppelt gebucht wird.",
       "paymentsTitle": "Zahlungen über Stripe",
-      "paymentsBody": "Anzahlung, vollständige Vorauszahlung oder Zahlung vor Ort: Sie legen die Regel pro Leistung fest.$",
+      "paymentsBody": "Anzahlung, vollständige Vorauszahlung oder Zahlung vor Ort: Sie legen die Regel pro Leistung fest.",
       "teamTitle": "Team mit Berechtigungen",
       "teamBody": "Laden Sie Manager, Fachkräfte und Rezeption mit rollenbasiertem Zugriff ein.",
       "securityTitle": "Echte Sicherheit",
       "securityBody": "Zwei-Faktor-Authentifizierung und ausfallsichere Datentrennung zwischen Mandanten.",
       "complianceTitle": "LGPD-Konformität",
-      "complianceBody": "Rechtsgrundlage der Datenverarbeitung, Datenexport und -löschung, startklar für den Betrieb in Brasilien.$",
+      "complianceBody": "Rechtsgrundlage der Datenverarbeitung, Datenexport und -löschung, startklar für den Betrieb in Brasilien.",
       "agendaTitle": "Ein Terminplan unter Kontrolle",
       "agendaBody": "Sehen Sie Buchungen, Bestätigungen und No-Shows an einem Ort, ohne WhatsApp-Gruppe oder Notizbuch. Sie wissen den ganzen Tag, wer kommt, wann und bei wem.",
       "managementTitle": "Das Geschäft an einem Ort verwalten",
@@ -914,7 +914,7 @@
     "faq": {
       "title": "Häufige Fragen",
       "q1": "Brauche ich eine Kreditkarte, um zu starten?",
-      "a1": "Nein, melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihr Unternehmen nach der Testphase weiter online halten möchten.$",
+      "a1": "Nein, melden Sie sich kostenlos an und testen Sie 7 Tage lang ohne Karte. Eine Karte brauchen Sie nur, wenn Sie Ihr Unternehmen nach der Testphase weiter online halten möchten.",
       "q2": "Kann ich jederzeit kündigen?",
       "a2": "Ja, direkt im Abrechnungsbereich, ohne Vertragsstrafe oder Mindestlaufzeit.",
       "q3": "Sind meine Daten sicher?",
@@ -932,7 +932,7 @@
     },
     "mobileShowcase": {
       "title": "Ihr Unternehmen, in jeder Hosentasche",
-      "subtitle": "Dasselbe Dashboard, das Ihr Team am Desktop nutzt, einsatzbereit auf jedem Handy: Termine prüfen, Kunden anlegen oder Buchungen bestätigen, von überall.$",
+      "subtitle": "Dasselbe Dashboard, das Ihr Team am Desktop nutzt, einsatzbereit auf jedem Handy: Termine prüfen, Kunden anlegen oder Buchungen bestätigen, von überall.",
       "quickActions": "Schnellzugriff",
       "features": {
         "overview": "Übersicht",
@@ -947,7 +947,7 @@
     },
     "finalCta": {
       "title": "Bereit, Ihr Unternehmen zu modernisieren?",
-      "subtitle": "Jetzt starten. 7 Tage kostenlos, keine Kreditkarte nötig.$",
+      "subtitle": "Jetzt starten. 7 Tage kostenlos, keine Kreditkarte nötig.",
       "cta": "Kostenlos testen"
     },
     "footer": {
