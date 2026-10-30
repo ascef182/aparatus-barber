@@ -13,7 +13,7 @@ export default async function TermsPage() {
           <h2>1. Service description</h2>
           <p>
             Bladiq is a software-as-a-service booking platform for local businesses (&ldquo;tenants&rdquo;). By
-            subscribing to a plan — Starter, Growth, or Pro — a tenant can manage services, staff, and online
+            subscribing to a plan (Starter, Growth, or Pro), a tenant can manage services, staff, and online
             bookings on their own subdomain.
           </p>
         </section>
@@ -39,7 +39,7 @@ export default async function TermsPage() {
           <p>
             Tenants are responsible for the accuracy of their service listings, pricing, and staff information, and
             for complying with the consumer-protection and data-protection laws that apply in their own
-            jurisdiction — including maintaining their own Legal Notice (Impressum) where legally required.
+            jurisdiction, including maintaining their own Legal Notice (Impressum) where legally required.
           </p>
         </section>
         <section>
