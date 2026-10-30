@@ -23,11 +23,22 @@
     "staff": "{count, plural, one {# profissional} other {# profissionais}}",
     "unlimitedStaff": "Profissionais ilimitados",
     "cta": "Começar teste grátis",
-    "trialNote": "Sem cartão de crédito necessário — só peça um se quiser manter seu negócio depois dos 7 dias de teste.",
+    "trialNote": "Sem cartão de crédito necessário. Só peça um se quiser manter seu negócio depois dos 7 dias de teste.$",
     "popularBadge": "Mais popular",
     "featureOnlineBooking": "Agendamento online ilimitado",
     "featureStripePayments": "Pagamentos com Stripe",
-    "featureEmailSupport": "Suporte por e-mail"
+    "featureEmailSupport": "Suporte por e-mail",
+    "featureBookingPage": "Página de agendamento própria 24/7",
+    "featureDeposit": "Sinal anti-falta cobrado na reserva",
+    "featureNoCommission": "0% de comissão sobre os seus clientes",
+    "gaTitle": "Planos com cadastro direto",
+    "gaSubtitle": "7 dias grátis, sem cartão de crédito. Você configura sozinho, no seu tempo.",
+    "guaranteeTitle": "Garantia Cadeira Protegida",
+    "guaranteeBody": "Se em {days} dias de plano pago, com o link publicado e o sinal ativado, você não receber nenhuma reserva online com sinal pago, devolvemos a mensalidade e refazemos o setup com você.",
+    "includedInAllPlans": "Incluído",
+    "locationsRowLabel": "Unidades",
+    "priceRowLabel": "Mensalidade",
+    "staffRowLabel": "Equipe"
   },
   "cookieConsent": {
     "message": "Usamos apenas cookies essenciais para o funcionamento do site (sessão, roteamento de tenant, tema). Sem cookies de marketing ou rastreamento.",
@@ -841,8 +852,8 @@
     "hero": {
       "badge": "Plataforma multi-tenant para negócios locais",
       "titleLine1": "Agende, cobre",
-      "titleLine2": "e cresça — tudo em um só lugar",
-      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade com a LGPD — pronto em minutos, em 3 idiomas.",
+      "titleLine2": "e cresça: tudo em um só lugar$",
+      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade com a LGPD, pronto em minutos, em 3 idiomas.$",
       "ctaPrimary": "Começar teste grátis",
       "ctaSecondary": "Ver como funciona",
       "trustGdpr": "Conforme LGPD",
@@ -852,7 +863,7 @@
         "booking": {
           "label": "Agendamento",
           "title": "Escolha um horário",
-          "subtitle": "Clientes agendam em poucos toques — sem precisar de conta."
+          "subtitle": "Clientes agendam em poucos toques, sem precisar de conta.$"
         },
         "availability": {
           "label": "Disponibilidade",
@@ -862,7 +873,7 @@
         "payments": {
           "label": "Pagamentos",
           "title": "Receba do seu jeito",
-          "subtitle": "Sinal, pagamento total ou no local — você escolhe por serviço."
+          "subtitle": "Sinal, pagamento total ou no local: você escolhe por serviço.$"
         },
         "team": {
           "label": "Equipe",
@@ -875,17 +886,21 @@
       "title": "Tudo que seu negócio precisa",
       "subtitle": "Uma plataforma completa, sem depender de planilhas, grupos de WhatsApp ou sistemas soltos.",
       "multiTenantTitle": "Sua própria página",
-      "multiTenantBody": "Cada negócio recebe um subdomínio próprio com agendamento white-label — sem marca d'água, sem confusão de multi-tenant.",
-      "bookingTitle": "Agendamento em poucos cliques",
-      "bookingBody": "Clientes escolhem serviço, profissional e horário em tempo real, sem ligação nem troca de mensagens.",
+      "multiTenantBody": "Cada negócio recebe um subdomínio próprio com agendamento white-label, sem marca d'água, sem confusão de multi-tenant.$",
+      "bookingTitle": "Reservas simples para os clientes",
+      "bookingBody": "O cliente escolhe serviço e horário e confirma na hora, sem ligação, sem ida e volta de mensagem. A disponibilidade atualiza em tempo real, então ninguém marca em cima de ninguém.",
       "paymentsTitle": "Pagamentos com Stripe",
-      "paymentsBody": "Depósito, pré-pagamento total ou pagamento no local — você escolhe a regra por serviço.",
+      "paymentsBody": "Depósito, pré-pagamento total ou pagamento no local: você escolhe a regra por serviço.$",
       "teamTitle": "Equipe com permissões",
       "teamBody": "Convide gerentes, profissionais e recepcionistas com acesso controlado por função.",
       "securityTitle": "Segurança de verdade",
       "securityBody": "Autenticação em dois fatores e isolamento de dados entre negócios à prova de falhas.",
       "complianceTitle": "Conformidade com a LGPD",
-      "complianceBody": "Base legal de tratamento de dados, exportação e apagamento prontos para operar no Brasil."
+      "complianceBody": "Base legal de tratamento de dados, exportação e apagamento prontos para operar no Brasil.",
+      "agendaTitle": "Uma agenda sob controle",
+      "agendaBody": "Veja reservas, confirmações e faltas em um só lugar, sem precisar checar grupo de WhatsApp ou caderno. Você sabe o dia inteiro quem vem, quando e com quem.",
+      "managementTitle": "Gestão do negócio em um só lugar",
+      "managementBody": "Convide gerentes, profissionais e recepcionistas com acesso por papel: cada um vê só o que precisa. Você mantém o controle do negócio inteiro, mesmo sem estar lá o dia todo."
     },
     "howItWorks": {
       "title": "Como funciona",
@@ -899,7 +914,7 @@
     "faq": {
       "title": "Perguntas frequentes",
       "q1": "Preciso de cartão de crédito para começar?",
-      "a1": "Não — cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter seu negócio no ar depois do teste.",
+      "a1": "Não, cadastre-se grátis e teste por 7 dias sem cartão. Você só precisa cadastrar um se quiser manter seu negócio no ar depois do teste.$",
       "q2": "Posso cancelar quando quiser?",
       "a2": "Sim, direto pelo painel de billing, sem multa ou período de fidelidade.",
       "q3": "Meus dados estão seguros?",
@@ -907,11 +922,17 @@
       "q4": "Meus clientes podem pagar online?",
       "a4": "Sim, via Stripe: depósito, pré-pagamento total ou pagamento no local, configurável por serviço.",
       "q5": "Funciona em outros idiomas?",
-      "a5": "Sim, o painel e a página de agendamento estão disponíveis em alemão, inglês e português."
+      "a5": "Sim, o painel e a página de agendamento estão disponíveis em alemão, inglês e português.",
+      "q6": "Não tenho tempo pra configurar. Quem faz isso?",
+      "a6": "A página fica pronta em poucos minutos: você mesmo cadastra serviços, equipe, horários e a regra de sinal, sem precisar de ajuda técnica.",
+      "q7": "E se meus clientes não quiserem agendar pelo link?",
+      "a7": "Eles não precisam baixar app nem criar conta, é só um link. O kit de migração traz as mensagens prontas pra avisar quem já é cliente. Quem preferir continuar marcando por mensagem pode: você lança a reserva direto no painel.",
+      "q8": "Como funciona a garantia?",
+      "a8": "Se em {days} dias de plano pago, com o link publicado e o sinal ativado, você não receber nenhuma reserva online com sinal pago, devolvemos a mensalidade daquele mês e refazemos o setup com você."
     },
     "mobileShowcase": {
       "title": "Seu negócio, no bolso de todo mundo",
-      "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular — veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.",
+      "subtitle": "O mesmo painel que sua equipe usa no computador, pronto em qualquer celular: veja a agenda, cadastre um cliente ou confirme um horário de onde estiver.$",
       "quickActions": "Ações rápidas",
       "features": {
         "overview": "Visão geral",
@@ -920,11 +941,13 @@
         "customers": "Clientes",
         "staff": "Equipe",
         "more": "Mais"
-      }
+      },
+      "agendaLabel": "Agenda",
+      "teamLabel": "Equipe"
     },
     "finalCta": {
       "title": "Pronto para modernizar seu negócio?",
-      "subtitle": "Comece agora — 7 dias grátis, sem cartão necessário.",
+      "subtitle": "Comece agora. 7 dias grátis, sem cartão necessário.$",
       "cta": "Começar teste grátis"
     },
     "footer": {
@@ -938,6 +961,41 @@
       "termsLink": "Termos",
       "dpaLink": "DPA",
       "copyright": "© {year} Bladiq. Todos os direitos reservados."
+    },
+    "bonusBenefits": {
+      "title": "Por que escolher a Bladiq",
+      "trial": "7 dias de teste grátis, sem cartão",
+      "noCommission": "0% de comissão sobre seus clientes",
+      "lgpd": "Conforme a LGPD",
+      "stripe": "Pagamentos via Stripe",
+      "languages": "Português, inglês e alemão"
+    },
+    "bookingExperience": {
+      "title": "Agendar é rápido para o seu cliente",
+      "subtitle": "Sem aplicativo, sem conta obrigatória. Só escolher, confirmar e já está na agenda.",
+      "step1Title": "Escolhe o serviço",
+      "step1Body": "Vê o preço e a duração antes de continuar.",
+      "step2Title": "Escolhe o horário",
+      "step2Body": "Disponibilidade atualizada em tempo real, sem overbooking.",
+      "step3Title": "Confirma e, se precisar, paga o sinal",
+      "step3Body": "A reserva entra direto na sua agenda, com sinal cobrado quando você configurar essa regra."
+    },
+    "calculator": {
+      "title": "Quanto a falta está te custando?",
+      "subtitle": "Use os seus números. Nenhuma média de mercado, nenhuma estimativa nossa.",
+      "resultLabel": "Você deixa de receber por mês",
+      "perMonth": "/mês",
+      "comparison": "Isso é {multiple}x o valor de {fee} por mês.",
+      "disclaimer": "Conta feita com 4,33 semanas por mês. O sinal cobra na reserva a parte do valor que você definir em cada serviço.",
+      "noShowsLabel": "Faltas ou cancelamentos em cima da hora por semana",
+      "ticketLabel": "Valor médio do atendimento (R$)"
+    },
+    "mockup": {
+      "chooseSlotCta": "Ver horários",
+      "customerPlaceholder": "Cliente",
+      "depositLabel": "Depósito",
+      "servicePlaceholder": "Serviço selecionado",
+      "statusConfirmed": "Confirmado"
     }
   },
   "signIn": {
