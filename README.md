@@ -20,6 +20,8 @@
 
 Bladiq is a multi-tenant booking and payments platform for independent beauty businesses in Brazil. It gives barbershops, hair salons, nail studios, and beauty salons a branded booking page, operational calendar, customer portal, deposits, reminders, and LGPD-aligned compliance foundations in Portuguese, English, and German.
 
+![Bladiq dashboard: agenda view with a populated week of bookings](docs/images/dashboard-agenda.jpg)
+
 ## Why this codebase is worth a look
 
 - **Multi-tenant isolation enforced in three independent layers**: a Prisma client that fails closed without tenant/platform context, PostgreSQL Row-Level Security as a second boundary, and composite foreign keys that make cross-tenant relationships structurally impossible, not just "trust the `WHERE` clause."
@@ -61,6 +63,32 @@ The repository does **not** currently ship an AI receptionist. AI dependencies a
 - next-intl for `de`, `en`, and `pt`
 
 Tenant-owned models carry `organizationId`. The scoped Prisma client fails closed without tenant/platform context, PostgreSQL RLS provides a second boundary, and composite foreign keys prevent cross-tenant relationships. See [Architecture](docs/ARCHITECTURE.md) and [Security Policy](SECURITY.md).
+
+```mermaid
+flowchart TD
+    Browser["Browser"] --> Proxy["proxy.ts\n(subdomain routing)"]
+
+    Proxy --> Marketing["Marketing pages\nbladiq.com (public)"]
+    Proxy --> Tenant["Tenant storefront\n{slug}.bladiq.com"]
+    Proxy --> Dashboard["Owner/staff dashboard\n(protected)"]
+    Proxy --> Discover["Discovery app\napp.bladiq.com"]
+
+    Tenant --> Prisma["Scoped Prisma client\n(fails closed w/o tenant context)"]
+    Dashboard --> Prisma
+    Discover --> Prisma
+    Prisma --> RLS["PostgreSQL Row-Level Security"]
+    RLS --> DB[("PostgreSQL")]
+
+    Dashboard -. enqueue .-> Redis[("Redis")]
+    Redis --> Worker["BullMQ worker\n(reminders, transactional email)"]
+    Worker --> DB
+
+    StripeBilling["Stripe Billing\n(platform subscriptions)"] --> Webhooks["Signature-verified webhooks\n(only write path)"]
+    StripeConnect["Stripe Connect\n(tenant payouts)"] --> Webhooks
+    Webhooks --> DB
+```
+
+Three independent boundaries keep one tenant's data out of another's reach: the Prisma client above refuses to query without tenant/platform context, PostgreSQL RLS enforces the same rule at the database layer, and composite foreign keys make a cross-tenant relationship a schema violation rather than a bug to catch in review.
 
 ## Project structure
 
