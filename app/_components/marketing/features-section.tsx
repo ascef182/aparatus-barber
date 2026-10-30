@@ -1,35 +1,98 @@
 import { getTranslations } from "next-intl/server";
-import { Store, CalendarCheck, CreditCard, Users, ShieldCheck, FileCheck } from "lucide-react";
 import { Reveal } from "./reveal";
+import {
+  MiniBookingCard,
+  RoleBadge,
+  SlotChips,
+  StaffAvatarInitial,
+} from "./product-mockup-primitives";
 
-const ICONS = [Store, CalendarCheck, CreditCard, Users, ShieldCheck, FileCheck];
-const FEATURE_KEYS = ["multiTenant", "booking", "payments", "team", "security", "compliance"] as const;
+const BOOKING_SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"];
+
+// 3 blocos de benefício (não funcionalidade) — cada um com uma demonstração
+// visual fiel, não um ícone genérico repetido 6x.
+const BLOCK_KEYS = ["agenda", "booking", "management"] as const;
 
 export async function FeaturesSection() {
   const t = await getTranslations("landing.features");
+  const tMockup = await getTranslations("landing.mockup");
+  const tRoles = await getTranslations("roles");
+
+  const service = tMockup("servicePlaceholder");
+  const customer = tMockup("customerPlaceholder");
 
   return (
-    <section id="features" className="bg-neutral-950 px-6 py-24">
+    <section id="features" className="bg-background px-6 py-24">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">{t("title")}</h2>
-          <p className="mt-4 text-neutral-400">{t("subtitle")}</p>
+          <h2 className="text-foreground text-3xl font-semibold tracking-tight md:text-4xl">
+            {t("title")}
+          </h2>
+          <p className="text-muted-foreground mt-4">{t("subtitle")}</p>
         </Reveal>
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURE_KEYS.map((key, i) => {
-            const Icon = ICONS[i]!;
-            return (
-              <Reveal key={key} delay={(i % 3) * 0.1}>
-                <div className="h-full rounded-xl border border-white/10 bg-white/[0.03] p-6 transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05]">
-                  <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                    <Icon className="size-5" />
-                  </div>
-                  <h3 className="font-semibold text-white">{t(`${key}Title`)}</h3>
-                  <p className="mt-2 text-sm text-neutral-400">{t(`${key}Body`)}</p>
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {BLOCK_KEYS.map((key, i) => (
+            <Reveal key={key} delay={i * 0.1}>
+              <div className="border-border bg-card hover:border-primary/30 flex h-full flex-col gap-6 rounded-xl border p-6 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div>
+                  <h3 className="text-foreground font-semibold">
+                    {t(`${key}Title`)}
+                  </h3>
+                  <p className="text-muted-foreground mt-2 text-sm">
+                    {t(`${key}Body`)}
+                  </p>
                 </div>
-              </Reveal>
-            );
-          })}
+
+                {key === "agenda" && (
+                  <div className="mt-auto flex flex-col gap-2" aria-hidden>
+                    <MiniBookingCard
+                      time="09:00"
+                      status="CONFIRMED"
+                      service={service}
+                      customer={customer}
+                      staff="Ana"
+                    />
+                    <MiniBookingCard
+                      time="10:30"
+                      status="PENDING"
+                      service={service}
+                      customer={customer}
+                      staff="Bruno"
+                    />
+                  </div>
+                )}
+
+                {key === "booking" && (
+                  <div className="mt-auto">
+                    <SlotChips slots={BOOKING_SLOTS} selectedIndex={3} />
+                  </div>
+                )}
+
+                {key === "management" && (
+                  <div className="mt-auto flex flex-col gap-2" aria-hidden>
+                    {[
+                      { name: "Ana Souza", role: tRoles("manager") },
+                      { name: "Bruno Lima", role: tRoles("professional") },
+                    ].map((person) => (
+                      <div
+                        key={person.name}
+                        className="bg-muted/60 flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs"
+                      >
+                        <StaffAvatarInitial
+                          name={person.name}
+                          className="size-7"
+                        />
+                        <span className="text-foreground min-w-0 flex-1 truncate font-medium">
+                          {person.name}
+                        </span>
+                        <RoleBadge label={person.role} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

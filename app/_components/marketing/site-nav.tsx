@@ -16,20 +16,34 @@ export async function SiteNav() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/80 backdrop-blur-md">
+    <header className="border-border bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-white">
+        <Link
+          href="/"
+          className="text-foreground text-lg font-semibold tracking-tight"
+        >
           Bladiq
         </Link>
-        <div className="hidden items-center gap-8 text-sm text-neutral-300 md:flex">
+        <div className="text-muted-foreground hidden items-center gap-8 text-sm md:flex">
           {links.map((link) => (
-            <a key={link.href} href={link.href} className="transition-colors hover:text-white">{link.label}</a>
+            <a
+              key={link.href}
+              href={link.href}
+              className="hover:text-foreground transition-colors"
+            >
+              {link.label}
+            </a>
           ))}
         </div>
         <div className="flex items-center gap-4">
           <LocaleSwitcher />
           <div className="hidden items-center gap-4 md:flex">
-            <Button asChild size="sm" variant="outline" className="border-white/15 bg-transparent text-white hover:bg-white/10">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="border-border text-foreground hover:bg-muted bg-transparent"
+            >
               <Link href={signInHref}>{t("signIn")}</Link>
             </Button>
             <Button asChild size="sm">

@@ -19,39 +19,51 @@ export default async function FindCityPage({
   ]);
 
   return (
-    <main className="bg-neutral-950">
+    <main className="bg-background">
       <SiteNav />
-      <section className="mx-auto max-w-3xl px-6 py-16 text-white">
-        <p className="mb-1 text-sm text-neutral-400">
+      <section className="text-foreground mx-auto max-w-3xl px-6 py-16">
+        <p className="text-muted-foreground mb-1 text-sm">
           <Link href="/find" className="hover:underline">
             {t("backToCities")}
           </Link>
         </p>
         <h1 className="mb-8 text-3xl font-semibold">{t("title", { city })}</h1>
         {locations.length === 0 ? (
-          <p className="text-neutral-400">{t("empty")}</p>
+          <p className="text-muted-foreground">{t("empty")}</p>
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2">
             {locations.map((location) => {
-              const image = location.organization.coverImageUrl ?? location.organization.logo;
+              const image =
+                location.organization.coverImageUrl ??
+                location.organization.logo;
               return (
-                <li key={location.id} className="overflow-hidden rounded-lg border border-neutral-800">
-                  <div className="aspect-[16/9] w-full bg-neutral-900">
+                <li
+                  key={location.id}
+                  className="border-border overflow-hidden rounded-lg border"
+                >
+                  <div className="bg-muted aspect-[16/9] w-full">
                     {image && (
                       // eslint-disable-next-line @next/next/no-img-element -- vem do Cloudinary, fora dos remotePatterns de next/image
-                      <img src={image} alt="" className="size-full object-cover" />
+                      <img
+                        src={image}
+                        alt=""
+                        className="size-full object-cover"
+                      />
                     )}
                   </div>
                   <div className="p-4">
-                    <p className="text-lg font-medium">{location.organization.name}</p>
-                    <p className="text-sm text-neutral-400">
-                      {location.addressLine1}, {location.postalCode} {location.city}
+                    <p className="text-foreground text-lg font-medium">
+                      {location.organization.name}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {location.addressLine1}, {location.postalCode}{" "}
+                      {location.city}
                     </p>
                     <ChooseBusinessLink
                       slug={location.organization.slug}
                       name={location.organization.name}
                       href={getTenantUrl(location.organization.slug)}
-                      className="mt-2 inline-block text-sm text-blue-400 hover:underline"
+                      className="text-primary mt-2 inline-block text-sm hover:underline"
                     >
                       {t("viewBusiness")}
                     </ChooseBusinessLink>

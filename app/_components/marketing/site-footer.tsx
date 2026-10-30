@@ -6,32 +6,62 @@ export async function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/10 bg-neutral-950 px-6 py-16 text-sm">
+    <footer className="border-border bg-background border-t px-6 py-16 text-sm">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 md:flex-row md:justify-between">
         <div className="max-w-xs">
-          <p className="text-lg font-semibold text-white">Bladiq</p>
-          <p className="mt-2 text-neutral-500">{t("tagline")}</p>
+          <p className="text-foreground text-lg font-semibold">Bladiq</p>
+          <p className="text-muted-foreground mt-2">{t("tagline")}</p>
         </div>
         <div className="flex gap-16">
           <div>
-            <p className="mb-3 font-medium text-white">{t("productTitle")}</p>
-            <ul className="flex flex-col gap-2 text-neutral-400">
-              <li><a href="#features" className="hover:text-white">{t("featuresLink")}</a></li>
-              <li><a href="#pricing" className="hover:text-white">{t("pricingLink")}</a></li>
+            <p className="text-foreground mb-3 font-medium">
+              {t("productTitle")}
+            </p>
+            <ul className="text-muted-foreground flex flex-col gap-2">
+              <li>
+                <a href="#features" className="hover:text-foreground">
+                  {t("featuresLink")}
+                </a>
+              </li>
+              <li>
+                <a href="#pricing" className="hover:text-foreground">
+                  {t("pricingLink")}
+                </a>
+              </li>
             </ul>
           </div>
           <div>
-            <p className="mb-3 font-medium text-white">{t("legalTitle")}</p>
-            <ul className="flex flex-col gap-2 text-neutral-400">
-              <li><Link href="/impressum" className="hover:text-white">{t("impressumLink")}</Link></li>
-              <li><Link href="/privacy" className="hover:text-white">{t("privacyLink")}</Link></li>
-              <li><Link href="/terms" className="hover:text-white">{t("termsLink")}</Link></li>
-              <li><Link href="/dpa" className="hover:text-white">{t("dpaLink")}</Link></li>
+            <p className="text-foreground mb-3 font-medium">
+              {t("legalTitle")}
+            </p>
+            <ul className="text-muted-foreground flex flex-col gap-2">
+              <li>
+                <Link href="/impressum" className="hover:text-foreground">
+                  {t("impressumLink")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-foreground">
+                  {t("privacyLink")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-foreground">
+                  {t("termsLink")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/dpa" className="hover:text-foreground">
+                  {t("dpaLink")}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
       </div>
-      <p className="mx-auto mt-12 max-w-6xl text-neutral-600">{t("copyright", { year })}</p>
+      <p className="text-muted-foreground/70 mx-auto mt-12 max-w-6xl">
+        {t("copyright", { year })}
+      </p>
     </footer>
   );
 }

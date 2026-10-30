@@ -6,12 +6,17 @@ export async function FinalCta() {
   const t = await getTranslations("landing.finalCta");
 
   return (
-    <section className="relative overflow-hidden border-t border-white/10 bg-neutral-950 px-6 py-24 text-center">
-      <div className="absolute inset-x-0 top-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_center,rgba(87,175,120,0.15),transparent_65%)]" aria-hidden />
+    <section className="bg-foreground relative overflow-hidden px-6 py-24 text-center">
       <Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-6">
-        <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">{t("title")}</h2>
-        <p className="text-neutral-400">{t("subtitle")}</p>
-        <Button asChild size="lg" className="transition-transform duration-300 hover:-translate-y-0.5">
+        <h2 className="text-background text-3xl font-bold tracking-tight md:text-4xl">
+          {t("title")}
+        </h2>
+        <p className="text-background/80">{t("subtitle")}</p>
+        <Button
+          asChild
+          size="lg"
+          className="shadow-lg shadow-black/20 transition-transform duration-300 hover:-translate-y-0.5"
+        >
           <a href="#pricing">{t("cta")}</a>
         </Button>
       </Reveal>
