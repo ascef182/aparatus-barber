@@ -1,0 +1,15 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon" fill="none" stroke="#0B2B26" stroke-width="30" stroke-linecap="round">
+    <!-- two overlapping circles: the finger loops -->
+    <circle cx="188" cy="346" r="72"/>
+    <circle cx="308" cy="346" r="72"/>
+    <!-- two straight crossing blades -->
+    <line x1="158" y1="316" x2="388" y2="71"/>
+    <line x1="338" y1="316" x2="108" y2="71"/>
+    <!-- pivot rivet, sage accent -->
+    <circle cx="248" cy="220" r="20" fill="#8EB69B" stroke="none"/>
+  </g>
+  <g id="wordmark">
+    <text x="490" y="302" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700" font-size="136" letter-spacing="-2" fill="#0B2B26">Bladiq</text>
+  </g>
+</svg>

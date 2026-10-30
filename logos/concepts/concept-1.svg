@@ -1,0 +1,11 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon">
+    <rect x="56" y="56" width="110" height="400" rx="18" fill="#0B2B26"/>
+    <path d="M166,56 L326,56 L416,146 L326,236 L166,236 Z" fill="#0B2B26"/>
+    <path d="M166,276 L346,276 L446,366 L346,456 L166,456 Z" fill="#0B2B26"/>
+    <path d="M388,134 L408,146 L388,158 Z" fill="#8EB69B"/>
+  </g>
+  <g id="wordmark">
+    <text x="512" y="308" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700" font-size="168" letter-spacing="-2" fill="#0B2B26">Bladiq</text>
+  </g>
+</svg>

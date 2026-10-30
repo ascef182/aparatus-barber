@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon">
+    <path d="M 96 56 L 356 56 L 456 156 L 456 416 A 40 40 0 0 1 416 456 L 96 456 A 40 40 0 0 1 56 416 L 56 96 A 40 40 0 0 1 96 56 Z"
+      fill="none" stroke="#0B2B26" stroke-width="30" stroke-linejoin="round"/>
+    <line x1="140" y1="380" x2="420" y2="130" stroke="#8EB69B" stroke-width="40" stroke-linecap="round"/>
+  </g>
+  <g id="wordmark">
+    <text x="520" y="305" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700" font-size="140" letter-spacing="-2" fill="#0B2B26">Bladiq</text>
+  </g>
+</svg>

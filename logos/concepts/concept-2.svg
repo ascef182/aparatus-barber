@@ -1,0 +1,9 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon">
+    <polygon points="424,90 378,232 142,408 176,192" fill="#0B2B26"/>
+    <polygon points="424,90 378,232 330,140" fill="#8EB69B"/>
+  </g>
+  <g id="wordmark">
+    <text x="500" y="256" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700" font-size="132" letter-spacing="-2" fill="#0B2B26" dominant-baseline="central">Bladiq</text>
+  </g>
+</svg>
