@@ -24,9 +24,14 @@ export function futureMondayISO(now: Date = new Date()): string {
 
 /**
  * Helper de slot: hora cheia em UTC no dia devolvido por `futureMondayISO`.
- * Mantido em UTC porque o tenant dos testes usa `Europe/Berlin` (UTC+1/+2) —
- * horas entre 8 e 17 UTC caem no meio do dia local em qualquer estação, sem
- * atravessar a fronteira do dia do tenant.
+ * Mantido em UTC porque os tenants de teste usam o default do schema,
+ * `America/Sao_Paulo` (UTC-3, desde a migração de mercado BR) — horas
+ * entre 8 e 17 UTC caem no meio do dia local (5h-14h), sem atravessar a
+ * fronteira do dia do tenant. Fora dessa janela (ex.: 21h-23h59 local)
+ * cruza pro dia seguinte em UTC — createBooking já trata isso
+ * corretamente (ver Sprint 8, tests/integration/booking-flow.test.ts),
+ * mas este helper continua restrito à janela segura de propósito, pra
+ * não acoplar todo teste existente a esse comportamento de fronteira.
  */
 export function futureMondayAt(hour: number, dateISO = futureMondayISO()) {
   return new Date(`${dateISO}T${String(hour).padStart(2, "0")}:00:00.000Z`);

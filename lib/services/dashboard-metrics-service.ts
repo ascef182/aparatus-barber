@@ -59,16 +59,37 @@ async function computePeriodTotals(from: Date, to: Date): Promise<PeriodTotals> 
  * agregado e não por serviço/slot — ali a granularidade é por candidato de
  * slot de UM serviço, aqui é capacidade bruta de horário de trabalho.
  */
-async function computeOccupancyRate(fromDate: string, toDateExclusive: string, timezone: string): Promise<number | null> {
+type WorkingHoursRow = { staffId: string; weekday: number; startTime: string; endTime: string; validFrom: Date | null; validUntil: Date | null };
+
+/**
+ * Staff ativo + working hours não dependem do range de datas — só
+ * absences/bookings dependem. getDashboardMetrics chama esta função duas
+ * vezes (período atual + anterior, pra variação percentual); sem separar
+ * a parte fixa, as mesmas duas queries (staff, workingHours) rodavam
+ * repetidas de novo na segunda chamada, achado medindo query count real
+ * de /dashboard (Sprint 6) — evidência, não suposição.
+ */
+async function getActiveStaffWithWorkingHours(): Promise<{ staffIds: string[]; workingHours: WorkingHoursRow[] }> {
   const staff = await db.staff.findMany({ where: { isActive: true }, select: { id: true } });
   const staffIds = staff.map((s) => s.id);
+  if (!staffIds.length) return { staffIds, workingHours: [] };
+  const workingHours = await db.staffWorkingHours.findMany({ where: { staffId: { in: staffIds } } });
+  return { staffIds, workingHours };
+}
+
+async function computeOccupancyRate(
+  fromDate: string,
+  toDateExclusive: string,
+  timezone: string,
+  staffIds: string[],
+  workingHours: WorkingHoursRow[],
+): Promise<number | null> {
   if (!staffIds.length) return null;
 
   const rangeStart = tenantDayStartUtc(fromDate, timezone);
   const rangeEnd = tenantDayStartUtc(toDateExclusive, timezone);
 
-  const [workingHours, absences, bookings] = await Promise.all([
-    db.staffWorkingHours.findMany({ where: { staffId: { in: staffIds } } }),
+  const [absences, bookings] = await Promise.all([
     db.staffAbsence.findMany({ where: { staffId: { in: staffIds }, startAt: { lt: rangeEnd }, endAt: { gt: rangeStart } } }),
     db.booking.findMany({
       where: { staffId: { in: staffIds }, startAt: { lt: rangeEnd }, endAt: { gt: rangeStart }, status: { in: ["CONFIRMED", "COMPLETED"] } },
@@ -121,6 +142,8 @@ export async function getDashboardMetrics(timezone: string, range: DashboardRang
   const previousFrom = tenantDayStartUtc(previousFromDate, timezone);
   const previousTo = from;
 
+  const { staffIds, workingHours } = await getActiveStaffWithWorkingHours();
+
   const [bookings, previousTotals, occupancyRate, previousOccupancyRate, newCustomersCount, previousNewCustomersCount] = await Promise.all([
     db.booking.findMany({
       where: { startAt: { gte: from, lt: to } },
@@ -128,8 +151,8 @@ export async function getDashboardMetrics(timezone: string, range: DashboardRang
       orderBy: { startAt: "asc" },
     }),
     computePeriodTotals(previousFrom, previousTo),
-    computeOccupancyRate(fromDate, toDate, timezone),
-    computeOccupancyRate(previousFromDate, fromDate, timezone),
+    computeOccupancyRate(fromDate, toDate, timezone, staffIds, workingHours),
+    computeOccupancyRate(previousFromDate, fromDate, timezone, staffIds, workingHours),
     db.customer.count({ where: { createdAt: { gte: from, lt: to } } }),
     db.customer.count({ where: { createdAt: { gte: previousFrom, lt: previousTo } } }),
   ]);

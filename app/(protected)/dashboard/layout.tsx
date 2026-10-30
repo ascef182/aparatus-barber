@@ -17,10 +17,9 @@ import {
   TriangleAlert,
   Users,
 } from "lucide-react";
-import { auth } from "@/lib/auth";
-import { resolveTenantSlug } from "@/lib/tenant-host";
-import { getOrganizationBySlug, isFreeTrialExpired, isSetupComplete, autoListDirectory } from "@/lib/services/organization-service";
-import { ensureMfaGracePeriod, getMembership } from "@/lib/services/member-service";
+import { getDashboardContext } from "@/lib/services/dashboard-context-service";
+import { isFreeTrialExpired, isSetupComplete, autoListDirectory } from "@/lib/services/organization-service";
+import { ensureMfaGracePeriod } from "@/lib/services/member-service";
 import { hasPermission, isAppRole } from "@/lib/auth/permissions";
 import { Badge } from "@/app/_components/ui/badge";
 import { Input } from "@/app/_components/ui/input";
@@ -34,13 +33,9 @@ const MFA_EXEMPT_PREFIX = "/dashboard/settings";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const requestHeaders = await headers();
-  const session = await auth.api.getSession({ headers: requestHeaders });
-  const slug = resolveTenantSlug(requestHeaders.get("host"));
-  if (!session?.user || !slug) redirect("/");
-  const organization = await getOrganizationBySlug(slug);
-  if (!organization) redirect("/");
-  const membership = await getMembership(organization.id, session.user.id);
-  if (!membership) redirect("/");
+  const ctx = await getDashboardContext(requestHeaders);
+  if (!ctx) redirect("/");
+  const { session, organization, membership } = ctx;
 
   const trialExpired = isFreeTrialExpired(organization);
   const readOnly = trialExpired;

@@ -20,11 +20,13 @@
 
 Bladiq is a multi-tenant booking and payments platform for independent beauty businesses in Brazil. It gives barbershops, hair salons, nail studios, and beauty salons a branded booking page, operational calendar, customer portal, deposits, reminders, and LGPD-aligned compliance foundations in Portuguese, English, and German.
 
+![Bladiq dashboard: agenda view with a populated week of bookings](docs/images/dashboard-agenda.jpg)
+
 ## Why this codebase is worth a look
 
-- **Multi-tenant isolation enforced in three independent layers**: a Prisma client that fails closed without tenant/platform context, PostgreSQL Row-Level Security as a second boundary, and composite foreign keys that make cross-tenant relationships structurally impossible — not just "trust the `WHERE` clause."
+- **Multi-tenant isolation enforced in three independent layers**: a Prisma client that fails closed without tenant/platform context, PostgreSQL Row-Level Security as a second boundary, and composite foreign keys that make cross-tenant relationships structurally impossible, not just "trust the `WHERE` clause."
 - **Real payments integration**: Stripe Billing for platform subscriptions *and* Stripe Connect for tenant payouts, with signature-verified, idempotent webhooks as the only write path (`app/api/stripe/*/webhook`).
-- **Production-grade test pyramid**: Vitest unit/integration (including dedicated RLS-policy and tenant-isolation suites run against a real ephemeral Postgres via Testcontainers) plus Playwright e2e — see [Testing](#testing).
+- **Production-grade test pyramid**: Vitest unit/integration (including dedicated RLS-policy and tenant-isolation suites run against a real ephemeral Postgres via Testcontainers) plus Playwright e2e. See [Testing](#testing).
 - **CI that actually gates merges**: dependency audit, lint, typecheck, Prisma migration-drift check, production build, and the full test suite all run on every PR (`.github/workflows/ci.yml`), with CodeQL static analysis on top.
 - **Shipped, not a toy**: structured Pino logging, Sentry error taxonomy with PII scrubbing, a BullMQ worker for async notifications, i18n in 3 languages, and a documented release/rollback/incident process (see [Documentation index](#documentation-index)).
 
@@ -62,10 +64,36 @@ The repository does **not** currently ship an AI receptionist. AI dependencies a
 
 Tenant-owned models carry `organizationId`. The scoped Prisma client fails closed without tenant/platform context, PostgreSQL RLS provides a second boundary, and composite foreign keys prevent cross-tenant relationships. See [Architecture](docs/ARCHITECTURE.md) and [Security Policy](SECURITY.md).
 
+```mermaid
+flowchart TD
+    Browser["Browser"] --> Proxy["proxy.ts\n(subdomain routing)"]
+
+    Proxy --> Marketing["Marketing pages\nbladiq.com (public)"]
+    Proxy --> Tenant["Tenant storefront\n{slug}.bladiq.com"]
+    Proxy --> Dashboard["Owner/staff dashboard\n(protected)"]
+    Proxy --> Discover["Discovery app\napp.bladiq.com"]
+
+    Tenant --> Prisma["Scoped Prisma client\n(fails closed w/o tenant context)"]
+    Dashboard --> Prisma
+    Discover --> Prisma
+    Prisma --> RLS["PostgreSQL Row-Level Security"]
+    RLS --> DB[("PostgreSQL")]
+
+    Dashboard -. enqueue .-> Redis[("Redis")]
+    Redis --> Worker["BullMQ worker\n(reminders, transactional email)"]
+    Worker --> DB
+
+    StripeBilling["Stripe Billing\n(platform subscriptions)"] --> Webhooks["Signature-verified webhooks\n(only write path)"]
+    StripeConnect["Stripe Connect\n(tenant payouts)"] --> Webhooks
+    Webhooks --> DB
+```
+
+Three independent boundaries keep one tenant's data out of another's reach: the Prisma client above refuses to query without tenant/platform context, PostgreSQL RLS enforces the same rule at the database layer, and composite foreign keys make a cross-tenant relationship a schema violation rather than a bug to catch in review.
+
 ## Project structure
 
 ```
-app/            Next.js routes — (marketing), (protected) dashboard, api/, t/ tenant storefront, superadmin/
+app/            Next.js routes: (marketing), (protected) dashboard, api/, t/ tenant storefront, superadmin/
 lib/            Domain logic: auth, billing, scheduling, notifications, rate-limit, rules, Prisma client
 worker/         Standalone BullMQ worker process (reminders, transactional notifications)
 prisma/         Schema and migrations
@@ -91,8 +119,8 @@ pnpm dev
 `pnpm db:up` starts only PostgreSQL and Redis, so it can be used with the host Next.js process without a port conflict. Use `pnpm stack:up` instead when you want web, worker, migrations, PostgreSQL, and Redis entirely in Docker; do not run `pnpm dev` at the same time.
 
 Stripe webhooks (billing subscriptions, Connect onboarding) only update the database
-through `app/api/stripe/billing/webhook/route.ts` and `app/api/stripe/connect/webhook/route.ts`
-— there is no other sync path. Locally, those events only reach your machine through the
+through `app/api/stripe/billing/webhook/route.ts` and `app/api/stripe/connect/webhook/route.ts`.
+There is no other sync path. Locally, those events only reach your machine through the
 Stripe CLI: run `stripe listen --forward-to localhost:3000/api/stripe/billing/webhook`
 (a second `stripe listen` instance for `/api/stripe/connect/webhook` if you're testing
 Connect) and put the printed `whsec_...` into `STRIPE_BILLING_WEBHOOK_SECRET`/
@@ -120,11 +148,11 @@ See the [deployment runbook](docs/DEPLOYMENT.md) for local workflows, provider c
 
 ## Testing
 
-- `pnpm test` — Vitest unit and integration suites in `tests/`, including Prisma RLS policy checks (`tests/rls-policy.test.ts`) and cross-tenant isolation (`tests/tenant-isolation.test.ts`).
-- `pnpm test:unit` — unit-only subset via `vitest.unit.config.ts`, no database required.
-- `pnpm test:e2e` — Playwright flows in `tests/e2e/` against a running app; requires `pnpm db:up` (or `pnpm stack:up`) and a seeded/dev database.
+- `pnpm test`: Vitest unit and integration suites in `tests/`, including Prisma RLS policy checks (`tests/rls-policy.test.ts`) and cross-tenant isolation (`tests/tenant-isolation.test.ts`).
+- `pnpm test:unit`: unit-only subset via `vitest.unit.config.ts`, no database required.
+- `pnpm test:e2e`: Playwright flows in `tests/e2e/` against a running app; requires `pnpm db:up` (or `pnpm stack:up`) and a seeded/dev database.
 - `tests/security/` and `tests/proxy.test.ts` cover auth boundaries and the trusted-proxy IP logic described in [Security Policy](SECURITY.md).
-- CI runs lint, typecheck, tests, and CodeQL — see `.github/workflows/ci.yml` and `.github/workflows/codeql.yml`.
+- CI runs lint, typecheck, tests, and CodeQL. See `.github/workflows/ci.yml` and `.github/workflows/codeql.yml`.
 
 ## Documentation index
 
@@ -145,4 +173,4 @@ See the [deployment runbook](docs/DEPLOYMENT.md) for local workflows, provider c
 
 ## Current direction
 
-The launch wedge is Beauty Brazil, initially with 3–5 assisted design partners (specific city/region not yet fixed — see open decisions in `docs/marketing/plan.md`). Construction, electrician, medical, and dental categories remain in the database for compatibility but are not accepted by public onboarding. See [Product strategy](PRODUCT.md) and [current roadmap](docs/ROADMAP-2026-08-01.md).
+The launch wedge is Beauty Brazil, initially with 3-5 assisted design partners (specific city/region not yet fixed; see open decisions in `docs/marketing/plan.md`). Construction, electrician, medical, and dental categories remain in the database for compatibility but are not accepted by public onboarding. See [Product strategy](PRODUCT.md) and [current roadmap](docs/ROADMAP-2026-08-01.md).

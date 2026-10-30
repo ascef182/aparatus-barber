@@ -12,9 +12,9 @@ import { ThemeProvider } from "./_providers/theme-provider";
 import { CookieConsentBanner } from "./_components/cookie-consent-banner";
 
 export const metadata: Metadata = {
-  title: "Bladiq — The complete booking platform for local businesses",
+  title: "Bladiq: The complete booking platform for local businesses",
   description:
-    "White-label online booking, Stripe payments, team management, and LGPD compliance — everything a modern local business needs, in one multi-tenant SaaS.",
+    "White-label online booking, Stripe payments, team management, and LGPD compliance, everything a modern local business needs, in one multi-tenant SaaS.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

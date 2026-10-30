@@ -11,20 +11,20 @@ export default async function FindPage() {
   ]);
 
   return (
-    <main className="bg-neutral-950">
+    <main className="bg-background">
       <SiteNav />
-      <section className="mx-auto max-w-3xl px-6 py-16 text-white">
+      <section className="text-foreground mx-auto max-w-3xl px-6 py-16">
         <h1 className="mb-2 text-3xl font-semibold">{t("title")}</h1>
-        <p className="mb-8 text-neutral-400">{t("subtitle")}</p>
+        <p className="text-muted-foreground mb-8">{t("subtitle")}</p>
         {cities.length === 0 ? (
-          <p className="text-neutral-400">{t("noCities")}</p>
+          <p className="text-muted-foreground">{t("noCities")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {cities.map((city) => (
               <li key={city}>
                 <Link
                   href={`/find/${encodeURIComponent(city)}`}
-                  className="block rounded-md border border-neutral-800 p-4 hover:bg-neutral-900"
+                  className="border-border hover:bg-muted block rounded-md border p-4"
                 >
                   {city}
                 </Link>

@@ -167,6 +167,50 @@
   --ring: #c6ff4a;
 }
 
+/* Tema exclusivo das páginas de marketing/público (landing em app/page.tsx,
+   e app/(marketing)/* — termos, privacidade, DPA, impressum, diretório).
+   v3: paleta escura estilo Spotify, decidida e aprovada pelo usuário —
+   fundo quase-preto (#121212), superfícies elevadas em #181818 e acento
+   verde vívido (#1ED760) como única cor de ação/destaque, com texto
+   branco (#FFFFFF) e texto secundário em cinza claro (#A7A7A7). Substitui
+   a v2 vermelho/azul-marinho (punch_red/honeydew/frosted_blue/cerulean/
+   oxford_navy) e a v1 Coral Profundo — ambas descartadas. Sempre escuro,
+   independente do tema do sistema: a declaração direta no elemento já
+   vence qualquer .dark herdado do <html>, então não precisa de variante
+   clara aqui. Nunca aplicado no dashboard autenticado (app/(protected),
+   paleta "Minimal Premium" verde-floresta) nem no app de descoberta
+   (.theme-discover, paleta escura verde-limão) — esses mantêm suas
+   próprias paletas, mesmo já sendo ambos escuros. */
+.theme-marketing {
+  --background: #121212;
+  --foreground: #FFFFFF;
+  --card: #181818;
+  --card-foreground: #FFFFFF;
+  --popover: #181818;
+  --popover-foreground: #FFFFFF;
+  --primary: #1ED760;
+  --primary-foreground: #121212;
+  --secondary: #282828;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A1A;
+  --muted-foreground: #A7A7A7;
+  --accent: #282828;
+  --accent-foreground: #1ED760;
+  --destructive: #FF5252;
+  --destructive-foreground: #121212;
+  --success: #1ED760;
+  --warning: #FFC94D;
+  --info: #4FA3F7;
+  --border: #2E2E2E;
+  --input: #1A1A1A;
+  --ring: #1ED760;
+  --chart-1: #1ED760;
+  --chart-2: #4FA3F7;
+  --chart-3: #FFC94D;
+  --chart-4: #B388FF;
+  --chart-5: #FF5252;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

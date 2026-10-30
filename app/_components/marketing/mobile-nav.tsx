@@ -4,7 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/app/_components/ui/sheet";
 
 /** Nav mobile do site de marketing — versão leve do mobile-nav.tsx do
  * dashboard: aqui são só âncoras da própria landing, não rotas de app. */
@@ -29,13 +34,16 @@ export function MobileNav({
         <button
           type="button"
           aria-label="Menu"
-          className="rounded-md p-2 text-neutral-300 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md p-2 transition-colors md:hidden"
         >
           <Menu className="size-5" />
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="flex w-72 flex-col gap-0 border-white/10 bg-neutral-950 p-0 text-white">
-        <SheetTitle className="border-b border-white/10 px-4 py-4 text-left font-semibold tracking-tight text-white">
+      <SheetContent
+        side="right"
+        className="border-border bg-background text-foreground flex w-72 flex-col gap-0 p-0"
+      >
+        <SheetTitle className="border-border text-foreground border-b px-4 py-4 text-left font-semibold tracking-tight">
           Bladiq
         </SheetTitle>
         <div className="flex flex-1 flex-col gap-1 px-4 py-4">
@@ -44,18 +52,27 @@ export function MobileNav({
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-2.5 text-sm text-neutral-300 transition-colors hover:bg-white/10 hover:text-white"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-2 py-2.5 text-sm transition-colors"
             >
               {link.label}
             </a>
           ))}
         </div>
-        <div className="flex flex-col gap-2 border-t border-white/10 p-4">
-          <Button asChild size="sm" variant="outline" className="border-white/15 bg-transparent text-white hover:bg-white/10">
-            <Link href={signInHref} onClick={() => setOpen(false)}>{signInLabel}</Link>
+        <div className="border-border flex flex-col gap-2 border-t p-4">
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+          >
+            <Link href={signInHref} onClick={() => setOpen(false)}>
+              {signInLabel}
+            </Link>
           </Button>
           <Button asChild size="sm">
-            <Link href={startFreeHref} onClick={() => setOpen(false)}>{startFreeLabel}</Link>
+            <Link href={startFreeHref} onClick={() => setOpen(false)}>
+              {startFreeLabel}
+            </Link>
           </Button>
         </div>
       </SheetContent>

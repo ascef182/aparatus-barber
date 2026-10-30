@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getAvailableSlots } from "@/lib/scheduling/availability";
 import { requireTenantId, runWithPlatformScope } from "@/lib/tenant-context";
+import { getOrganizationById } from "@/lib/services/organization-service";
+import { formatDateInTenantTz } from "@/lib/dates";
 import {
   findOrCreateCustomerForUser,
   findOrCreateGuestCustomer,
@@ -14,6 +16,7 @@ import { checkCancellation } from "@/lib/rules/policies/cancellation";
 import { logger } from "@/lib/logger";
 import { logAuditEvent } from "@/lib/services/audit-service";
 import { assertOwned } from "@/lib/authz";
+import { claimRefundApplication } from "@/lib/services/stripe-event-service";
 
 export type CreateBookingInput = {
   serviceId: string;
@@ -67,10 +70,11 @@ function revalidateBookingCaches() {
 /** Server-only booking boundary used by the public wizard and dashboard. */
 export async function createBooking(input: CreateBookingInput) {
   const organizationId = requireTenantId();
-  const [service, staff, rules] = await Promise.all([
+  const [service, staff, rules, organization] = await Promise.all([
     db.service.findUnique({ where: { id: input.serviceId } }),
     db.staff.findUnique({ where: { id: input.staffId } }),
     getResolvedRules(),
+    getOrganizationById(organizationId),
   ]);
   if (
     !service?.isActive ||
@@ -79,15 +83,24 @@ export async function createBooking(input: CreateBookingInput) {
   ) {
     throw new Error("Serviço ou profissional indisponível.");
   }
+  if (!organization) throw new Error("Organização não encontrada.");
   const link = await db.staffService.findUnique({
     where: { staffId_serviceId: { staffId: staff.id, serviceId: service.id } },
   });
   if (!link) throw new Error("Profissional não executa este serviço.");
 
+  // Data CIVIL no timezone do tenant, não a data em UTC do instante —
+  // America/Sao_Paulo (default desde a migração de mercado BR) é UTC-3,
+  // então qualquer horário entre 21:00-23:59 local já virou o dia
+  // seguinte em UTC. `.toISOString().slice(0, 10)` pegava a data errada
+  // nesses casos e getAvailableSlots(dateISO: dia errado) nunca batia
+  // com o slot escolhido — toda reserva legítima nesse horário era
+  // rejeitada como "indisponível". Achado real via E2E (Sprint 8),
+  // reproduzido em tests/integration/booking-flow.test.ts.
   const slots = await getAvailableSlots({
     serviceId: service.id,
     staffId: staff.id,
-    dateISO: input.startAt.toISOString().slice(0, 10),
+    dateISO: formatDateInTenantTz(input.startAt, organization.timezone),
   });
   if (
     !slots.some((slot) => slot.startAt.getTime() === input.startAt.getTime())
@@ -389,33 +402,55 @@ export async function getCustomerOverviewStats(customerId: string) {
 }
 
 /** Aplica um refund (parcial ou total) via payment intent — webhook Connect. */
+/**
+ * refund.amount (Stripe) é o valor de UM Refund object, nunca cumulativo
+ * por charge/payment_intent — uma reserva pode receber mais de um
+ * reembolso parcial ao longo do tempo (Dashboard, manual). SOMA no total
+ * já registrado em vez de sobrescrever, e só conta reembolsos com
+ * status "succeeded" (pending/failed/canceled ainda não são dinheiro que
+ * voltou de verdade pro cliente). claimRefundApplication garante que o
+ * MESMO refund.id nunca é somado duas vezes, mesmo que
+ * charge.refund.updated dispare de novo pra ele (event.id novo a cada
+ * disparo, então o dedup de nível de evento em claimStripeEvent não
+ * cobre este caso). O clamp final é defensivo — Stripe já impede
+ * reembolsar mais do que foi cobrado do lado dele.
+ */
 export async function applyRefundToBooking(
   paymentIntentId: string,
-  amountRefundedInCents: number,
+  refund: { id: string; status: string; amountInCents: number },
 ) {
+  if (refund.status !== "succeeded") return null;
   return runWithPlatformScope(async () => {
     const booking = await db.booking.findFirst({
       where: { stripePaymentIntentId: paymentIntentId },
     });
     if (!booking) return null;
+
+    const isNewRefund = await claimRefundApplication(refund.id);
+    if (!isNewRefund) return booking;
+
     // Compara contra o que foi de fato cobrado (onlinePaymentAmountInCents),
     // não booking.priceInCents (preço cheio do serviço) — com deposit mode
     // ou cupom aplicado, o valor cobrado é menor que o preço, e comparar
     // contra o preço cheio classificava um reembolso 100% do cobrado como
     // PARTIALLY_REFUNDED por engano.
     const chargeAmount = booking.onlinePaymentAmountInCents;
+    const refundedAmountInCents = Math.min(
+      booking.refundedAmountInCents + refund.amountInCents,
+      chargeAmount,
+    );
     const paymentStatus =
-      amountRefundedInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
+      refundedAmountInCents >= chargeAmount ? "REFUNDED" : "PARTIALLY_REFUNDED";
     const updated = await db.booking.update({
       where: { id: booking.id },
-      data: { paymentStatus, refundedAmountInCents: amountRefundedInCents },
+      data: { paymentStatus, refundedAmountInCents },
     });
     await logAuditEvent({
       entity: "Booking",
       action: "PAYMENT_REFUNDED",
       entityId: booking.id,
       organizationId: booking.organizationId,
-      metadata: { amountRefundedInCents },
+      metadata: { refundId: refund.id, amountRefundedInCents: refund.amountInCents, totalRefundedInCents: refundedAmountInCents },
     });
     return updated;
   });

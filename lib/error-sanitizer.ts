@@ -3,6 +3,7 @@
  * Remove dados sensíveis (PII, queries, headers) que não devem aparecer
  * em relatórios de erro.
  */
+import type { ErrorEvent as SentryErrorEvent } from "@sentry/nextjs";
 
 // Padrões de campos sensíveis que devem ser redatados
 const SENSITIVE_FIELDS = [
@@ -81,4 +82,52 @@ export function sanitizeError(error: Error): Error {
     .map((line) => sanitizeErrorMessage(line))
     .join("\n");
   return sanitized;
+}
+
+/**
+ * beforeSend global (sentry.server.config.ts / sentry.edge.config.ts /
+ * instrumentation-client.ts) — cobre TODO call site de
+ * Sentry.captureException/captureRequestError do projeto de uma vez, em
+ * vez de depender de cada um chamar sanitizeError manualmente (só
+ * lib/safe-action.ts fazia isso antes da Sprint 5; os outros 12 call
+ * sites mandavam o erro cru). Headers/cookies HTTP (Authorization,
+ * Set-Cookie, sessão) já são filtrados pelo próprio SDK por padrão sem
+ * `sendDefaultPii: true` — isto cobre o que esse filtro não cobre:
+ * texto de mensagem de erro/stack, extra/contexts e breadcrumbs (dados
+ * de aplicação, não de request HTTP).
+ */
+export function sanitizeSentryEvent(
+  event: SentryErrorEvent,
+): SentryErrorEvent {
+  return {
+    ...event,
+    ...(event.message !== undefined && {
+      message: sanitizeErrorMessage(event.message),
+    }),
+    ...(event.exception?.values && {
+      exception: {
+        ...event.exception,
+        values: event.exception.values.map((value) => ({
+          ...value,
+          ...(value.value !== undefined && {
+            value: sanitizeErrorMessage(value.value),
+          }),
+        })),
+      },
+    }),
+    ...(event.extra && { extra: sanitizeErrorContext(event.extra) }),
+    ...(event.contexts && {
+      contexts: sanitizeErrorContext(
+        event.contexts,
+      ) as SentryErrorEvent["contexts"],
+    }),
+    ...(event.breadcrumbs && {
+      breadcrumbs: event.breadcrumbs.map((crumb) => ({
+        ...crumb,
+        ...(crumb.message !== undefined && {
+          message: sanitizeErrorMessage(crumb.message),
+        }),
+      })),
+    }),
+  };
 }

@@ -75,3 +75,33 @@ export function markStripeEventFailed(id: string, error: unknown) {
     data: { status: "FAILED", lastError: message.slice(0, 1000) },
   });
 }
+
+/**
+ * Claim de idempotência POR REFUND (não por Stripe event.id) — reusa a
+ * mesma tabela/constraint única de claimStripeEvent, com um id prefixado
+ * pra não colidir com ids de evento reais. charge.refund.updated pode
+ * disparar mais de uma vez pro MESMO refund.id com o MESMO valor (ex.:
+ * pending -> succeeded, ou outro campo mudando depois de succeeded) —
+ * cada disparo é um event.id novo (StripeEvent/claimStripeEvent não pega
+ * isso), mas todos se referem ao mesmo dinheiro. Sem este claim separado,
+ * somar refund.amount a cada evento contaria o mesmo reembolso mais de
+ * uma vez.
+ */
+export async function claimRefundApplication(
+  refundId: string,
+): Promise<boolean> {
+  try {
+    await prisma.stripeEvent.create({
+      data: {
+        id: `refund-applied:${refundId}`,
+        type: "refund.amount.applied",
+        status: "PROCESSED",
+        processedAt: new Date(),
+      },
+    });
+    return true;
+  } catch (error) {
+    if ((error as { code?: string } | null)?.code === "P2002") return false;
+    throw error;
+  }
+}

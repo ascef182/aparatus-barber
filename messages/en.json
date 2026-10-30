@@ -23,11 +23,22 @@
     "staff": "{count, plural, one {# staff member} other {# staff members}}",
     "unlimitedStaff": "Unlimited staff",
     "cta": "Start free trial",
-    "trialNote": "No credit card required — add one only if you keep your business after the 7-day trial.",
+    "trialNote": "No credit card required. Add one only if you keep your business after the 7-day trial.",
     "popularBadge": "Most popular",
     "featureOnlineBooking": "Unlimited online booking",
     "featureStripePayments": "Stripe payments",
-    "featureEmailSupport": "Email support"
+    "featureEmailSupport": "Email support",
+    "featureBookingPage": "Your own 24/7 booking page",
+    "featureDeposit": "No-show deposit charged at booking",
+    "featureNoCommission": "0% commission on your clients",
+    "gaTitle": "Self-service plans",
+    "gaSubtitle": "7 days free, no credit card. Set it up yourself, on your own time.",
+    "guaranteeTitle": "Protected Chair Guarantee",
+    "guaranteeBody": "If after {days} days on a paid plan, with your link published and deposits turned on, you don't receive a single online booking with a paid deposit, we refund the fee and redo the setup with you.",
+    "includedInAllPlans": "Included",
+    "locationsRowLabel": "Locations",
+    "priceRowLabel": "Monthly fee",
+    "staffRowLabel": "Team"
   },
   "cookieConsent": {
     "message": "We use essential cookies to run this site (sessions, tenant routing, theme). No marketing or tracking cookies.",
@@ -256,6 +267,11 @@
       "searchPlaceholder": "Search customers...",
       "notifications": "Notifications",
       "noNotifications": "No notifications yet."
+    },
+    "error": {
+      "title": "This page couldn't load",
+      "description": "Something went wrong while loading this part of the dashboard. This is usually temporary — try again in a few seconds.",
+      "retry": "Try again"
     },
     "messages": {
       "title": "Messages",
@@ -834,10 +850,10 @@
       "signIn": "Sign in"
     },
     "hero": {
-      "badge": "Multi-tenant platform for local businesses",
-      "titleLine1": "Book, get paid,",
-      "titleLine2": "and grow — all in one place",
-      "subtitle": "Your business with its own page, online booking, Stripe payments, and LGPD compliance — ready in minutes, in 3 languages.",
+      "badge": "Coming soon: AI-powered service",
+      "titleLine1": "Your customer talks,",
+      "titleLine2": "AI books the appointment, in any language",
+      "subtitle": "We're building an AI that talks with your customers in Portuguese, English, or German and books the right time for them. In the meantime, start free with your own complete online booking page.",
       "ctaPrimary": "Start free trial",
       "ctaSecondary": "See how it works",
       "trustGdpr": "LGPD-compliant",
@@ -847,7 +863,7 @@
         "booking": {
           "label": "Booking",
           "title": "Pick a time",
-          "subtitle": "Customers book in a few taps — no account needed."
+          "subtitle": "Customers book in a few taps, no account needed."
         },
         "availability": {
           "label": "Availability",
@@ -857,7 +873,7 @@
         "payments": {
           "label": "Payments",
           "title": "Get paid your way",
-          "subtitle": "Deposit, full prepayment, or pay on-site — you choose per service."
+          "subtitle": "Deposit, full prepayment, or pay on-site: you choose per service."
         },
         "team": {
           "label": "Team",
@@ -868,19 +884,23 @@
     },
     "features": {
       "title": "Everything your business needs",
-      "subtitle": "One complete platform — no spreadsheets, WhatsApp groups, or disconnected tools.",
+      "subtitle": "One complete platform: no spreadsheets, WhatsApp groups, or disconnected tools.",
       "multiTenantTitle": "Your own page",
-      "multiTenantBody": "Every business gets its own subdomain with white-label booking — no watermarks, no multi-tenant confusion.",
-      "bookingTitle": "Booking in a few clicks",
-      "bookingBody": "Customers pick a service, staff member, and time slot in real time — no calls, no back-and-forth messages.",
+      "multiTenantBody": "Every business gets its own subdomain with white-label booking, no watermarks, no multi-tenant confusion.",
+      "bookingTitle": "Simple booking for customers",
+      "bookingBody": "Customers pick a service and time and confirm on the spot, no calls, no back-and-forth messages. Availability updates in real time, so no one gets double-booked.",
       "paymentsTitle": "Payments via Stripe",
-      "paymentsBody": "Deposit, full prepayment, or pay-on-site — you choose the rule per service.",
+      "paymentsBody": "Deposit, full prepayment, or pay-on-site: you choose the rule per service.",
       "teamTitle": "Team with permissions",
       "teamBody": "Invite managers, professionals, and receptionists with role-based access.",
       "securityTitle": "Real security",
       "securityBody": "Two-factor authentication and fail-closed data isolation between tenants.",
       "complianceTitle": "LGPD compliance",
-      "complianceBody": "Data processing basis, export, and erasure — ready to operate in Brazil."
+      "complianceBody": "Data processing basis, export, and erasure, ready to operate in Brazil.",
+      "agendaTitle": "A schedule under control",
+      "agendaBody": "See bookings, confirmations, and no-shows in one place, no WhatsApp group or notebook to check. You know who's coming, when, and with whom, all day long.",
+      "managementTitle": "Manage the business in one place",
+      "managementBody": "Invite managers, professionals, and receptionists with role-based access: everyone sees only what they need. You stay in control of the whole business, even when you're not there all day."
     },
     "howItWorks": {
       "title": "How it works",
@@ -894,7 +914,7 @@
     "faq": {
       "title": "Frequently asked questions",
       "q1": "Do I need a credit card to start?",
-      "a1": "No — sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your business live after the trial ends.",
+      "a1": "No, sign up for free and try it for 7 days with no card. You'll only need to add one if you want to keep your business live after the trial ends.",
       "q2": "Can I cancel anytime?",
       "a2": "Yes, directly from the billing dashboard, no penalty or minimum commitment.",
       "q3": "Is my data secure?",
@@ -902,11 +922,17 @@
       "q4": "Can my customers pay online?",
       "a4": "Yes, via Stripe: deposit, full prepayment, or pay-on-site, configurable per service.",
       "q5": "Does it work in other languages?",
-      "a5": "Yes, the dashboard and booking page are available in German, English, and Portuguese."
+      "a5": "Yes, the dashboard and booking page are available in German, English, and Portuguese.",
+      "q6": "I don't have time to set this up. Who does it?",
+      "a6": "Your page is ready in minutes: you set up services, staff, hours, and deposit rules yourself, no technical help needed.",
+      "q7": "What if my clients don't want to book through the link?",
+      "a7": "They don't need an app or an account, it's just a link. The migration kit includes ready-made messages to tell your existing clients. Anyone who prefers to keep booking by message still can: you add the booking in the dashboard.",
+      "q8": "How does the guarantee work?",
+      "a8": "If after {days} days on a paid plan, with your link published and deposits turned on, you don't receive a single online booking with a paid deposit, we refund that month and redo the setup with you."
     },
     "mobileShowcase": {
       "title": "Your business, in everyone's pocket",
-      "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone — check the schedule, add a customer, or confirm a booking from anywhere.",
+      "subtitle": "The same dashboard your team uses on desktop, ready to go on any phone: check the schedule, add a customer, or confirm a booking from anywhere.",
       "quickActions": "Quick actions",
       "features": {
         "overview": "Overview",
@@ -915,11 +941,13 @@
         "customers": "Customers",
         "staff": "Staff",
         "more": "More"
-      }
+      },
+      "agendaLabel": "Schedule",
+      "teamLabel": "Team"
     },
     "finalCta": {
       "title": "Ready to modernize your business?",
-      "subtitle": "Get started now — 7 days free, no card required.",
+      "subtitle": "Get started now. 7 days free, no card required.",
       "cta": "Start free trial"
     },
     "footer": {
@@ -933,6 +961,41 @@
       "termsLink": "Terms",
       "dpaLink": "DPA",
       "copyright": "© {year} Bladiq. All rights reserved."
+    },
+    "bonusBenefits": {
+      "title": "Why choose Bladiq",
+      "trial": "7-day free trial, no card required",
+      "noCommission": "0% commission on your own customers",
+      "lgpd": "LGPD compliant",
+      "stripe": "Payments via Stripe",
+      "languages": "Portuguese, English, and German"
+    },
+    "bookingExperience": {
+      "title": "Booking is fast for your customer",
+      "subtitle": "No app, no account required. Just pick, confirm, and it's on the schedule.",
+      "step1Title": "Pick the service",
+      "step1Body": "See the price and duration before continuing.",
+      "step2Title": "Pick the time",
+      "step2Body": "Real-time availability, no overbooking.",
+      "step3Title": "Confirm, and pay the deposit if needed",
+      "step3Body": "The booking goes straight into your schedule, with a deposit charged if you set that rule."
+    },
+    "calculator": {
+      "title": "How much are no-shows costing you?",
+      "subtitle": "Use your own numbers. No market averages, no estimates from us.",
+      "resultLabel": "You lose each month",
+      "perMonth": "/mo",
+      "comparison": "That's {multiple}x {fee} per month.",
+      "disclaimer": "Based on 4.33 weeks per month. The deposit charges, at booking time, the share of the price you set for each service.",
+      "noShowsLabel": "No-shows or last-minute cancellations per week",
+      "ticketLabel": "Average service price (R$)"
+    },
+    "mockup": {
+      "chooseSlotCta": "See times",
+      "customerPlaceholder": "Customer",
+      "depositLabel": "Deposit",
+      "servicePlaceholder": "Selected service",
+      "statusConfirmed": "Confirmed"
     }
   },
   "signIn": {

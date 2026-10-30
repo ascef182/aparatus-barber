@@ -14,9 +14,14 @@ import { logger } from "@/lib/logger";
 // rápido, a conexão não desiste. O rate-limit continua fail-closed
 // (decisão deliberada): sem Redis, a tentativa de login/reset é rejeitada,
 // não liberada sem limite.
+// connectTimeout explícito (bate com o default do ioredis, 10s) — deixa
+// documentado e ajustável sem depender do default da lib; é o que teria
+// virado "connect ETIMEDOUT" em produção se o host de Redis estivesse
+// inalcançável (SYN nunca respondido) em vez de lento.
 const redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379", {
   lazyConnect: true,
   maxRetriesPerRequest: 1,
+  connectTimeout: 10_000,
   retryStrategy: (times) => Math.min(times * 200, 5000),
 });
 

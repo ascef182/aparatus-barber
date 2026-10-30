@@ -1,4 +1,5 @@
 import { getLocale } from "next-intl/server";
+import { GUARANTEE_DAYS, GUARANTEE_ENABLED } from "@/lib/marketing/offer";
 import { LegalPage } from "../legal-page";
 
 export default async function TermsPage() {
@@ -12,7 +13,7 @@ export default async function TermsPage() {
           <h2>1. Service description</h2>
           <p>
             Bladiq is a software-as-a-service booking platform for local businesses (&ldquo;tenants&rdquo;). By
-            subscribing to a plan — Starter, Growth, or Pro — a tenant can manage services, staff, and online
+            subscribing to a plan (Starter, Growth, or Pro), a tenant can manage services, staff, and online
             bookings on their own subdomain.
           </p>
         </section>
@@ -23,13 +24,22 @@ export default async function TermsPage() {
             your plan at any time from the Customer Portal. Fees already charged are non-refundable, except where
             the law requires otherwise.
           </p>
+          {/* PENDENTE DE REVISÃO JURÍDICA — só publicado quando GUARANTEE_ENABLED for ligado. */}
+          {GUARANTEE_ENABLED && (
+            <p>
+              Protected Chair Guarantee: if, within the first {GUARANTEE_DAYS} days of a paid plan, with the booking
+              link published and deposits enabled on at least one service, the tenant receives no online booking
+              with a paid deposit, Bladiq refunds that month&rsquo;s fee on request and offers a new assisted setup.
+              The guarantee applies once per tenant.
+            </p>
+          )}
         </section>
         <section>
           <h2>3. Tenant responsibilities</h2>
           <p>
             Tenants are responsible for the accuracy of their service listings, pricing, and staff information, and
             for complying with the consumer-protection and data-protection laws that apply in their own
-            jurisdiction — including maintaining their own Legal Notice (Impressum) where legally required.
+            jurisdiction, including maintaining their own Legal Notice (Impressum) where legally required.
           </p>
         </section>
         <section>
@@ -76,6 +86,15 @@ export default async function TermsPage() {
             pode alterar ou cancelar seu plano a qualquer momento pelo Portal do Cliente. Valores já cobrados não
             são reembolsáveis, exceto quando exigido por lei.
           </p>
+          {/* PENDENTE DE REVISÃO JURÍDICA — só publicado quando GUARANTEE_ENABLED for ligado. */}
+          {GUARANTEE_ENABLED && (
+            <p>
+              Garantia Cadeira Protegida: se, nos primeiros {GUARANTEE_DAYS} dias de plano pago, com o link de
+              agendamento publicado e o sinal ativado em pelo menos um serviço, o tenant não receber nenhuma reserva
+              online com sinal pago, a Bladiq reembolsa a mensalidade daquele mês mediante solicitação e oferece um
+              novo setup assistido. A garantia vale uma vez por tenant.
+            </p>
+          )}
         </section>
         <section>
           <h2>3. Responsabilidades do tenant</h2>
@@ -129,6 +148,15 @@ export default async function TermsPage() {
           können Ihren Plan jederzeit über das Kundenportal ändern oder kündigen. Bereits berechnete Gebühren sind,
           soweit gesetzlich nicht anders vorgeschrieben, nicht erstattungsfähig.
         </p>
+        {/* PENDENTE DE REVISÃO JURÍDICA — só publicado quando GUARANTEE_ENABLED for ligado. */}
+        {GUARANTEE_ENABLED && (
+          <p>
+            Garantie Geschützter Stuhl: Erhält der Mandant in den ersten {GUARANTEE_DAYS} Tagen eines bezahlten
+            Plans, bei veröffentlichtem Buchungslink und aktivierter Anzahlung für mindestens eine Leistung, keine
+            einzige Online-Buchung mit bezahlter Anzahlung, erstattet Bladiq auf Anfrage die Gebühr dieses Monats
+            und bietet eine erneute begleitete Einrichtung an. Die Garantie gilt einmal pro Mandant.
+          </p>
+        )}
       </section>
       <section>
         <h2>3. Pflichten der Mandanten</h2>

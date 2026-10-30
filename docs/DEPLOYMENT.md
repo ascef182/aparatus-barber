@@ -36,6 +36,20 @@ Build `RUNTIME_DATABASE_URL` from that password and the same Neon/PostgreSQL hos
 - Cloudflare: set `TRUSTED_PROXY_IP_HEADER=cf-connecting-ip` only when direct access to the origin is blocked. Local development uses `x-real-ip`.
 - Health monitoring: call `/api/health` for liveness and `/api/internal/health` with `Authorization: Bearer <HEALTHCHECK_SECRET>` for dependency health.
 
+## Process model: web vs worker
+
+Two separate long-running processes, deployed from the same commit, never sharing a runtime:
+
+| | Web (`pnpm start` / `next start`) | Worker (`pnpm worker` / `tsx worker/index.ts`) |
+|---|---|---|
+| Serves | HTTP requests (App Router, Server Actions, API routes) | Nothing — no HTTP server. Pulls jobs from Redis/BullMQ. |
+| Queues owned | Producer only (`enqueueBookingNotification` etc., `lib/notifications.ts`) | Consumer — 5 `Worker` instances: `booking-notifications`, `booking-maintenance`, `invitation-notifications`, `quote-request-notifications`, `mfa-reminder-maintenance` |
+| Startup logging | Next.js's own boot log | `worker.starting` (lists every queue it's attaching to) then `worker.ready`, both via `lib/logger.ts` — confirm both lines appear in the platform's log stream after every deploy |
+| Graceful shutdown | Platform/Next.js default | `SIGTERM`/`SIGINT` → `worker.shutting_down` → `Worker.close()` on all 5 workers (stops pulling new jobs, waits for in-flight ones) → `worker.shutdown_complete` → `process.exit(0)`. Without this, a rolling deploy's SIGTERM would kill a job mid-send instead of letting it finish — the platform must send SIGTERM and wait before SIGKILL (Railway/Docker/k8s all do this by default; do not shorten the grace period below a few seconds). |
+| Error logging | `instrumentation.ts` (`onRequestError`) + `app/(protected)/dashboard/error.tsx` (client-side) | Every `Worker`/`Queue` has an `on("error", ...)` handler (`logWorkerError`/`logQueueError` in `worker/index.ts`/`lib/notifications.ts`) — without it, an EventEmitter `error` event with no listener crashes the whole process on a Redis blip. Every worker also has an `on("failed", ...)` handler logging + reporting to Sentry per job. |
+| Health | `/api/health` (liveness) + `/api/internal/health` (Postgres/Redis/queue depth) — both live in the **web** process | **No dedicated worker health endpoint** — the worker doesn't run an HTTP server. Liveness is inferred indirectly from the web side: growing queue depth over time in `/api/internal/health` is the signal a worker has stopped consuming. A worker that loses its Redis connection does **not** crash (see error logging above) — it logs and waits for `ioredis`'s own reconnection, so "process alive" and "actually processing jobs" are different signals; monitor queue depth, not just process uptime, to catch a worker that's alive but stuck. |
+| Notification idempotency | N/A (producer side only relies on a deterministic `jobId` to avoid double-enqueueing) | Every outbound email is sent with a Resend `idempotencyKey` (`lib/notifications.ts#buildNotificationIdempotencyKey`) — protects against the worker retrying an already-sent job (crash between Resend accepting the send and BullMQ marking the job complete) from producing a duplicate email. `jobId` dedup (producer) and `idempotencyKey` (worker) are two different, complementary layers — the first stops a duplicate *enqueue*, the second stops a duplicate *send* of a job that was only ever enqueued once. |
+
 ## Release gate
 
 1. Rotate any credential exposed outside the secret manager and invalidate affected sessions when applicable.

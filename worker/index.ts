@@ -14,6 +14,7 @@ import {
 } from "@/lib/services/member-service";
 import {
   buildNotificationEmail,
+  buildNotificationIdempotencyKey,
   enqueueBookingNotification,
   scheduleStaleHoldSweep,
   scheduleMfaReminderSweep,
@@ -28,12 +29,30 @@ import { renderBrandedEmail } from "@/lib/email-template";
 import { recordNotificationLog } from "@/lib/services/notification-log-service";
 import { logger } from "@/lib/logger";
 import { assertRuntimeEnv } from "@/lib/env";
+import { sanitizeSentryEvent } from "@/lib/error-sanitizer";
+import { classifyError } from "@/lib/error-taxonomy";
 
 assertRuntimeEnv("worker");
 
 // Processo separado do web — precisa do próprio Sentry.init (não passa
-// pela instrumentação do Next.js). dsn ausente = no-op seguro.
-Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
+// pela instrumentação do Next.js). dsn ausente = no-op seguro. Mesmo
+// beforeSend do server/edge/client (sentry.*.config.ts) — sem isso, os 7
+// call sites de Sentry.captureException deste arquivo mandavam o erro cru
+// (nenhum dos 13 do projeto no total sanitizava antes da Sprint 5, exceto
+// lib/safe-action.ts).
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  beforeSend: (event, hint) => {
+    event.tags = { ...event.tags, errorCategory: classifyError(hint.originalException) };
+    return sanitizeSentryEvent(event);
+  },
+});
+
+logger({}).info(
+  { queues: ["booking-notifications", "booking-maintenance", "invitation-notifications", "quote-request-notifications", "mfa-reminder-maintenance"] },
+  "worker.starting",
+);
 
 const connection = { url: process.env.REDIS_URL ?? "redis://localhost:6379" };
 const from = process.env.EMAIL_FROM ?? "Bladiq <bookings@bladiq.com>";
@@ -63,10 +82,11 @@ async function sendAndLog(params: {
   organizationId: string;
   type: string;
   recipient: string;
+  idempotencyKey: string;
   email: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0];
 }) {
-  const { organizationId, type, recipient, email } = params;
-  const { error } = await getResend().emails.send(email);
+  const { organizationId, type, recipient, idempotencyKey, email } = params;
+  const { error } = await getResend().emails.send(email, { idempotencyKey });
   await recordNotificationLog({
     organizationId,
     type,
@@ -88,6 +108,7 @@ const notificationsWorker = new Worker<BookingNotificationJob>(
       organizationId: booking.organizationId,
       type: `booking.${job.data.type}`,
       recipient: email.to,
+      idempotencyKey: buildNotificationIdempotencyKey(`booking.${job.data.type}`, job.data.bookingId),
       email: { from, ...email },
     });
   },
@@ -149,6 +170,7 @@ const invitationsWorker = new Worker<InvitationNotificationJob>(
       organizationId: job.data.organizationId,
       type: "invitation.invite",
       recipient: job.data.email,
+      idempotencyKey: buildNotificationIdempotencyKey("invitation.invite", job.data.invitationId),
       email: {
         from,
         to: job.data.email,
@@ -201,6 +223,7 @@ const quoteRequestsWorker = new Worker<QuoteRequestNotificationJob>(
       organizationId: quoteRequest.organizationId,
       type: "quoteRequest.notify",
       recipient: ownerEmail,
+      idempotencyKey: buildNotificationIdempotencyKey("quoteRequest.notify", job.data.quoteRequestId),
       email: {
         from,
         to: ownerEmail,
@@ -251,6 +274,7 @@ const mfaReminderWorker = new Worker(
           organizationId: member.organizationId,
           type: "mfaReminder",
           recipient: member.user.email,
+          idempotencyKey: buildNotificationIdempotencyKey("mfaReminder", member.id),
           email: {
             from,
             to: member.user.email,
@@ -286,3 +310,33 @@ mfaReminderWorker.on("error", logWorkerError("mfa-reminder-maintenance"));
 
 scheduleStaleHoldSweep();
 scheduleMfaReminderSweep();
+
+logger({}).info({}, "worker.ready");
+
+/**
+ * Sem isso, um deploy/restart (SIGTERM do orquestrador — Railway, Docker,
+ * k8s todos mandam SIGTERM antes de um SIGKILL forçado) mata o processo
+ * NO MEIO de um job em andamento (ex.: já chamou resend.emails.send() mas
+ * ainda não voltou) em vez de esperar terminar. Worker.close() do BullMQ
+ * para de puxar job novo e aguarda o(s) em andamento até o timeout antes
+ * de fechar a conexão — reduz (não substitui, ver buildNotificationIdempotencyKey)
+ * quantas vezes um job fica "active" órfão no Redis até o stalled-job
+ * detection do BullMQ liberar ele pra um retry.
+ */
+let shuttingDown = false;
+async function shutdown(signal: string) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger({ signal }).info({}, "worker.shutting_down");
+  await Promise.allSettled([
+    notificationsWorker.close(),
+    maintenanceWorker.close(),
+    invitationsWorker.close(),
+    quoteRequestsWorker.close(),
+    mfaReminderWorker.close(),
+  ]);
+  logger({ signal }).info({}, "worker.shutdown_complete");
+  process.exit(0);
+}
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));

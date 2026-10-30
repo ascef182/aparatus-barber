@@ -95,8 +95,12 @@ export async function POST(request: Request) {
         typeof refund.payment_intent === "string"
           ? refund.payment_intent
           : null;
-      if (paymentIntentId) {
-        await applyRefundToBooking(paymentIntentId, refund.amount);
+      if (paymentIntentId && refund.id && refund.status) {
+        await applyRefundToBooking(paymentIntentId, {
+          id: refund.id,
+          status: refund.status,
+          amountInCents: refund.amount,
+        });
       }
     } else if (event.type === "account.updated") {
       const account = event.data.object as Stripe.Account;

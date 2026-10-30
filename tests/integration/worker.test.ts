@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   buildNotificationEmail,
+  buildNotificationIdempotencyKey,
   bookingNotifications,
   enqueueBookingNotification,
 } from "@/lib/notifications";
@@ -144,5 +145,43 @@ describe("worker de notificações — construção/supressão de e-mail", () =>
     expect(job?.opts.attempts).toBe(5);
     expect(job?.opts.backoff).toEqual({ type: "exponential", delay: 1000 });
     await job?.remove();
+  });
+});
+
+/**
+ * Sprint 4 (hardening), Seção 22 — invariante de notificação: uma
+ * confirmação de booking não pode virar 10 e-mails por causa de retry.
+ * jobId determinístico (teste acima) evita ENFILEIRAR o mesmo job duas
+ * vezes, mas não protege contra o WORKER reprocessar o MESMO job já
+ * enfileirado após uma falha (attempts:5 existe justamente pra isso) —
+ * se o processo crashar entre o Resend aceitar o envio e o job ser
+ * marcado completed no BullMQ, o retry chamaria resend.emails.send() de
+ * novo pro mesmo e-mail. sendAndLog (worker/index.ts) não passava
+ * idempotencyKey nenhum pro SDK do Resend — exatamente o "Common Mistake
+ * #1" documentado pelo próprio Resend ("Retrying without idempotency key").
+ * O Resend dedupa server-side por até 24h dado a MESMA chave + MESMO
+ * payload — a garantia real vem de lá; nosso trabalho é só gerar uma
+ * chave estável e sempre passar a mesma pro mesmo evento lógico.
+ */
+describe("buildNotificationIdempotencyKey", () => {
+  test("é determinística: mesmo tipo+id sempre produz a mesma chave", () => {
+    expect(buildNotificationIdempotencyKey("booking.confirmation", "b1")).toBe(
+      buildNotificationIdempotencyKey("booking.confirmation", "b1"),
+    );
+  });
+
+  test("tipos ou ids diferentes produzem chaves diferentes (não suprime notificações legítimas)", () => {
+    const a = buildNotificationIdempotencyKey("booking.confirmation", "b1");
+    const b = buildNotificationIdempotencyKey("booking.reminder", "b1");
+    const c = buildNotificationIdempotencyKey("booking.confirmation", "b2");
+    expect(a).not.toBe(b);
+    expect(a).not.toBe(c);
+    expect(b).not.toBe(c);
+  });
+
+  test("segue o formato recomendado pelo Resend: <event-type>/<entity-id>", () => {
+    expect(buildNotificationIdempotencyKey("booking.confirmation", "b1")).toBe(
+      "booking.confirmation/b1",
+    );
   });
 });

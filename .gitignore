@@ -67,7 +67,9 @@ public/window.svg
 *.tsbuildinfo
 next-env.d.ts
 
-# skills de marketing: .agents/skills/ é a fonte de verdade (versionada, com
-# skills-lock.json). .claude/skills/ é só symlinks derivados que qualquer
-# clone recria -- versionar links quebraria em outra máquina.
-.claude/skills/
+# .claude/ é config/tooling local do Claude Code (rules, skills, cache) --
+# nunca faz parte do app. skills/ já era ignorado por serem symlinks
+# derivados (.agents/skills/ é a fonte de verdade); o restante (rules/,
+# plugins cache, etc.) ficou de fora do ignore anterior e vazava como
+# untracked em todo checkout.
+.claude/
