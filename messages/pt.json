@@ -850,10 +850,10 @@
       "signIn": "Entrar"
     },
     "hero": {
-      "badge": "Plataforma multi-tenant para negócios locais",
-      "titleLine1": "Agende, cobre",
-      "titleLine2": "e cresça: tudo em um só lugar$",
-      "subtitle": "Seu negócio com página própria, agendamento online, pagamentos via Stripe e conformidade com a LGPD, pronto em minutos, em 3 idiomas.$",
+      "badge": "Em construção: atendimento com IA",
+      "titleLine1": "Seu cliente fala,",
+      "titleLine2": "a IA agenda em qualquer idioma",
+      "subtitle": "Estamos construindo uma IA que conversa com seus clientes em português, inglês ou alemão e agenda o horário certo por eles. Enquanto isso, comece grátis com sua página de agendamento online completa.",
       "ctaPrimary": "Começar teste grátis",
       "ctaSecondary": "Ver como funciona",
       "trustGdpr": "Conforme LGPD",

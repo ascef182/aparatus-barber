@@ -850,10 +850,10 @@
       "signIn": "Anmelden"
     },
     "hero": {
-      "badge": "Multi-Tenant-Plattform für lokale Unternehmen",
-      "titleLine1": "Buchen, kassieren",
-      "titleLine2": "und wachsen: an einem Ort$",
-      "subtitle": "Ihr Unternehmen mit eigener Seite, Online-Buchung, Zahlungen über Stripe und LGPD-Konformität, startklar in Minuten, in 3 Sprachen.$",
+      "badge": "Demnächst: Service mit KI",
+      "titleLine1": "Ihr Kunde spricht,",
+      "titleLine2": "die KI bucht den Termin, in jeder Sprache",
+      "subtitle": "Wir entwickeln eine KI, die mit Ihren Kunden auf Portugiesisch, Englisch oder Deutsch spricht und den passenden Termin für sie bucht. Starten Sie in der Zwischenzeit kostenlos mit Ihrer eigenen vollständigen Online-Buchungsseite.",
       "ctaPrimary": "Kostenlos testen",
       "ctaSecondary": "So funktioniert's",
       "trustGdpr": "LGPD-konform",

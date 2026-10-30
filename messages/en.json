@@ -850,10 +850,10 @@
       "signIn": "Sign in"
     },
     "hero": {
-      "badge": "Multi-tenant platform for local businesses",
-      "titleLine1": "Book, get paid,",
-      "titleLine2": "and grow: all in one place$",
-      "subtitle": "Your business with its own page, online booking, Stripe payments, and LGPD compliance, ready in minutes, in 3 languages.$",
+      "badge": "Coming soon: AI-powered service",
+      "titleLine1": "Your customer talks,",
+      "titleLine2": "AI books the appointment, in any language",
+      "subtitle": "We're building an AI that talks with your customers in Portuguese, English, or German and books the right time for them. In the meantime, start free with your own complete online booking page.",
       "ctaPrimary": "Start free trial",
       "ctaSecondary": "See how it works",
       "trustGdpr": "LGPD-compliant",
