@@ -354,7 +354,7 @@ export function ScrollPreviewHero({
       */}
       <div className="flex flex-col justify-center md:motion-safe:sticky md:motion-safe:top-16 md:motion-safe:h-[calc(100vh-4rem)] md:motion-safe:overflow-hidden">
         <div
-          className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(230,57,70,0.14),transparent_65%)]"
+          className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(30,215,96,0.14),transparent_65%)]"
           aria-hidden
         />
         <div className="mx-auto flex w-full max-w-7xl flex-col justify-center px-6 py-10 lg:py-14">
@@ -387,7 +387,7 @@ export function ScrollPreviewHero({
               <h1 className="text-foreground mb-4 text-5xl font-bold tracking-tight text-balance sm:text-6xl lg:mb-5 lg:text-[64px] xl:text-[72px] xl:leading-[1.02]">
                 {titleLine1}
                 <br />
-                <span className="text-primary drop-shadow-[0_0_28px_rgba(230,57,70,0.3)]">
+                <span className="text-primary drop-shadow-[0_0_28px_rgba(30,215,96,0.3)]">
                   {titleLine2}
                 </span>
               </h1>
